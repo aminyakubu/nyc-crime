@@ -2,11 +2,16 @@
 title: "NYC Crime Data"
 author: "Amin Yakubu"
 date: "11/16/2018"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+The dataset as assessed on 11th November, 2018 [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i)
+
+```{r}
+
+```
 
