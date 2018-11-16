@@ -35,7 +35,7 @@ saveRDS(nyc_felony_misdemeanor, file = "datafiles/nyc_felony_misdemeanor.rds")
 
 ```
 
-To restore the object, use the following code
+To use our data, use the following code
 
 ```{r, eval = FALSE}
 
