@@ -30,7 +30,7 @@ The acquired data has 6,036,805 observations and 35 variables. Broadly, the vari
 
 ### Subsetting
 
-We are interested in looking at incidence i.e. when the crime happen, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.
+We are interested in looking at incidence i.e. when the crime happens, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.
 
 ``` r
 # This code was used to retrieve and assess the observations with missing date of crime occurrence
@@ -54,7 +54,7 @@ saveRDS(nyc_felony_misdemeanor, file = "datasets/nyc_felony_misdemeanor.rds")
 
 Our dataset for analysis has 1,645,149 observations and 31 variables.
 
-To use our dataset, use the following code after clonning our repository.
+To use our dataset, use the following code after cloning our repository.
 
 ``` r
 readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
