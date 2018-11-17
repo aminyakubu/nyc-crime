@@ -11,6 +11,7 @@ knitr::opts_chunk$set(warning = FALSE)
 
 ```{r}
 library(tidyverse)
+<<<<<<< HEAD
 library(RSocrata)
 library(lubridate)
 ```
@@ -19,6 +20,13 @@ library(lubridate)
 
 The data was accessed through an API on 16th November, 2018.
 
+=======
+library("RSocrata")
+```
+
+Assessing the data. The data was assessed on 16th November, 2018.
+
+>>>>>>> 17b1f25dbf0b0b4751a2693f4ddf0eeaa34d902e
 Click [here](https://dev.socrata.com/consumers/getting-started.html) to read more about the API. 
 
 ```{r, eval = FALSE}
@@ -33,23 +41,37 @@ nyc_crime = read.socrata(
 ```
 
 
+<<<<<<< HEAD
 Click [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i) for an overview of the dataset. 
 
 ### Subsetting 
+=======
+ Click [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i) for an overview of the dataset. 
+>>>>>>> 17b1f25dbf0b0b4751a2693f4ddf0eeaa34d902e
 
 Since we are interested in looking at incidence i.e. when the crime happen, we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015, 2014 and 2013 so we will take out those years. 
 
 ```{r, eval = FALSE}
+<<<<<<< HEAD
 # This code was used to retrieve and assess the observations with missing date of crime occurrence
+=======
+# This code was used to assess the observations with missing date of crime occurrence
+>>>>>>> 17b1f25dbf0b0b4751a2693f4ddf0eeaa34d902e
 
 crime_missing_cp = nyc_crime %>% filter(is.na(cmplnt_fr_dt))
 
 #Cleaning and subsetting the data
 
+<<<<<<< HEAD
 nyc_felony_misdemeanor = nyc_crime %>%
   filter(!is.na(cmplnt_fr_dt)) %>%
   mutate(year = year(cmplnt_fr_dt)) %>% 
   filter(year %in% 2014:2017) %>% 
+=======
+nyc_felony_misdemeanor = crime %>% filter(!is.na(cmplnt_fr_dt)) %>%
+  separate(cmplnt_fr_dt, into = c("day", "month", "year"), sep = "\\/") %>% 
+  filter(year %in% c("2017", "2016", "2015", "2014", "2013")) %>% 
+>>>>>>> 17b1f25dbf0b0b4751a2693f4ddf0eeaa34d902e
   filter(law_cat_cd == "FELONY" | law_cat_cd == "MISDEMEANOR")
 
 saveRDS(nyc_felony_misdemeanor, file = "datafiles/nyc_felony_misdemeanor.rds")
@@ -63,3 +85,9 @@ To use our data, use the following code
 readRDS(file = "datafiles/nyc_felony_misdemeanor.rds")
 ```
 
+<<<<<<< HEAD
+=======
+You can use the code below to assess the complete data. 
+
+
+>>>>>>> 17b1f25dbf0b0b4751a2693f4ddf0eeaa34d902e
