@@ -57,5 +57,5 @@ Our dataset for analysis has 1,645,149 observations and 31 variables.
 To use our dataset, use the following code after clonning our repository.
 
 ``` r
-readRDS(file = "datafiles/nyc_felony_misdemeanor.rds")
+readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 ```
