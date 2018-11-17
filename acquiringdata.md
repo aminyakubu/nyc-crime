@@ -1,48 +1,61 @@
 NYC Crime Data
 ================
 
+### Accessing the data.
+
+The data was accessed through the SODA Consumer API on 17th November, 2018. Click [here](https://dev.socrata.com/consumers/getting-started.html) to read more about the API.
+
+The `tidyverse`, `Rsocrata` and `lubridate` libraries are required to connect with the API and subsequently manipulate and clean the data.
+
 ``` r
 library(tidyverse)
+library(RSocrata)
+library(lubridate)
 ```
-
-The dataset as assessed on 11th November, 2018 [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i)
-
-Since we are interested in looking at incidence i.e. when the crime happen, we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015, 2014, 2013.
-
-``` r
-crime = read_csv("data/NYPD_Complaint_Data_Historic.csv", col_names = TRUE) 
-
-# This code was used to assess the observations with missing date of crime occurrence
-crime_missing_cp = crime %>% filter(is.na(CMPLNT_FR_DT))
-
-#Cleaning and subsetting the data
-
-nyc_felony_misdemeanor = crime %>% filter(!is.na(CMPLNT_FR_DT)) %>%
-  separate(CMPLNT_FR_DT, into = c("day", "month", "year"), sep = "\\/") %>% 
-  filter(year %in% c("2017", "2016", "2015", "2014", "2013")) %>% 
-  janitor::clean_names() %>% 
-  filter(law_cat_cd == "FELONY" | law_cat_cd == "MISDEMEANOR")
-
-saveRDS(nyc_felony_misdemeanor, file = "datafiles/nyc_felony_misdemeanor.rds")
-```
-
-To use our data, use the following code
-
-``` r
-readRDS(file = "datafiles/nyc_felony_misdemeanor.rds")
-```
-
-You can use the code below to assess the complete data
 
 ``` r
 ## Install the required package with:
-## install.packages("RSocrata")
+## install.packages("RSocrata) if not already installed
 
-library("RSocrata")
-
-df <- read.socrata(
+nyc_crime = read.socrata(
   "https://data.cityofnewyork.us/resource/9s4h-37hy.json",
-  app_token = "xxx",
-  email     = "xxx",
-  password  = "xxx" )
+  app_token = "jK8jo5IhF6gBPFqZ1va8ITny0",
+  email     = "yakubuamin@ymail.com",
+  password  = "daTA@12345" )
+
+saveRDS(nyc_crime, file = "data/nyc_crime.rds")
+```
+
+The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i).
+
+### Subsetting
+
+We are interested in looking at incidence i.e. when the crime happen, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.
+
+``` r
+# This code was used to retrieve and assess the observations with missing date of crime occurrence
+
+crime_missing_cp = nyc_crime %>% 
+  filter(is.na(cmplnt_fr_dt))
+
+#Cleaning and subsetting the data
+
+nyc_felony_misdemeanor = nyc_crime %>% 
+  janitor::clean_names() %>% 
+  filter(!is.na(cmplnt_fr_dt)) %>%
+  mutate(year = year(cmplnt_fr_dt))%>%
+  mutate_if(is.character, tolower) %>% 
+  filter(year %in% 2014:2017) %>% 
+  filter(law_cat_cd == "felony" | law_cat_cd == "misdemeanor") %>% 
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+
+saveRDS(nyc_felony_misdemeanor, file = "datasets/nyc_felony_misdemeanor.rds")
+```
+
+Our dataset for analysis has 1,645,149 observations and 31 variables.
+
+To use our dataset, use the following code after clonning our repository.
+
+``` r
+readRDS(file = "datafiles/nyc_felony_misdemeanor.rds")
 ```
