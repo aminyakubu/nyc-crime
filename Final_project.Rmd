@@ -26,14 +26,6 @@ com_crime_nyc = crime_nyc %>%
 ```
 
 
-```{r}
-com_crime_nyc %>%
-  group_by(pd_desc, susp_age_group, susp_sex, vic_sex, vic_age_group, boro_nm) %>%
-  summarise(n = n()) %>%
-  ggplot(aes(x = susp_age_group, y = pd_desc, color = boro_nm)) + 
-    geom_point() 
-
-```
 
 Highest number of crimes (top 10)
 ```{r}
@@ -42,12 +34,24 @@ com_crime_nyc %>%
   count()
 
 com_crime_nyc %>%
-  group_by(pd_desc) %>%
+  group_by(pd_desc, susp_age_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(10, number) %>%
   arrange(desc(number)) %>%
-  knitr::kable(digits = 1)
+  knitr::kable()
+
+```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(pd_desc, susp_age_group) %>%
+  summarise(mean = mean(pd_desc)) %>%
+  spread(key = susp_age_group, value = mean) %>% 
+  ggplot(aes(x = susp_age_group, y = mean)) + 
+  geom_col()
+
 
 ```
 
