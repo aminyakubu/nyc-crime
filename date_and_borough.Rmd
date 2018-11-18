@@ -61,3 +61,22 @@ crime_graph
 ```
 
 I can also look at whether the length of time for the reported event/crime differs by borough.
+```{r}
+crime_graph2 = 
+  crime_df %>% 
+  sample(nrow(crime_df), 500) %>% 
+  summarize(length_of_reported_crime = cmplnt_to_dt - cmplnt_fr_dt) %>% 
+  ggplot(aes(x = boro_nm, y = length_of_reported_crime)) + 
+  geom_point() +
+    labs(
+    title = "Length of Reported Crimes, By Borough",
+    x = "Borough",
+    y = "Length of Reported Crime",
+    caption = "Data from the crime_data file"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+crime_graph2
+```
+
