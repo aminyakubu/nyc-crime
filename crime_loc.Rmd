@@ -53,18 +53,41 @@ Looking at the individual offenses by borough over the four years:
 ```{r}
 
 crime_df %>% 
-  distinct(ofns_desc) %>% 
+  distinct(pd_cd) %>% 
   count()
 
-combined_df = crime_df %>% group_by(boro_nm, ofns_desc, year) %>% 
+combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>% 
   summarise(count = n())
 
- full = left_join(combined_df, nycc_df, by = "boro_nm") %>% 
-  mutate(off_rate = (count/population)*100)
+ full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
+  mutate(off_rate = ((count/population)*100))
+ 
+ full %>% select(-count, -population) %>% 
+   group_by(boro_nm, pd_cd, year) %>% 
+  head(arrange(desc(pd_cd)), n = 1) 
+  ggplot(aes(aes(x = year, y = pd_cd, color = boro_nm))) +
+  geom_col() +
+  theme(legend.position = "none") +
+  labs(
+    title = "Offense rate",
+    x = "Year",
+    y = "Number of offenses",
+    caption = "NYC crime by borough"
+  )
+
  
  trend = ggplot(full, aes(x = year, y = off_rate, color = boro_nm)) + 
+ geom_point() + 
+ theme(legend.position = "bottom") +
+  labs(
+    x = "Year",
+    y = "Number of offenses",
+    caption = "NYC_Crime"
+  )
+ggplotly(trend)
+
+trend = ggplot(full, aes(x = year, y = ofns_desc, color = boro_nm)) + 
  geom_line() + 
- facet_grid(~ofns_desc) +
  theme(legend.position = "bottom") +
   labs(
     x = "Year",
@@ -74,5 +97,3 @@ combined_df = crime_df %>% group_by(boro_nm, ofns_desc, year) %>%
 ggplotly(trend)
 
 ```
-
-

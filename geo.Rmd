@@ -1,0 +1,97 @@
+---
+title: "Untitled"
+author: "Amin Yakubu"
+date: "11/17/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("ggmap")
+library(tidyverse)
+
+# generate a single example address
+lonlat_sample <- as.numeric(geocode("the hollyood bowl"))
+lonlat_sample  # note the order is longitude, latitiude
+
+res <- revgeocode(lonlat_sample, output="more")
+# can then access zip and neighborhood where populated
+res$postal_code
+res$neighborhood
+
+address <- reverseGeoCode(c(37.4418834, -122.1430195))
+
+```
+
+```{r}
+reverseGeoCode <- function(latlng) {
+latlngStr <-  gsub(' ','%20', paste(latlng, collapse=",")) #Collapse and Encode URL Parameters
+  library("RJSONIO") #Load Library
+  #Open Connection
+  connectStr <- paste('http://maps.google.com/maps/api/geocode/json?sensor=false&latlng=',latlngStr, sep="")
+  con <- url(connectStr)
+  data.json <- fromJSON(paste(readLines(con), collapse=""))
+  close(con)
+  #Flatten the received JSON
+  data.json <- unlist(data.json)
+  if(data.json["status"]=="OK")
+    address <- data.json["results.formatted_address"]
+  return (address)
+}
+```
+
+```{r}
+getGeoCode <- function(gcStr)  {
+  library("RJSONIO") #Load Library
+  gcStr <- gsub(' ','%20',gcStr) #Encode URL Parameters
+ #Open Connection
+ connectStr <- paste('http://maps.google.com/maps/api/geocode/json?sensor=false&address=',gcStr, sep="") 
+  con <- url(connectStr)
+  data.json <- fromJSON(paste(readLines(con), collapse=""))
+  close(con)
+  #Flatten the received JSON
+  data.json <- unlist(data.json)
+  if(data.json["status"]=="OK")   {
+    lat <- data.json["results.geometry.location.lat"]
+    lng <- data.json["results.geometry.location.lng"]
+    gcodes <- c(lat, lng)
+    names(gcodes) <- c("Lat", "Lng")
+    return (gcodes)
+  }
+}
+
+geoCodes <- getGeoCode("Palo Alto,California")
+library(revgeo)
+
+revgeo(longitude=-77.0229529, latitude=38.89283435, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY")
+
+revgeo(longitude=-77.0229529, latitude=38.89283435, output='frame')
+
+crime_zip_df = crime_df %>% 
+  mutate(zip = map2(.x = crime_df$longitude, .y = crime_df$latitude, ~ revgeo(longitude = .x , latitude= .y, output='hash', item='zip')))
+
+crime_zip_df = crime_df %>% 
+  mutate(zip = revgeo(longitude = crime_df$longitude , latitude = crime_df$latitude, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY", output = 'hash', item = 'zip'))
+
+revgeo(longitude = -73.920159704, latitude = 40.71378306, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY")
+
+revgeo(longitude = -73.949406261, latitude = 40.790636092, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY", output = 'hash', item='zip')
+
+```
+
+```{r}
+library(googleway)
+```
+
+```{r}
+
+google_reverse_geocode(location = c(40.597711235, -73.986825645),
+                       result_type = c("neighborhood"),
+                       location_type = "rooftop",
+                       key = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY",
+                       simplify = FALSE)
+```
+

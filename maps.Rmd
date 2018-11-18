@@ -1,0 +1,53 @@
+---
+title: "Untitled"
+author: "Amin Yakubu"
+date: "11/18/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(maptools)
+library(rgdal)
+library(shapefiles)
+library(ggmap)
+library(DT)
+library(knitr)
+library(plotly)
+```
+
+```{r}
+crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds") 
+```
+
+```{r}
+
+area <- rgdal::readOGR("/Users/amin/Desktop/NTA map/geo_export_992243af-bc24-493a-9edf-3828dab5d845.shp")
+
+read.shapefile("/Users/amin/Desktop/NTA map/geo_export_992243af-bc24-493a-9edf-3828dab5d845.shp")
+
+x = plot(area)
+
+ggplotly(x)
+```
+
+```{r}
+crime_df_2 = crime_df %>% 
+  mutate(lon_lat = map2(.x = longitude, .y = latitude, ~ c(.x, .y))) %>% as.tibble()
+
+x = crime_df_2 %>% 
+  filter(!is.na(longitude) | !is.na(latitude)) %>% filter(x_coord_cd == 1006384) %>% 
+  mutate(lon_lat = SpatialPoints(lon_lat))
+
+coords <- crime_df_2[complete.cases(lon_lat)]
+
+points <- data.frame(lat = c(55.4, 35.8, 36.4), lon = c(-5.5, -5.6, -35.8))
+points <- SpatialPoints(points)
+
+plot(crime_df_2$lon_lat, add= TRUE , col = 'red')
+```
+

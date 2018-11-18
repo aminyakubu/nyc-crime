@@ -23,8 +23,13 @@ crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
+<<<<<<< HEAD
   filter(boro_nm == "queens") %>% 
   sample_n(500) %>% 
+=======
+  sample_n(500) %>% 
+  filter(boro_nm == "queens") %>% 
+>>>>>>> 3064720f4c6c83047b914155d0a90531a52ad8df
   separate(cmplnt_fr_dt, into = c("year_of_complaint", "month_complaint", "day_complaint"), sep = "-") %>% 
   select(year_of_complaint, law_cat_cd, boro_nm)
 
