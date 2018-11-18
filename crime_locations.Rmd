@@ -56,10 +56,10 @@ crime_df %>%
   distinct(ofns_desc) %>% 
   count()
 
-combined_df = crime_df %>% group_by(boro_nm, ofns_desc, year) %>% 
+combined_df = nycc_df%>% group_by(boro_nm, ofns_desc, year) %>% 
   summarise(count = n())
 
- full = left_join(combined_df, nycc_df, by = "boro_nm") %>% 
+ full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
   mutate(off_rate = (count/population)*100)
  
  trend = ggplot(full, aes(x = year, y = off_rate, color = boro_nm)) + 
