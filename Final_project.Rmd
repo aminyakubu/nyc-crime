@@ -13,7 +13,11 @@ crime_nyc = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 library(tidyverse)
 ```
 
-**Looking at crime description by age and sex of offenders and victims**
+
+**Crime category by race/ethnicity, age, sex and other sociodemographics**
+** top ten offense, general chracteristics**
+** top 5, general characteristics**
+**filter out unknown and analyze top 5 crimes for unknowns**
 
 Removing missing variables
 ```{r}
@@ -22,22 +26,104 @@ com_crime_nyc = crime_nyc %>%
   filter(!is.na(susp_sex)) %>%
   filter(!is.na(susp_age_group)) %>%
   filter(!is.na(vic_sex)) %>%
-  filter(!is.na(vic_age_group))
+  filter(!is.na(vic_age_group)) %>%
+  filter(!is.na(vic_race)) %>%
+  filter(!is.na(susp_race))
 ```
 
 
 
-Highest number of crimes (top 10)
+Highest number of crimes (top 5)
 ```{r}
 com_crime_nyc %>%
   distinct(pd_desc) %>%
   count()
 
 com_crime_nyc %>%
-  group_by(pd_desc, susp_age_group) %>%
+  group_by(pd_desc, pd_cd) %>%
   summarise(number = n()) %>%
   ungroup() %>%
-  top_n(10, number) %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+Suspect Age
+```{r}
+com_crime_nyc %>%
+  group_by(susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Suspect Sex
+```{r}
+com_crime_nyc %>%
+  group_by(susp_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(3, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+
+```
+
+Victim's sex
+```{r}
+com_crime_nyc %>%
+  group_by(vic_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(3, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Victim's age
+```{r}
+com_crime_nyc %>%
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Suspect's age
+```{r}
+com_crime_nyc %>%
+  group_by(susp_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+Victim's race
+```{r}
+com_crime_nyc %>%
+  group_by(vic_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+Suspect's race
+```{r}
+com_crime_nyc %>%
+  group_by(pd_desc, susp_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
   arrange(desc(number)) %>%
   knitr::kable()
 
@@ -46,12 +132,34 @@ com_crime_nyc %>%
 
 ```{r}
 com_crime_nyc %>%
-  group_by(pd_desc, susp_age_group) %>%
-  summarise(mean = mean(pd_desc)) %>%
-  spread(key = susp_age_group, value = mean) %>% 
-  ggplot(aes(x = susp_age_group, y = mean)) + 
-  geom_col()
-
-
+  group_by(susp_race, vic_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
 ```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(susp_race, pd_desc) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(pd_desc, susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
 
