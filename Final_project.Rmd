@@ -19,6 +19,7 @@ library(tidyverse)
 ** top 5, general characteristics**
 **filter out unknown and analyze top 5 crimes for unknowns**
 
+
 Removing missing variables
 ```{r}
 com_crime_nyc = crime_nyc %>% 
@@ -30,7 +31,6 @@ com_crime_nyc = crime_nyc %>%
   filter(!is.na(vic_race)) %>%
   filter(!is.na(susp_race))
 ```
-
 
 
 Highest number of crimes (top 5)
@@ -162,4 +162,10 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
+
+```{r}
+filter(com_crime_nyc, susp_age_group == 'unknown')
+
+
+```
 
