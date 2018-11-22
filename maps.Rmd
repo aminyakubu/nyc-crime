@@ -15,7 +15,6 @@ library(maptools)
 library(rgdal)
 library(shapefiles)
 library(ggmap)
-library(DT)
 library(knitr)
 library(plotly)
 ```
@@ -39,6 +38,10 @@ ggplotly(x)
 crime_df_2 = crime_df %>% 
   mutate(lon_lat = map2(.x = longitude, .y = latitude, ~ c(.x, .y))) %>% as.tibble()
 
+x = crime_df %>% 
+  filter(pd_cd == 101 ) %>% 
+  ggplot( aes(x = longitude, y = latitude)) + geom_point()
+
 x = crime_df_2 %>% 
   filter(!is.na(longitude) | !is.na(latitude)) %>% filter(x_coord_cd == 1006384) %>% 
   mutate(lon_lat = SpatialPoints(lon_lat))
@@ -48,6 +51,6 @@ coords <- crime_df_2[complete.cases(lon_lat)]
 points <- data.frame(lat = c(55.4, 35.8, 36.4), lon = c(-5.5, -5.6, -35.8))
 points <- SpatialPoints(points)
 
-plot(crime_df_2$lon_lat, add= TRUE , col = 'red')
+plot(crime_df_2$lon_lat, add = TRUE , col = 'red')
 ```
 

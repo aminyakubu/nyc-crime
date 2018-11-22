@@ -41,7 +41,7 @@ crime_table =
 head(crime_table, 12)
 ```
 
-\
+
 It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.
 ```{r graph_crime_data}
 crime_graph = 
