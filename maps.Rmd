@@ -24,6 +24,11 @@ crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 ```
 
 ```{r}
+select_crimes = crime_df %>% filter(law_cat_cd == "felony") %>% 
+  group_by(boro_nm, )
+```
+
+```{r}
 
 area <- rgdal::readOGR("/Users/amin/Desktop/NTA map/geo_export_992243af-bc24-493a-9edf-3828dab5d845.shp")
 
