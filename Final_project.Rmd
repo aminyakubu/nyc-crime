@@ -174,22 +174,15 @@ filter(com_crime_nyc, susp_age_group == 'unknown') %>%
   knitr::kable() 
 ```
 
+
 select top 10 crimes into a new dataset
 ```{r}
 top_ten_crime = com_crime_nyc %>%
   group_by(pd_desc, pd_cd) %>%
   summarise(number = n()) %>%
   ungroup() %>%
-  top_n(1, number) 
+  top_n(10, number) 
  # arrange(desc(number)) %>%
-```
-
-```{r}
-cc = top_ten_crime$pd_cd
-#toplist = c('101', '639', '333', '109','198', '338','259','113','567','254')
-toplist = list('101'| '639')
-#mydataextract =  com_crime_nyc[com_crime_nyc$pd_desc == cc, ]
-mydataextract2 = com_crime_nyc[which(com_crime_nyc$pd_cd == toplist, arr.ind = TRUE ), ]
 ```
 
 ```{r}
@@ -217,9 +210,11 @@ suspect_agetopten=table(mydata$pd_desc,mydata$susp_age_group)
 
 ```{r}
 suspect_agetopten2=as.data.frame(suspect_agetopten)
+mycolnames=c('Crime', 'Agegroup', 'Freq')
+colnames(suspect_agetopten2)=mycolnames
 suspect_agetopten2 %>%
-group_by(Var2, Var1) %>%
-  ggplot(aes(x = Var1, y = Freq, color = Var2)) +
+group_by(Agegroup, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Agegroup)) +
    geom_point() +
 #   geom_smooth(se=FALSE) +
 labs(
@@ -241,6 +236,25 @@ sort(table(mydataextract4$susp_race))
 suspect_racetopten=table(mydata$pd_desc,mydata$susp_race)
 ```
 
+```{r}
+suspect_racetopten2=as.data.frame(suspect_racetopten)
+mycolnames=c('Crime', 'Race', 'Freq')
+colnames(suspect_racetopten2)=mycolnames
+suspect_racetopten2 %>%
+group_by(Race, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Race)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by race",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
+
+```
+
+
 sex
 ```{r}
 table(mydataextract4$susp_sex)
@@ -250,5 +264,21 @@ suspect_sextopten=table(mydata$pd_desc,mydata$susp_sex)
 suspect_sextopten
 ```
 
+```{r}
+suspect_sextopten2=as.data.frame(suspect_sextopten)
+mycolnames=c('Crime', 'Sex', 'Freq')
+colnames(suspect_sextopten2)=mycolnames
+suspect_sextopten2 %>%
+group_by(Sex, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Sex)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by sex",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
 
+```
 
