@@ -6,7 +6,7 @@ output: github_document
 ---
 
 \
-This is one of the exploratory analyses for our P8105 - Data Science group project.
+This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.
 
 \
 First, I load the tidyverse and patchwork package.
@@ -17,63 +17,38 @@ library(patchwork)
 ```
 
 \
-Next, I read in the CSV file and tidy it up. I limit the data to just individuals in the borough of Queens and randomly sample 500 observations from the data frame.
+Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.
 ```{r tidy_crime_data}
 crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
-<<<<<<< HEAD
-  filter(boro_nm == "queens") %>% 
-  sample_n(500) %>% 
-=======
-  sample_n(500) %>% 
-  filter(boro_nm == "queens") %>% 
->>>>>>> 3064720f4c6c83047b914155d0a90531a52ad8df
-  separate(cmplnt_fr_dt, into = c("year_of_complaint", "month_complaint", "day_complaint"), sep = "-") %>% 
-  select(year_of_complaint, law_cat_cd, boro_nm)
+  sample_n(1000) %>% 
+  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days"))) %>% 
+  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)
 ```
 
 \
-I can look at the data in a table to examine general trends and get a feel of my data.
-```{r crime_data_table}
-crime_table = 
-  crime_data %>% 
-  knitr::kable(digits = 2)
-
-head(crime_table, 12)
-```
-
-\
-It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.
-```{r graph_crime_data}
-crime_graph = 
-  crime_data %>% 
-  table() %>%
-  as.data.frame()
-
+I can also look at whether the length of time for the reported event/crime differs by borough.
+```{r length_of_time_of_reported_event}
 crime_graph2 = 
-  crime_graph %>% 
-  group_by(law_cat_cd) %>% 
-  ggplot(aes(x = year_of_complaint, y = Freq, color = law_cat_cd)) + 
+  crime_data %>% 
+  group_by(boro_nm) %>% 
+  summarize(average_time = mean(time_diff2)) %>%
+  ggplot(aes(x = boro_nm, y = time_diff2)) + 
   geom_point() +
     labs(
-    title = "Categories of Offenses, By Year of Complaint, In Queens",
-    x = "Year",
-    y = "Category",
+    title = "Average Time of Reported Event, By Borough",
+    x = "Borough",
+    y = "Average Time",
     caption = "Data from the crime_data file"
     ) +
   geom_smooth(se = FALSE) +
   theme(legend.position = "bottom")
 
 crime_graph2
-
-```
-
-I can also look at whether the length of time for the reported event/crime differs by borough.
-```{r length_of_time_of_reported_event}
-
 ```
 
