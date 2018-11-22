@@ -5,10 +5,10 @@ date: "November 18, 2018"
 output: github_document
 ---
 
-\
+
 This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.
 
-\
+
 First, I load the tidyverse and patchwork package.
 ```{r setup, echo = FALSE}
 library(tidyverse)
@@ -16,7 +16,7 @@ devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 ```
 
-\
+
 Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.
 ```{r tidy_crime_data}
 crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
@@ -31,8 +31,7 @@ crime_data = crime_df %>%
 head(crime_data)
 ```
 
-\
-<<<<<<< HEAD
+
 I can look at the data in a table to examine general trends and get a feel of my data.
 ```{r crime_data_table}
 crime_table = 
@@ -61,8 +60,7 @@ crime_graph =
 crime_graph
 ```
 
-=======
->>>>>>> a10feeb5e86d0de4402678894a72c3c2e2a8173e
+
 I can also look at whether the length of time for the reported event/crime differs by borough.
 ```{r length_of_time_of_reported_event}
 crime_graph2 = 
