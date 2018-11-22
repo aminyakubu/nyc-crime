@@ -214,6 +214,24 @@ mydata=mydataextract4[mydataextract4$susp_age_group %in% agegroup,]
 suspect_agetopten=table(mydata$pd_desc,mydata$susp_age_group)
 ```
 
+
+```{r}
+suspect_agetopten2=as.data.frame(suspect_agetopten)
+suspect_agetopten2 %>%
+group_by(Var2, Var1) %>%
+  ggplot(aes(x = Var1, y = Freq, color = Var2)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by age group",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
+
+```
+
+
 consider suspects demographics by the top ten crimes.
 suspect race
 ```{r}
@@ -231,4 +249,6 @@ sort(table(mydataextract4$susp_sex))
 suspect_sextopten=table(mydata$pd_desc,mydata$susp_sex)
 suspect_sextopten
 ```
+
+
 
