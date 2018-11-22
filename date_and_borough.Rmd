@@ -6,7 +6,7 @@ output: github_document
 ---
 
 \
-This is one of the exploratory analyses for our P8105 - Data Science group project.
+This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.
 
 \
 First, I load the tidyverse and patchwork package.
@@ -17,21 +17,22 @@ library(patchwork)
 ```
 
 \
-Next, I read in the CSV file and tidy it up. I limit the data to just individuals in the borough of Queens and randomly sample 500 observations from the data frame.
+Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.
 ```{r tidy_crime_data}
 crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
-  sample_n(500) %>% 
-  filter(boro_nm == "queens") %>% 
-  separate(cmplnt_fr_dt, into = c("year_of_complaint", "month_complaint", "day_complaint"), sep = "-") %>% 
-  select(year_of_complaint, law_cat_cd, boro_nm)
+  sample_n(1000) %>% 
+  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days"))) %>% 
+  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)
 ```
 
 \
+<<<<<<< HEAD
 I can look at the data in a table to examine general trends and get a feel of my data.
 ```{r crime_data_table}
 crime_table = 
@@ -60,18 +61,20 @@ crime_graph =
 crime_graph
 ```
 
+=======
+>>>>>>> a10feeb5e86d0de4402678894a72c3c2e2a8173e
 I can also look at whether the length of time for the reported event/crime differs by borough.
-```{r}
+```{r length_of_time_of_reported_event}
 crime_graph2 = 
-  crime_df %>% 
-  sample(nrow(crime_df), 500) %>% 
-  summarize(length_of_reported_crime = cmplnt_to_dt - cmplnt_fr_dt) %>% 
-  ggplot(aes(x = boro_nm, y = length_of_reported_crime)) + 
+  crime_data %>% 
+  group_by(boro_nm) %>% 
+  summarize(average_time = mean(time_diff2)) %>%
+  ggplot(aes(x = boro_nm, y = time_diff2)) + 
   geom_point() +
     labs(
-    title = "Length of Reported Crimes, By Borough",
+    title = "Average Time of Reported Event, By Borough",
     x = "Borough",
-    y = "Length of Reported Crime",
+    y = "Average Time",
     caption = "Data from the crime_data file"
     ) +
   geom_smooth(se = FALSE) +

@@ -9,11 +9,17 @@ output: github_document
 crime_nyc = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 ```
  
+
 ```{r}
 library(tidyverse)
 ```
 
-**Looking at crime description by age and sex of offenders and victims**
+
+**Crime category by race/ethnicity, age, sex and other sociodemographics**
+** top ten offense, general chracteristics**
+** top 5, general characteristics**
+**filter out unknown and analyze top 5 crimes for unknowns**
+
 
 Removing missing variables
 ```{r}
@@ -22,32 +28,257 @@ com_crime_nyc = crime_nyc %>%
   filter(!is.na(susp_sex)) %>%
   filter(!is.na(susp_age_group)) %>%
   filter(!is.na(vic_sex)) %>%
-  filter(!is.na(vic_age_group))
+  filter(!is.na(vic_age_group)) %>%
+  filter(!is.na(vic_race)) %>%
+  filter(!is.na(susp_race))
 ```
 
 
-```{r}
-com_crime_nyc %>%
-  group_by(pd_desc, susp_age_group, susp_sex, vic_sex, vic_age_group, boro_nm) %>%
-  summarise(n = n()) %>%
-  ggplot(aes(x = susp_age_group, y = pd_desc, color = boro_nm)) + 
-    geom_point() 
-
-```
-
-Highest number of crimes (top 10)
+Highest number of crimes (top 5)
 ```{r}
 com_crime_nyc %>%
   distinct(pd_desc) %>%
   count()
 
 com_crime_nyc %>%
-  group_by(pd_desc) %>%
+  group_by(pd_desc, pd_cd) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(10, number) %>%
   arrange(desc(number)) %>%
-  knitr::kable(digits = 1)
+  knitr::kable() 
+```
+
+
+Suspect Age
+```{r}
+com_crime_nyc %>%
+  group_by(susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Suspect Sex
+```{r}
+com_crime_nyc %>%
+  group_by(susp_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(3, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+
+```
+
+Victim's sex
+```{r}
+com_crime_nyc %>%
+  group_by(vic_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(3, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Victim's age
+```{r}
+com_crime_nyc %>%
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+Suspect's age
+```{r}
+com_crime_nyc %>%
+  group_by(susp_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+Victim's race
+```{r}
+com_crime_nyc %>%
+  group_by(vic_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+
+Suspect's race
+```{r}
+com_crime_nyc %>%
+  group_by(pd_desc, susp_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+
+```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(susp_race, vic_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(susp_race, pd_desc) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+
+```{r}
+com_crime_nyc %>%
+  group_by(pd_desc, susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+**filter out unknown and analyze top 5 crimes for unknowns**
+```{r}
+filter(com_crime_nyc, susp_age_group == 'unknown') %>%
+  group_by(pd_cd) %>%
+  summarise(n = n()) %>%
+  filter() %>%
+  knitr::kable() 
+```
+
+
+select top 10 crimes into a new dataset
+```{r}
+top_ten_crime = com_crime_nyc %>%
+  group_by(pd_desc, pd_cd) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(10, number) 
+ # arrange(desc(number)) %>%
+```
+
+```{r}
+mydataextract3 = list()
+cc = top_ten_crime$pd_cd
+for(j in 1:length(cc)){
+  ind = cc[j]
+#mydataextract =  com_crime_nyc[com_crime_nyc$pd_desc == cc, ]
+mydataextract3[[j]] = com_crime_nyc[which(com_crime_nyc$pd_cd == ind, arr.ind = TRUE ), ]
+mydataextract4 = do.call(rbind, mydataextract3)
+} # has 397,023 obs
+```
+
+consider suspects demographics by the top ten crimes
+suspect age group
+```{r}
+ table(mydataextract4$susp_age_group)
+sort(table(mydataextract4$susp_age_group))
+#keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
+agegroup=c('<18', '45-64',   '18-24', 'unknown',   '25-44', '65+' )
+mydata=mydataextract4[mydataextract4$susp_age_group %in% agegroup,]
+suspect_agetopten=table(mydata$pd_desc,mydata$susp_age_group)
+```
+
+
+```{r}
+suspect_agetopten2=as.data.frame(suspect_agetopten)
+mycolnames=c('Crime', 'Agegroup', 'Freq')
+colnames(suspect_agetopten2)=mycolnames
+suspect_agetopten2 %>%
+group_by(Agegroup, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Agegroup)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by age group",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
+
+```
+
+
+consider suspects demographics by the top ten crimes.
+suspect race
+```{r}
+ table(mydataextract4$susp_race)
+sort(table(mydataextract4$susp_race))
+#keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
+suspect_racetopten=table(mydata$pd_desc,mydata$susp_race)
+```
+
+```{r}
+suspect_racetopten2=as.data.frame(suspect_racetopten)
+mycolnames=c('Crime', 'Race', 'Freq')
+colnames(suspect_racetopten2)=mycolnames
+suspect_racetopten2 %>%
+group_by(Race, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Race)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by race",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
+
+```
+
+
+sex
+```{r}
+table(mydataextract4$susp_sex)
+sort(table(mydataextract4$susp_sex))
+#keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
+suspect_sextopten=table(mydata$pd_desc,mydata$susp_sex)
+suspect_sextopten
+```
+
+```{r}
+suspect_sextopten2=as.data.frame(suspect_sextopten)
+mycolnames=c('Crime', 'Sex', 'Freq')
+colnames(suspect_sextopten2)=mycolnames
+suspect_sextopten2 %>%
+group_by(Sex, Crime) %>%
+  ggplot(aes(x = Crime, y = Freq, color = Sex)) +
+   geom_point() +
+#   geom_smooth(se=FALSE) +
+labs(
+  title = "Graph of crime frequency by sex",
+  x = "Crime ",
+  y = "Freq"
+) +
+  theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
 
 ```
 
