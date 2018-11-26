@@ -41,6 +41,7 @@ com_crime_nyc %>%
   count()
 
 com_crime_nyc %>%
+  filter(law_cat_cd == "felony") %>% 
   group_by(pd_desc, pd_cd) %>%
   summarise(number = n()) %>%
   ungroup() %>%
@@ -196,6 +197,7 @@ mydataextract4 = do.call(rbind, mydataextract3)
 } # has 397,023 obs
 ```
 
+
 consider suspects demographics by the top ten crimes
 suspect age group
 ```{r}
@@ -206,6 +208,7 @@ agegroup=c('<18', '45-64',   '18-24', 'unknown',   '25-44', '65+' )
 mydata=mydataextract4[mydataextract4$susp_age_group %in% agegroup,]
 suspect_agetopten=table(mydata$pd_desc,mydata$susp_age_group)
 ```
+
 
 
 ```{r}
@@ -235,6 +238,8 @@ sort(table(mydataextract4$susp_race))
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
 suspect_racetopten=table(mydata$pd_desc,mydata$susp_race)
 ```
+
+
 
 ```{r}
 suspect_racetopten2=as.data.frame(suspect_racetopten)
