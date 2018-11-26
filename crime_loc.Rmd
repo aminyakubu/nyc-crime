@@ -60,7 +60,7 @@ crime_df %>%
 combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>% 
   summarise(count = n())
 
-<<<<<<< HEAD
+
 full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
 mutate(off_rate = ((count/population)*100)) 
 
@@ -69,65 +69,48 @@ full[,'off_rate'] = round(full[,'off_rate'],2)
 test <- sqldf("SELECT boro_nm, year, off_rate
               FROM full
               WHERE off_rate IS NOT NULL and year = '2017'
-              GROUP BY boro_nm
-              ORDER BY off_rate DESC")
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2017 <- test[!duplicated(test$boro_nm), ]
+
 
 test2 <- sqldf("SELECT boro_nm, year, off_rate
               FROM full
               WHERE off_rate IS NOT NULL and year = '2016'
-              GROUP BY boro_nm
-              ORDER BY off_rate DESC")
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2016 <- test2[!duplicated(test2$boro_nm), ]
+
 
 test3 <- sqldf("SELECT boro_nm, year, off_rate
               FROM full
               WHERE off_rate IS NOT NULL and year = '2015'
-              GROUP BY boro_nm
               ORDER BY boro_nm, off_rate DESC")
-              LIMIT 1")
+
+test_2015 <- test3[!duplicated(test3$boro_nm), ]
+
 
 test4 <- sqldf("SELECT boro_nm, year, off_rate
               FROM full
               WHERE off_rate IS NOT NULL and year = '2014'
-              GROUP BY boro_nm
-              ORDER BY off_rate DESC")
+              ORDER BY boro_nm, off_rate DESC")
 
-test = full %>% 
-  select(-count, -population) %>% 
-  group_by(boro_nm, year) %>% 
-  head(arrange(desc(off_rate)), n = 1) 
-  ggplot(aes(aes(x = year, y = pd_cd, color = boro_nm))) +
-  geom_col() +
-=======
- full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
-  mutate(off_rate = ((count/population)*100))
- 
- full[,'off_rate'] = round(full[,'off_rate'],2)
- 
-graph =
-full %>% select(-count, -population) %>% 
-  group_by(boro_nm, year) %>%
-head(arrange(desc(pd_cd)), n = 1) %>% 
-  ggplot(aes(aes(x = boro_nm, y = pd_cd, color = year))) +
-  geom_point(alpha = 1, size = 9) +
->>>>>>> 0513bbdcdc29d6b761e4cfa5df66cbd2beab41c3
-  theme(legend.position = "none") +
-  labs(
-    title = "Offense rate",
-    x = "Borough",
-    y = "Number of offenses",
-    caption = "NYC crime by borough"
-  )
- graph
+test_2014 <- test4[!duplicated(test4$boro_nm), ]
+
+test_new = rbind(test_2017, test_2016, test_2015, test_2014)
  
 
-trend = ggplot(full, aes(x = boro_nm, y = off_rate, color = year)) +
- geom_point() + 
- theme(legend.position = "bottom") +
+trend = ggplot(test_new, aes(x = boro_nm, y = off_rate, color = year)) +
+geom_point() + 
+theme(legend.position = "bottom") +
   labs(
-    x = "Borough",
-    y = "Number of offenses/Offense rate",
-    caption = "NYC_Crime"
-  )
+  x = "Borough",
+  y = "Offense rate",
+  caption = "NYC_Crime"
+  ) +
+geom_smooth(se = FALSE) +
+theme(legend.position = "bottom")
+
 ggplotly(trend)
 
 ```
