@@ -62,36 +62,30 @@ combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>%
  full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
   mutate(off_rate = ((count/population)*100))
  
- full %>% select(-count, -population) %>% 
-   group_by(boro_nm, pd_cd, year) %>% 
-  head(arrange(desc(pd_cd)), n = 1) 
-  ggplot(aes(aes(x = year, y = pd_cd, color = boro_nm))) +
-  geom_col() +
+ full[,'off_rate'] = round(full[,'off_rate'],2)
+ 
+graph =
+full %>% select(-count, -population) %>% 
+  group_by(boro_nm, year) %>%
+head(arrange(desc(pd_cd)), n = 1) %>% 
+  ggplot(aes(aes(x = boro_nm, y = pd_cd, color = year))) +
+  geom_point(alpha = 1, size = 9) +
   theme(legend.position = "none") +
   labs(
     title = "Offense rate",
-    x = "Year",
+    x = "Borough",
     y = "Number of offenses",
     caption = "NYC crime by borough"
   )
-
+ graph
  
- trend = ggplot(full, aes(x = year, y = off_rate, color = boro_nm)) + 
+
+trend = ggplot(full, aes(x = boro_nm, y = off_rate, color = year)) +
  geom_point() + 
  theme(legend.position = "bottom") +
   labs(
-    x = "Year",
-    y = "Number of offenses",
-    caption = "NYC_Crime"
-  )
-ggplotly(trend)
-
-trend = ggplot(full, aes(x = year, y = ofns_desc, color = boro_nm)) + 
- geom_line() + 
- theme(legend.position = "bottom") +
-  labs(
-    x = "Year",
-    y = "Number of offenses",
+    x = "Borough",
+    y = "Number of offenses/Offense rate",
     caption = "NYC_Crime"
   )
 ggplotly(trend)
