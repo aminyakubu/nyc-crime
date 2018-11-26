@@ -1,0 +1,68 @@
+---
+title: "Untitled"
+author: "Amin Yakubu"
+date: "11/22/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(maptools)
+
+area <- rgdal::readOGR("/Users/amin/Desktop/NTA map/geo_export_992243af-bc24-493a-9edf-3828dab5d845.shp")
+
+summary(area@data)
+
+map <- select_crimes %>% sample_n(500) %>% 
+  ggplot(aes(x = longitude, y = latitude)) + 
+  geom_polygon(data = area, aes(x = long, y = lat, group = group), colour = "black", fill = NA) +
+  theme_void() 
+#+ geom_text(data = cnames_nyc, aes(x = long, y = lat, label = id), size = 4)
+
+shp_nyc <- broom::tidy(area, region = "ntaname")
+lapply(shp_df, class)
+
+cnames_nyc <- aggregate(cbind(long, lat) ~ id, data=shp_nyc, FUN=mean)
+```
+
+```{r}
+
+require(rgdal)
+require(ggplot2)
+library(rgeos)
+require(rgdal)
+require(gpclib)
+
+
+fn <- file.path(tempdir(), "GBR_adm_gdb.zip", fsep = "\\")
+download.file("http://biogeo.ucdavis.edu/data/gadm2.8/shp/GBR_adm_shp.zip", fn)
+utils::unzip(fn, exdir = tempdir())
+shp <- readOGR(dsn = file.path(tempdir(), "GBR_adm1.shp"), stringsAsFactors = F)
+
+summary(shp@data)
+
+ggplot() + geom_polygon(data = shp, aes(x = long, y = lat, group = group), colour = "black", fill = NA)
+
+shp_df <- broom::tidy(shp, region = "NAME_1")
+lapply(shp_df, class)
+
+cnames <- aggregate(cbind(long, lat) ~ id, data=shp_df, FUN=mean)
+
+```
+
+```{r}
+library(ggmap)
+library(maps)
+library(mapproj)
+library(httr)
+qmap(location = "houston")
+qmap(location = "baylor university")
+
+register_google(key = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY")
+
+register_google
+```
+

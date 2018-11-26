@@ -66,19 +66,31 @@ getGeoCode <- function(gcStr)  {
 geoCodes <- getGeoCode("Palo Alto,California")
 library(revgeo)
 
-revgeo(longitude=-77.0229529, latitude=38.89283435, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY")
+revgeo(longitude= -73.86092, latitude= 40.58009, provider = "google", API = "AIzaSyBk3x1co1i4OQDk7Y5Nl1cC5vdfwY2xo2U", output = 'hash', item= 'zip')
 
-revgeo(longitude=-77.0229529, latitude=38.89283435, output='frame')
+revgeo(longitude= -73.79777, latitude= 40.84792, output='hash')
 
-crime_zip_df = crime_df %>% 
-  mutate(zip = map2(.x = crime_df$longitude, .y = crime_df$latitude, ~ revgeo(longitude = .x , latitude= .y, output='hash', item='zip')))
+zip_df = cnames_nyc %>% 
+  mutate(zip = map2(.x = long, .y = lat, ~ revgeo(longitude = .x , latitude= .y, provider = "google", API = "AIzaSyBk3x1co1i4OQDk7Y5Nl1cC5vdfwY2xo2U", output = "hash", item = "zip")))
 
-crime_zip_df = crime_df %>% 
-  mutate(zip = revgeo(longitude = crime_df$longitude , latitude = crime_df$latitude, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY", output = 'hash', item = 'zip'))
+
+zip_df = cnames_nyc %>% 
+  mutate(zip = revgeo(longitude = cnames_nyc$longitude , latitude = cnames_nyc$latitude, provider = "google", API = "AIzaSyBk3x1co1i4OQDk7Y5Nl1cC5vdfwY2xo2U"))
 
 revgeo(longitude = -73.920159704, latitude = 40.71378306, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY")
 
 revgeo(longitude = -73.949406261, latitude = 40.790636092, provider = "google", API = "AIzaSyAaq9cdjel06cZqCWhTgBcxomD9jddXoPY", output = 'hash', item='zip')
+
+```
+
+```{r}
+zip_final = zip_df %>% 
+  mutate(zip = as.character(zip)) %>% 
+  mutate(zip = str_replace(zip, "list\\(zip =", ""),
+         zip = str_replace(zip, "\\)", ""),
+         zip1 = as.numeric(gsub('"', '', zip)))
+
+
 
 ```
 
