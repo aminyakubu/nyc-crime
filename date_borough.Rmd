@@ -24,7 +24,7 @@ crime_data = crime_df %>%
   janitor::clean_names() %>%
   sample_n(1000) %>% 
   mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days"))) %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)
@@ -40,38 +40,19 @@ crime_table =
 head(crime_table, 12)
 ```
 
-
-It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.
-```{r graph_crime_data}
-crime_graph = 
-  crime_data %>% 
-  ggplot(aes(x = year_of_complaint, y = law_cat_cd)) + 
-  geom_point() +
-    labs(
-    title = "Categories of Offenses, By Year of Complaint, In Queens",
-    x = "Year",
-    y = "Category",
-    caption = "Data from the crime_data file"
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = "bottom")
-
-crime_graph
-```
-
-
-I can also look at whether the length of time for the reported event/crime differs by borough.
+I can also look at whether the length of time for the reported event/crime differs by borough visually.
 ```{r length_of_time_of_reported_event}
+crime_data2 <- crime_data[complete.cases(crime_data),]
+
 crime_graph2 = 
-  crime_data %>% 
-  group_by(boro_nm) %>% 
-  summarize(average_time = mean(time_diff2)) %>%
-  ggplot(aes(x = boro_nm, y = time_diff2)) + 
+  crime_data2 %>% 
+  group_by(boro_nm, law_cat_cd) %>% 
+  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
   geom_point() +
     labs(
-    title = "Average Time of Reported Event, By Borough",
+    title = "Spread of Times of Reported Event, By Borough",
     x = "Borough",
-    y = "Average Time",
+    y = "Length of Reported Event",
     caption = "Data from the crime_data file"
     ) +
   geom_smooth(se = FALSE) +
@@ -79,4 +60,4 @@ crime_graph2 =
 
 crime_graph2
 ```
-
+From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.
