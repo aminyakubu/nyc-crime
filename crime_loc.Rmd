@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rvest)
 library(plotly)
+library(sqldf)
 ```
 
 ```{r}
@@ -59,12 +60,40 @@ crime_df %>%
 combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>% 
   summarise(count = n())
 
- full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
-  mutate(off_rate = ((count/population)*100))
- 
- full %>% select(-count, -population) %>% 
-   group_by(boro_nm, pd_cd, year) %>% 
-  head(arrange(desc(pd_cd)), n = 1) 
+full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
+mutate(off_rate = ((count/population)*100)) 
+
+full[,'off_rate'] = round(full[,'off_rate'],2)
+
+test <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2017'
+              GROUP BY boro_nm
+              ORDER BY off_rate DESC")
+
+test2 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2016'
+              GROUP BY boro_nm
+              ORDER BY off_rate DESC")
+
+test3 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2015'
+              GROUP BY boro_nm
+              ORDER BY boro_nm, off_rate DESC")
+              LIMIT 1")
+
+test4 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2014'
+              GROUP BY boro_nm
+              ORDER BY off_rate DESC")
+
+test = full %>% 
+  select(-count, -population) %>% 
+  group_by(boro_nm, year) %>% 
+  head(arrange(desc(off_rate)), n = 1) 
   ggplot(aes(aes(x = year, y = pd_cd, color = boro_nm))) +
   geom_col() +
   theme(legend.position = "none") +
