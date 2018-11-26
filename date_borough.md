@@ -36,13 +36,13 @@ crime_data = crime_df %>%
 head(crime_data)
 ```
 
-    ##   cmplnt_fr_dt cmplnt_to_dt  law_cat_cd    time_diff time_diff2   boro_nm
-    ## 1   2015-02-26   2015-02-26 misdemeanor       0 secs          0 manhattan
-    ## 2   2016-07-15   2016-07-15 misdemeanor       0 secs          0 manhattan
-    ## 3   2014-12-20   2015-01-06      felony 1468800 secs         17 manhattan
-    ## 4   2014-01-10         <NA>      felony      NA secs         NA     bronx
-    ## 5   2017-08-11         <NA> misdemeanor      NA secs         NA manhattan
-    ## 6   2014-01-26         <NA> misdemeanor      NA secs         NA    queens
+    ##   cmplnt_fr_dt cmplnt_to_dt  law_cat_cd time_diff time_diff2   boro_nm
+    ## 1   2014-03-15   2014-03-15 misdemeanor    0 secs          0 manhattan
+    ## 2   2017-11-27   2017-11-27 misdemeanor    0 secs          0  brooklyn
+    ## 3   2015-07-09   2015-07-09      felony    0 secs          0    queens
+    ## 4   2014-03-04   2014-03-04 misdemeanor    0 secs          0     bronx
+    ## 5   2016-03-09   2016-03-09 misdemeanor    0 secs          0  brooklyn
+    ## 6   2014-09-19         <NA> misdemeanor   NA secs         NA manhattan
 
 I can look at the data in a table to examine general trends and get a feel of my data.
 
@@ -56,16 +56,16 @@ head(crime_table, 12)
 
     ##  [1] "cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd    time_diff        time_diff2  boro_nm       "
     ##  [2] "-------------  -------------  ------------  --------------  -----------  --------------"
-    ##  [3] "2015-02-26     2015-02-26     misdemeanor   0 secs                 0.00  manhattan     "
-    ##  [4] "2016-07-15     2016-07-15     misdemeanor   0 secs                 0.00  manhattan     "
-    ##  [5] "2014-12-20     2015-01-06     felony        1468800 secs          17.00  manhattan     "
-    ##  [6] "2014-01-10     NA             felony        NA                       NA  bronx         "
-    ##  [7] "2017-08-11     NA             misdemeanor   NA                       NA  manhattan     "
-    ##  [8] "2014-01-26     NA             misdemeanor   NA                       NA  queens        "
-    ##  [9] "2016-12-06     2016-12-06     misdemeanor   0 secs                 0.00  brooklyn      "
-    ## [10] "2014-09-21     NA             misdemeanor   NA                       NA  brooklyn      "
-    ## [11] "2016-01-21     2016-01-21     misdemeanor   0 secs                 0.00  manhattan     "
-    ## [12] "2017-05-26     2017-05-30     misdemeanor   345600 secs            4.00  manhattan     "
+    ##  [3] "2014-03-15     2014-03-15     misdemeanor   0 secs                 0.00  manhattan     "
+    ##  [4] "2017-11-27     2017-11-27     misdemeanor   0 secs                 0.00  brooklyn      "
+    ##  [5] "2015-07-09     2015-07-09     felony        0 secs                 0.00  queens        "
+    ##  [6] "2014-03-04     2014-03-04     misdemeanor   0 secs                 0.00  bronx         "
+    ##  [7] "2016-03-09     2016-03-09     misdemeanor   0 secs                 0.00  brooklyn      "
+    ##  [8] "2014-09-19     NA             misdemeanor   NA                       NA  manhattan     "
+    ##  [9] "2016-02-04     2016-02-04     misdemeanor   0 secs                 0.00  brooklyn      "
+    ## [10] "2015-03-20     2015-03-20     misdemeanor   0 secs                 0.00  bronx         "
+    ## [11] "2017-03-22     2017-03-22     misdemeanor   0 secs                 0.00  manhattan     "
+    ## [12] "2016-08-18     2016-08-18     misdemeanor   0 secs                 0.00  bronx         "
 
 I can also look at whether the length of time for the reported event/crime differs by borough visually.
 
