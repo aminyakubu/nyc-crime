@@ -6,7 +6,13 @@ output: github_document
 ---
 
 ```{r}
+
+library(tidyverse)
 crime_nyc = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
+
+crime_nyc %>% filter(law_cat_cd == "felony") %>% distinct(pd_cd, pd_desc) %>% 
+  mutate(x = str_detect(pd_desc, "rape")) %>% 
+  View
 ```
  
 
