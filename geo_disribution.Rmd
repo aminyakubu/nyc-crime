@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Geographical Distribution of Select Sexual Crimes"
 author: "Amin Yakubu"
 date: "11/26/2018"
 output: html_document
@@ -38,7 +38,7 @@ crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
 
 ```
 
-Reverse geocoding the get the zip codes
+Reverse geocoding to get the zip codes
 
 ```{r, eval = FALSE}
 #### Sampling the just year 2017 and selecting all felony rape/attempted rape reports
@@ -65,14 +65,14 @@ zip_names_2 = zip_df_2 %>%
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
 
 ### SAving the dataset so we don't call the API to everytime
-saveRDS(zip_names_2, file = "datasets/nyc_rape_zip_2.rds")
+saveRDS(zip_names_2, file = "./datasets/nyc_rape_zip_2.rds")
 
 ```
 
 ```{r}
-zip_df_1 = readRDS(file = "datasets/nyc_rape_zip.rds")
+zip_df_1 = readRDS(file = "./datasets/nyc_rape_zip.rds")
 
-zip_df_2 = readRDS(file = "datasets/nyc_rape_zip_2.rds")
+zip_df_2 = readRDS(file = "./datasets/nyc_rape_zip_2.rds")
 
 all_zip_df = bind_rows(zip_df_1, zip_df_2) 
 
@@ -95,14 +95,12 @@ group_zip = all_zip_df %>% group_by(zipcode) %>% summarize(number = n())
 ```{r}
 map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
-download.file(map_url, "nyc_zip_map.geojson")
+download.file(map_url, "./datasets/nyc_zip_map.geojson")
 
-map_json <- geojson_read("./nyc_zip_map.geojson", what = "sp")
+map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 ```
 
 ```{r}
-nyc_zip_shp = rgdal::readOGR("/Users/amin/Desktop/untitled folder/cb_2017_us_zcta510_500k/cb_2017_us_zcta510_500k.shp")
-
 map_json@data = 
   map_json@data %>% 
   left_join(group_zip, by = c("postalCode" = "zipcode")) %>% mutate(number = as.numeric(number)) %>% 
@@ -111,6 +109,9 @@ map_json@data =
 ```
 
 Now let's plot our polygons
+
+#### Distribution of reported rape and attempted rape in 2017 
+
 ```{r}
 
 # create color palette with colorNumeric()
@@ -132,6 +133,8 @@ map_json %>%
               bringToFront = TRUE))
 
 ```
+
+#### Distribution of sexual assualt in NYC
 
 ```{r}
 m1 <- crime_df %>% 
