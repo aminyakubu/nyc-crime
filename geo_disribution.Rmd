@@ -1,0 +1,192 @@
+---
+title: "Untitled"
+author: "Amin Yakubu"
+date: "11/26/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+Loading the required libraries
+
+```{r}
+library(tidyverse)
+library(htmltools)
+library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+library(revgeo)
+
+library(rgdal)
+if (!require(geojsonio)) {
+    install.packages("geojsonio")
+    library(geojsonio)
+}
+library(sp)
+library(maps)
+library(ggmap)
+library(maptools)
+```
+
+Reading in the datasets
+```{r}
+crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds") 
+
+```
+
+Reverse geocoding the get the zip codes
+
+```{r, eval = FALSE}
+#### Sampling the just year 2017 and selecting all felony rape/attempted rape reports
+zip_df = crime_df %>% filter(pd_cd %in% c(153, 157, 159, 155)) %>% filter(year == 2017) %>% 
+  mutate(longitude = as.numeric(longitude),
+         latitude = as.numeric(latitude))
+
+### Sampling 500 because so as not to exceed the API query limit
+zip_df_1 = zip_df %>% sample_n(500)
+
+### Reverse geocoding each longitude and latitude
+zip_names_1 = zip_df_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
+
+### SAving the dataset so we don't call the API to everytime
+saveRDS(zip_names_1, file = "datasets/nyc_rape_zip.rds")
+
+### Using antijoin to find the other data set
+
+zip_df_2 = anti_join(zip_df, zip_df_1, by = "cmplnt_num")
+
+### Reverse geocoding to get their zip codes
+zip_names_2 = zip_df_2 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
+
+### SAving the dataset so we don't call the API to everytime
+saveRDS(zip_names_2, file = "datasets/nyc_rape_zip_2.rds")
+
+```
+
+```{r}
+zip_df_1 = readRDS(file = "datasets/nyc_rape_zip.rds")
+
+zip_df_2 = readRDS(file = "datasets/nyc_rape_zip_2.rds")
+
+all_zip_df = bind_rows(zip_df_1, zip_df_2) 
+
+all_zip_df = all_zip_df %>% mutate(zip = as.character(zip)) %>% 
+  mutate(zip = str_replace(zip, "list\\(zip =", ""),
+         zip = str_replace(zip, "\\)", ""),
+         zipcode = gsub('"', '', zip),
+         zipcode = str_replace(zipcode, ":[0-9][0-9][0-9][0-9][0-9]", ""),
+         zipcode = str_replace(zipcode, "-[0-9][0-9][0-9][0-9]", ""),
+         zipcode = as.numeric(zipcode),
+         zipcode = as.factor(zipcode))
+
+all_zip_df  %>%
+  summarize_all(funs(sum(is.na(.))))
+
+group_zip = all_zip_df %>% group_by(zipcode) %>% summarize(number = n())
+
+```
+
+```{r}
+map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
+
+download.file(map_url, "nyc_zip_map.geojson")
+
+map_json <- geojson_read("./nyc_zip_map.geojson", what = "sp")
+```
+
+```{r}
+nyc_zip_shp = rgdal::readOGR("/Users/amin/Desktop/untitled folder/cb_2017_us_zcta510_500k/cb_2017_us_zcta510_500k.shp")
+
+map_json@data = 
+  map_json@data %>% 
+  left_join(group_zip, by = c("postalCode" = "zipcode")) %>% mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+```
+
+Now let's plot our polygons
+```{r}
+
+# create color palette with colorNumeric()
+nyc_pal <- colorNumeric("Reds", domain = NULL)
+
+map_json %>% 
+  leaflet() %>% 
+  #addTiles() %>% 
+  #addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
+  setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
+  addPolygons(weight = 2, 
+              color = nyc_pal(map_json@data$number), 
+              fillOpacity = 0.5, opacity = 5, 
+              smoothFactor = 0.2, 
+  # add labels that display mumber
+              label = ~ paste("Zip Code: ", postalCode, "Number of reported rape: ", number),
+              # highlight polygons on hover
+              highlight = highlightOptions(weight = 2, color = "black",
+              bringToFront = TRUE))
+
+```
+
+```{r}
+m1 <- crime_df %>% 
+  filter(law_cat_cd == "felony" & (pd_cd %in% c(109, 198, 386, 397))) %>% 
+  leaflet()  %>% 
+  addTiles() %>% 
+  #addProviderTiles("CartoDB")  %>% 
+    setView(lat = 40.7, lng = -74.0, zoom = 10) %>% 
+  addCircleMarkers(lng = ~ as.numeric(longitude),
+                   lat = ~ as.numeric(latitude), radius = 1, label = ~ pd_desc,
+  clusterOptions = markerClusterOptions())
+
+m1
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
