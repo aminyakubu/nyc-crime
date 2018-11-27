@@ -122,7 +122,7 @@ map_json %>%
   #addTiles() %>% 
   #addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
   setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addPolygons(weight = 2, 
+  addPolygons(weight = 2, group = "zipcode",
               color = nyc_pal(map_json@data$number), 
               fillOpacity = 0.5, opacity = 5, 
               smoothFactor = 0.2, 
@@ -130,7 +130,8 @@ map_json %>%
               label = ~ paste("Zip Code: ", postalCode, "Number of reported rape: ", number),
               # highlight polygons on hover
               highlight = highlightOptions(weight = 2, color = "black",
-              bringToFront = TRUE))
+              bringToFront = TRUE)) %>% 
+  addSearchFeatures(options = searchFeaturesOptions(zoom = 12), targetGroups = "zipcode")
 
 ```
 
@@ -145,7 +146,7 @@ m1 <- crime_df %>%
     setView(lat = 40.7, lng = -74.0, zoom = 10) %>% 
   addCircleMarkers(lng = ~ as.numeric(longitude),
                    lat = ~ as.numeric(latitude), radius = 1, label = ~ pd_desc,
-  clusterOptions = markerClusterOptions())
+  clusterOptions = markerClusterOptions()) 
 
 m1
 ```
