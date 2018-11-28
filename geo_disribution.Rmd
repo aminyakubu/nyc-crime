@@ -90,13 +90,13 @@ all_zip_df  %>%
 
 group_zip = all_zip_df %>% group_by(zipcode) %>% summarize(number = n())
 
-```
-
-```{r}
 map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
 download.file(map_url, "./datasets/nyc_zip_map.geojson")
 
+```
+
+```{r}
 map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 ```
 
@@ -127,26 +127,41 @@ map_json %>%
               fillOpacity = 0.5, opacity = 5, 
               smoothFactor = 0.2, 
   # add labels that display mumber
-              label = ~ paste("Zip Code: ", postalCode, "Number of reported rape: ", number),
+              label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
               # highlight polygons on hover
               highlight = highlightOptions(weight = 2, color = "black",
               bringToFront = TRUE)) %>% 
-  addSearchFeatures(options = searchFeaturesOptions(zoom = 12), targetGroups = "zipcode")
+  addSearchFeatures(options = searchFeaturesOptions(zoom = 12), targetGroups = "zipcode") %>% 
+   addLegend(pal = nyc_pal,
+                   values = c(0:50),
+                   opacity = 0.75,
+                   title = "Number of reported rape",
+                   position = "topleft") %>% addControl("Distrition of reported rape and attempted race cases by Zip codes", position = "topright")
 
 ```
 
 #### Distribution of sexual assualt in NYC
 
 ```{r}
+
+## Creating a color palette
+palette <- colorNumeric(palette = "RdBu", domain = c(25:50))
+
 m1 <- crime_df %>% 
   filter(law_cat_cd == "felony" & (pd_cd %in% c(109, 198, 386, 397))) %>% 
   leaflet()  %>% 
   addTiles() %>% 
-  #addProviderTiles("CartoDB")  %>% 
-    setView(lat = 40.7, lng = -74.0, zoom = 10) %>% 
+# Setting view on NYC. The values are the coordinates of NYC
+    setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
   addCircleMarkers(lng = ~ as.numeric(longitude),
-                   lat = ~ as.numeric(latitude), radius = 1, label = ~ pd_desc,
-  clusterOptions = markerClusterOptions()) 
+                   lat = ~ as.numeric(latitude), radius = 1, label = ~ pd_desc, color = ~palette(as.numeric(latitude)),
+  clusterOptions = markerClusterOptions()) %>% 
+           addLegend(pal = palette,
+                   values = c(25:50),
+                   opacity = 0.75,
+                   title = "Latitude",
+                   position = "topleft")
+
 
 m1
 ```
