@@ -35,29 +35,34 @@ nyc_population = nyc_population %>%
 ```
 
 ```{r}
-crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds") 
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds") 
 
 crime_df = crime_df %>% 
   mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm))
 ```
 
-Crime rates in categories (felony, misdemeanor) by borough
+Felony crime rates trends by borough
 
 ```{r}
-grouped_df = crime_df %>% group_by(boro_nm, law_cat_cd, year) %>% 
+grouped_df = crime_df %>% group_by(boro_nm, year) %>% 
   summarise(number = n())
 
 full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
   mutate(crime_rate = (number/population)*100)
 
-x = ggplot(full, aes(x = year, y = crime_rate, color = boro_nm)) + 
-  geom_line() + 
-  facet_grid(~law_cat_cd)
+x = full %>% filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) +
+  labs(x = "Year",
+       y = "Crime rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    ) + theme_classic()
 
 ggplotly(x)
 
 ```
-
 
 
 

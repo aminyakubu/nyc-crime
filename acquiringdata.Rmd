@@ -55,7 +55,7 @@ nyc_felony_crimes = nyc_crime %>%
   filter(law_cat_cd == "felony") %>% 
   select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
 
-saveRDS(nyc_felony_crimes, file = "datasets/nyc_felony_crimes.rds")
+saveRDS(nyc_felony_crimes, file = "./datasets/nyc_felony_crimes.rds")
 
 ```
 

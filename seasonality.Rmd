@@ -1,0 +1,12 @@
+---
+title: "seasonality"
+author: "Amin Yakubu"
+date: "11/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+

@@ -34,7 +34,7 @@ library(maptools)
 
 Reading in the datasets
 ```{r}
-crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds") 
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
 ```
 
