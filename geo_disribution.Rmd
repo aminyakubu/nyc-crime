@@ -36,6 +36,27 @@ Reading in the datasets
 ```{r}
 crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
+sex_drug_weapons = crime_df %>% 
+  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
+                      ## Drug related felony crimes
+                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
+                      ### Weapon related felony crimes
+                      781, 792, 793, 796)) %>% 
+  mutate(longitude = as.numeric(longitude),
+         latitude = as.numeric(latitude)) %>% 
+  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
+  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
+         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), "Sex-Related", 
+                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), "Drug-Related", 
+                                       if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd))))
+```
+
+
+```{r}
+sex_crimes_split = split(sex_crimes, sample(1:10, replace = F))
+
+sex_crime_zip = sex_crimes %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
 ```
 
 Reverse geocoding to get the zip codes
@@ -140,32 +161,98 @@ map_json %>%
 
 ```
 
-#### Distribution of sexual assualt in NYC
+#### Distribution of sexual related crimes in NYC
 
 ```{r}
 
-## Creating a color palette
-palette <- colorNumeric(palette = "RdBu", domain = c(25:50))
+sex_related = filter(sex_drug_weapons, crime_group == "Sex-Related") %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
 
-m1 <- crime_df %>% 
-  filter(law_cat_cd == "felony" & (pd_cd %in% c(109, 198, 386, 397))) %>% 
-  leaflet()  %>% 
+drug_related = filter(sex_drug_weapons, crime_group == "Drug-Related") %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+weapon_related = filter(sex_drug_weapons, crime_group == "Weapon-Related") %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+pal <- 
+   colorFactor(palette = c("blue", "red", "green"), 
+               levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
+
+m1 <- leaflet()  %>% 
   addTiles() %>% 
-# Setting view on NYC. The values are the coordinates of NYC
+#Setting view on NYC. The values are the coordinates of NYC
     setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addCircleMarkers(lng = ~ as.numeric(longitude),
-                   lat = ~ as.numeric(latitude), radius = 1, label = ~ pd_desc, color = ~palette(as.numeric(latitude)),
-  clusterOptions = markerClusterOptions()) %>% 
-           addLegend(pal = palette,
-                   values = c(25:50),
-                   opacity = 0.75,
-                   title = "Latitude",
-                   position = "topleft")
+  addCircleMarkers(data = sex_related,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "Sex-Related") %>% 
+  addCircleMarkers(data = drug_related,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "Drug-Related") %>% 
+  addCircleMarkers(data = weapon_related,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "Weapon-Related") 
 
-
-m1
 ```
 
+Adding years 
+
+```{r}
+year_2014 = filter(sex_drug_weapons, year == 2014) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2015 = filter(sex_drug_weapons, year == 2015) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2016 = filter(sex_drug_weapons, year == 2016) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2017 =filter(sex_drug_weapons, year == 2017) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+leaflet()  %>% 
+  addTiles() %>% 
+#Setting view on NYC. The values are the coordinates of NYC
+    setView(lat = 40.7, lng = -74.0, zoom = 11) %>%
+  addCircleMarkers(data = year_2014,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2014") %>% 
+  addCircleMarkers(data = year_2015,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2015") %>% 
+  addCircleMarkers(data = year_2016,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2016") %>% 
+  addCircleMarkers(data = year_2017,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2017") %>%
+  addLayersControl(overlayGroups = c("2014", "2015", "2016", "2017")) %>% 
+   addLegend(pal = pal, 
+            values = c("Sex-Related", "Weapon-Related", "Drug-Related"),
+            opacity = .5,
+            title = "Crime Group",
+            position = "topleft")
+```
 
 
 

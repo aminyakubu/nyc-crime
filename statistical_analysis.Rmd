@@ -1,0 +1,74 @@
+---
+title: "Statistical Analysis"
+author: "Amin Yakubu"
+date: "11/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = TRUE)
+knitr::opts_chunk$set(message = TRUE)
+```
+
+```{r}
+library(nnet)
+library(tidyverse)
+
+```
+
+```{r}
+
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds") 
+
+sex_drug_weapons = crime_df %>% 
+  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
+                      ## Drug related felony crimes
+                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
+                      ### Weapon related felony crimes
+                      781, 792, 793, 796)) %>% 
+  mutate(longitude = as.numeric(longitude),
+         latitude = as.numeric(latitude)) %>% 
+  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
+  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
+         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), "Sex-Related", 
+                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), "Drug-Related", 
+                                       if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd))))
+```
+
+Association between borough and crime, adjusting for average income
+
+Model statement for the multinomial logistic regression is below 
+
+`In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island`
+
+`In(P(crimegroup=weapon related)/P(crime group=sex related) )=β_20 + β_21 Bronx+β_22 Brooklyn+β_23 Queens+ β_24 Staten_island`
+
+
+```{r}
+### Making manhattan the and sex-related crime the reference groups 
+sex_drug_weapons = sex_drug_weapons%>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Sex-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan"))
+
+```
+
+```{r}
+with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
+  knitr::kable()
+```
+
+```{r}
+multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
+  mutate( OR = exp(estimate)) %>% knitr::kable()
+```
+
+The odds of drug related vs. sex-related crimes will increase by 6.443667 if moving from manhattan to Bronx. 
+
+The odds of drug related vs. sex-related crimes will increase by 3.189424 if moving from manhattan to Brooklyn.
+
+The odds of drug related vs. sex-related crimes will increase by 2.444266 if moving from manhattan to Brooklyn.
+
+
+
+

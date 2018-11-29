@@ -18,7 +18,7 @@ library(patchwork)
 
 Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.
 ```{r tidy_crime_data}
-crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
+crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%

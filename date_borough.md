@@ -7,16 +7,16 @@ This is one of the exploratory analyses for our P8105 - Data Science group proje
 
 First, I load the tidyverse and patchwork package.
 
-    ## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
-    ## v ggplot2 3.0.0     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.6
-    ## v tidyr   0.8.1     v stringr 1.3.1
-    ## v readr   1.1.1     v forcats 0.3.0
+    ## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+    ## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
+    ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+    ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
-    ## x dplyr::filter() masks stats::filter()
-    ## x dplyr::lag()    masks stats::lag()
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
 
     ## Skipping install of 'patchwork' from a github remote, the SHA1 (fd7958ba) has not changed since last install.
     ##   Use `force = TRUE` to force installation
@@ -24,7 +24,7 @@ First, I load the tidyverse and patchwork package.
 Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.
 
 ``` r
-crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
+crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
@@ -36,13 +36,13 @@ crime_data = crime_df %>%
 head(crime_data)
 ```
 
-    ##   cmplnt_fr_dt cmplnt_to_dt  law_cat_cd time_diff time_diff2   boro_nm
-    ## 1   2014-03-15   2014-03-15 misdemeanor    0 secs          0 manhattan
-    ## 2   2017-11-27   2017-11-27 misdemeanor    0 secs          0  brooklyn
-    ## 3   2015-07-09   2015-07-09      felony    0 secs          0    queens
-    ## 4   2014-03-04   2014-03-04 misdemeanor    0 secs          0     bronx
-    ## 5   2016-03-09   2016-03-09 misdemeanor    0 secs          0  brooklyn
-    ## 6   2014-09-19         <NA> misdemeanor   NA secs         NA manhattan
+    ##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd   time_diff time_diff2  boro_nm
+    ## 1   2014-06-11         <NA>     felony     NA secs         NA brooklyn
+    ## 2   2014-03-26   2014-03-26     felony      0 secs          0   queens
+    ## 3   2014-02-28         <NA>     felony     NA secs         NA brooklyn
+    ## 4   2014-02-09   2014-02-09     felony      0 secs          0 brooklyn
+    ## 5   2016-04-22   2016-04-25     felony 259200 secs          3 brooklyn
+    ## 6   2014-07-01   2014-07-01     felony      0 secs          0 brooklyn
 
 I can look at the data in a table to examine general trends and get a feel of my data.
 
@@ -54,18 +54,18 @@ crime_table =
 head(crime_table, 12)
 ```
 
-    ##  [1] "cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd    time_diff        time_diff2  boro_nm       "
-    ##  [2] "-------------  -------------  ------------  --------------  -----------  --------------"
-    ##  [3] "2014-03-15     2014-03-15     misdemeanor   0 secs                 0.00  manhattan     "
-    ##  [4] "2017-11-27     2017-11-27     misdemeanor   0 secs                 0.00  brooklyn      "
-    ##  [5] "2015-07-09     2015-07-09     felony        0 secs                 0.00  queens        "
-    ##  [6] "2014-03-04     2014-03-04     misdemeanor   0 secs                 0.00  bronx         "
-    ##  [7] "2016-03-09     2016-03-09     misdemeanor   0 secs                 0.00  brooklyn      "
-    ##  [8] "2014-09-19     NA             misdemeanor   NA                       NA  manhattan     "
-    ##  [9] "2016-02-04     2016-02-04     misdemeanor   0 secs                 0.00  brooklyn      "
-    ## [10] "2015-03-20     2015-03-20     misdemeanor   0 secs                 0.00  bronx         "
-    ## [11] "2017-03-22     2017-03-22     misdemeanor   0 secs                 0.00  manhattan     "
-    ## [12] "2016-08-18     2016-08-18     misdemeanor   0 secs                 0.00  bronx         "
+    ##  [1] "cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       "
+    ##  [2] "-------------  -------------  -----------  --------------  -----------  --------------"
+    ##  [3] "2014-06-11     NA             felony       NA                       NA  brooklyn      "
+    ##  [4] "2014-03-26     2014-03-26     felony       0 secs                 0.00  queens        "
+    ##  [5] "2014-02-28     NA             felony       NA                       NA  brooklyn      "
+    ##  [6] "2014-02-09     2014-02-09     felony       0 secs                 0.00  brooklyn      "
+    ##  [7] "2016-04-22     2016-04-25     felony       259200 secs            3.00  brooklyn      "
+    ##  [8] "2014-07-01     2014-07-01     felony       0 secs                 0.00  brooklyn      "
+    ##  [9] "2015-10-28     2015-12-09     felony       3632400 secs          42.04  brooklyn      "
+    ## [10] "2016-06-27     2016-06-27     felony       0 secs                 0.00  queens        "
+    ## [11] "2014-04-17     NA             felony       NA                       NA  brooklyn      "
+    ## [12] "2016-02-22     2016-02-22     felony       0 secs                 0.00  manhattan     "
 
 I can also look at whether the length of time for the reported event/crime differs by borough visually.
 

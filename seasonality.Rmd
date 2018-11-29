@@ -9,4 +9,122 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(lubridate)
+library(patchwork)
+library(chron)
+```
+
+Loading the dataset
+```{r}
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds") 
+
+sex_crimes = crime_df %>% 
+  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696)) %>% 
+  mutate(longitude = as.numeric(longitude),
+         latitude = as.numeric(latitude)) %>% 
+  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc)
+
+sex_crimes %>% group_by(prem_typ_desc) %>% summarize(n = n()) %>% View
+
+x = read.delim("https://www2.census.gov/geo/docs/maps-data/data/rel/zcta_county_rel_10.txt", sep = "," ) 
+```
+
+#### Season trends
+
+```{r}
+season_df = sex_crimes %>% 
+  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
+         month = months(cmplnt_fr_dt),
+         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December")),
+         day = weekdays(cmplnt_fr_dt),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
+         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
+         hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
+
+
+season_df %>% 
+  group_by(boro_nm, year, quarter) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  filter(year == 2017) %>% 
+  ggplot(aes(x = boro_nm, y = number, fill = as.factor(quarter))) + 
+  geom_bar(stat = "identity")
+
+season_df %>% 
+  group_by(boro_nm, year, month) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ## filter(year == 2017) %>% 
+  ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
+  geom_line()  + facet_wrap(~ year) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+
+```
+
+#### Time 
+
+```{r}
+ 
+season_df %>% 
+  group_by(boro_nm, hour) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = number, fill = boro_nm)) + geom_col()+ facet_wrap(~boro_nm)
+  
+```
+
+```{r}
+season_df %>% 
+  group_by(day, hour) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = day)) +
+  geom_tile(aes(fill = number), colour = "white") +
+  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") +
+  labs(
+    title = "Day of the Week on crime activity",
+    x = "Hour of day",
+    y = "Day of the Week"
+  ) + theme_classic() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+```
+
+We see that majority of the sex crimes occurs at midnight on all days. 
+
+#### Victim race 
+
+```{r}
+season_df %>% 
+  group_by(vic_sex) %>% summarize(number = n())
+
+season_df %>% 
+  group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
+  ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col() + facet_wrap(~boro_nm) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+  
+
+```
+
+
+```{r}
+year = read_html("http://worldpopulationreview.com/us-cities/new-york-city-population/") %>% 
+  html_nodes("td:nth-child(1)") %>% html_text()
+
+population = read_html("http://worldpopulationreview.com/us-cities/new-york-city-population/") %>% 
+  html_nodes("td:nth-child(2)") %>% html_text()
+
+x = tibble(year = as.numeric(year),
+           population = population) %>% drop_na() %>% 
+  mutate(population = as.numeric(gsub("," , "", population)))
+
+read_csv("https://data.cityofnewyork.us/api/views/kku6-nxdu/rows.csv?accessType=DOWNLOAD") %>% View
+
+season_df %>% 
+  summarize_all(funs(sum(is.na(.))))
+
+filter_df %>% group_by(vic_race) %>% summarize(number = n()) %>% 
+  ggplot(aes(x = vic_race, y = number)) + geom_col()
+```
+
 

@@ -2,7 +2,7 @@
 title: "Exploratory Analysis"
 author: "Jyoti Ankam"
 date: "November 17, 2018"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +18,7 @@ library(sqldf)
 
 ```{r}
 
-crime_df = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
+crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 ```
 
