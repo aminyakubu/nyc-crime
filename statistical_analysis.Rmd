@@ -69,6 +69,3 @@ The odds of drug related vs. sex-related crimes will increase by 3.189424 if mov
 
 The odds of drug related vs. sex-related crimes will increase by 2.444266 if moving from manhattan to Brooklyn.
 
-
-
-
