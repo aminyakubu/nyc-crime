@@ -1,0 +1,47 @@
+---
+title: "Factors Associated With New York City Crime From 2014 to 2017"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+<br>
+
+### Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 
+
+<br>
+
+<head>
+<link rel="stylesheet" href="styles.css" type="text/css">
+<link rel="stylesheet" href="academicons/css/academicons.min.css"/>
+<link rel="apple-touch-icon" href="/images/nyc2.jpg" >
+
+<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br>
+
+<br>
+
+##Background
+
+The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to the Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city. 
+
+
+##Project Description
+
+We conducted various exploratory and formal analyses of different variables associated with reported crimes and events across New York City (e.g., sociodemographics, day/seasonality, and other trends). We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.
+
+
+## Data sources
+
+We used the dataset collected by the NYPD - specifically, the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables.
+
+[The link to the dataset is here:](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i) 
+
+
+## Analyses
+
+For the analyses, we used both graphical elements and functions (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also included a Flex Dashboard and Shiny app controls to provide stratification by different variables. 
+
+
+## Other
+Email any one of us if you have any questions: [Amin Yakubu](mailto:<ay2416@cumc.columbia.edu>) | [Jacky Choi](mailto:<jmc2392@cumc.columbia.edu>) | [Yaa Klu](mailto:<ykk2116@cumc.columbia.edu>) | [Jyoti Ankam](mailto:<jva2106@cumc.columbia.edu>) 
+
