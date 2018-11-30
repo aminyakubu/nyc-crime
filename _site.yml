@@ -3,8 +3,8 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "About"
-      href: about.html
+    - text: "Exploratory Analyses"
+      href: Exploratory.html
     - icon: fa-envelope fa-lg
       href: mailto:<jmc2392@cumc.columbia.edu>
     - icon: fa-github fa-lg
