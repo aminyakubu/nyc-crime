@@ -10,6 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ### Accessing the data. 
@@ -18,7 +19,7 @@ The data was accessed through the SODA Consumer API on 17th November, 2018. Clic
 
 The `tidyverse`, `Rsocrata` and `lubridate` libraries are required to connect with the API and subsequently manipulate and clean the data.
 
-```{r}
+```{r, eval = FALSE}
 library(tidyverse)
 library(RSocrata)
 library(lubridate)
@@ -86,7 +87,7 @@ The dataset comes without zipcode or neighborhood information. There are only ge
 
 ### Felony Drug offenses
 
-```{r}
+```{r, eval = FALSE}
 #### Sampling the just year 2017 and selecting all felony drug rape reports
 
 ### Drug offenses in 2017
@@ -116,9 +117,40 @@ complete_drug_zip_2017 = bind_rows(drug_2017_zip_1, drug_2017_zip_2)
 saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 ```
 
-### Sex Drug offenses
+### Felony Sex offenses
+
+The same process will be used for the sexual related crimes. There are 1993 observations therefore there's no need to split the data before reverse geocoding.
+
+```{r, eval = FALSE}
+sex_2017 = sex_drug_weapons %>% filter(crime_group == "Sex-Related" & year == 2017)
+
+complete_sex_zip_2017 = sex_2017 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
+```
+
+### Felony Weapon offenses
+
+```{r, eval = FALSE}
+weapon_2017 = sex_drug_weapons %>% filter(crime_group == "Weapon-Related" & year == 2017)
+
+complete_weapon_zip_2017 = weapon_2017 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
+```
+
+Dataset with the 3 crimes together with their zipcodes
+
+```{r, eval = FALSE}
+all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, complete_weapon_zip_2017) 
+
+saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2017.rds")
+```
 
 ### Usage
+
 To use our dataset, use the following code after cloning our repository. 
 
 ```{r, eval = FALSE}
@@ -130,7 +162,16 @@ readRDS(file = "./datasets/nyc_felony_crimes.rds")
 readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 ### Drug offenses for 2017 with zipcodes
-saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
+readRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 
+### Sex offenses for 2017 with zipcodes
+readRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
+
+### Weapon offenses for 2017 with zipcodes
+saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
+
+### Weapons, sex, drug for 2017 with zipcodes
+
+readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
