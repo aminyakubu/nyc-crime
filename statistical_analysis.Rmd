@@ -47,7 +47,7 @@ Association between borough and crime, adjusting for average income
 
 ```{r}
 ### Making manhattan the and sex-related crime the reference groups 
-sex_drug_weapons = sex_drug_weapons%>%
+sex_drug_weapons = sex_drug_weapons %>%
   mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
          boro_nm = forcats::fct_relevel(boro_nm, "manhattan"))
 
