@@ -16,7 +16,6 @@ Loading the relevant libraries
 library(tidyverse)
 library(rvest)
 library(plotly)
-install.packages("sqldf")
 library(sqldf)
 ```
 
