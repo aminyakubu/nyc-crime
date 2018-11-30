@@ -37,50 +37,21 @@ library(maptools)
 ```
 
 Reading in the datasets
-```{r}
-sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds") 
-```
-
 
 ```{r}
-sex_crimes_split = split(sex_crimes, sample(1:10, replace = F))
-
-sex_crime_zip = sex_crimes %>% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
-```
-
-Reverse geocoding to get the zip codes
-
-```{r, eval = FALSE}
-#### Sampling the just year 2017 and selecting all felony rape/attempted rape reports
-zip_df = crime_df %>% filter(pd_cd %in% c(153, 157, 159, 155)) %>% filter(year == 2017) %>% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude))
-
-### Sampling 500 because so as not to exceed the API query limit
-zip_df_1 = zip_df %>% sample_n(500)
-
-### Reverse geocoding each longitude and latitude
-zip_names_1 = zip_df_1 %>% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
-
-### SAving the dataset so we don't call the API to everytime
-saveRDS(zip_names_1, file = "datasets/nyc_rape_zip.rds")
-
-### Using antijoin to find the other data set
-
-zip_df_2 = anti_join(zip_df, zip_df_1, by = "cmplnt_num")
-
-### Reverse geocoding to get their zip codes
-zip_names_2 = zip_df_2 %>% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
-
-### SAving the dataset so we don't call the API to everytime
-saveRDS(zip_names_2, file = "./datasets/nyc_rape_zip_2.rds")
-
+crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
 ```{r}
+
+crimes_df = crimes_df %>% 
+  mutate(zipcode = as.numeric(str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))) %>% 
+  summarize_all(funs(sum(is.na(.))))
+
+crimes_df %>% filter(is.na(zipcode))
+
+crimes_df %>% 
+
 zip_df_1 = readRDS(file = "./datasets/nyc_rape_zip.rds")
 
 zip_df_2 = readRDS(file = "./datasets/nyc_rape_zip_2.rds")
@@ -265,10 +236,4 @@ ggmap(nyc_map)
 ggplot(data = sex_drug_weapons, aes(longitude, latitude, color = crime_group)) + geom_point(aes(alpha = .4))
 ```
 
-```{r}
-zip_names = sex_drug_weapons %>% filter(!is.na(longitude) | !is.na(latitude)) %>% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
-
-revgeocode(c(lon = -97.1161, lat = 31.55098))
-```
 
