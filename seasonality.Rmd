@@ -20,14 +20,7 @@ library(rvest)
 
 Loading the dataset
 ```{r}
-crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds") 
-
-sex_crimes = crime_df %>% 
-  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696)) %>% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude)) %>% 
-  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc)
-
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds") 
 ```
 
 #### Season trends

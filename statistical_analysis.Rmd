@@ -70,7 +70,16 @@ fit %>% knitr::kable()
 
 ```{r}
 fit %>% ggplot(aes(x = term, y = OR, fill = term)) + geom_col(width = .1) + facet_grid(~ y.level) + coord_flip() + 
-  theme(legend.position="none")
+  theme(legend.position = "none")
+
+ggplot(fit, aes(x = term, y= OR)) +
+  geom_segment( aes(x = term, xend = term, y=0, yend= OR), color = "grey") +
+  geom_point( color = "orange", size = 3) + facet_grid(~ y.level)
+  theme_light() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank())
 
 ```
 
