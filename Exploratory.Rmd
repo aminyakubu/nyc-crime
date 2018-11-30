@@ -1,22 +1,29 @@
 ---
 title: "Exploratory Analyses"
+output:
+    toc: true
+    toc_depth: 2
 ---
 
-### Exploratory Analysis 1
+<br>
+## Exploratory Analysis 1
 
+<br>
 As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 
-First, we load the tidyverse and patchwork package.
-```{r setup, echo = FALSE}
 library(tidyverse)
 devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 ```
 
-
-Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
-```{r tidy_crime_data}
+<br>
+First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
+```{r tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 crime_data = crime_df %>% 
@@ -29,9 +36,9 @@ crime_data = crime_df %>%
 head(crime_data)
 ```
 
-
+<br>
 We can look at the data in a table to examine general trends and get a feel of my data.
-```{r crime_data_table}
+```{r crime_data_table, echo = FALSE}
 crime_table = 
   crime_data %>% 
   knitr::kable(digits = 2)
@@ -39,6 +46,7 @@ crime_table =
 head(crime_table, 12)
 ```
 
+<br>
 We can also look at whether the length of time for the reported event/crime differs by borough visually.
 ```{r length_of_time_of_reported_event}
 crime_data2 <- crime_data[complete.cases(crime_data),]
@@ -60,4 +68,8 @@ crime_graph2 =
 crime_graph2
 ```
 
+<br>
 From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.
+
+<br>
+You can find the code for this exploratory analysis [here](code_date_borough.html).
