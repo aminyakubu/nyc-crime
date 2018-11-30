@@ -2,19 +2,25 @@
 title: "Exploratory Analysis"
 author: "Jyoti Ankam"
 date: "November 17, 2018"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
 ```
+
+Loading the relevant libraries
 
 ```{r}
 library(tidyverse)
 library(rvest)
 library(plotly)
+install.packages("sqldf")
 library(sqldf)
 ```
+
+Reading the dataset
 
 ```{r}
 
@@ -22,6 +28,7 @@ crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 ```
 
+Loading information from the US census on total population in the individual NYC boroughs to calculate offense rates in each borough
 ```{r}
 
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
@@ -114,3 +121,5 @@ theme(legend.position = "bottom")
 ggplotly(trend)
 
 ```
+
+Interpretation: From this exploratory subanalysis, we can see that the rates of individual offenses are highest in the boroughs of Bronx and Brooklyn, followed by Manhattan and Queens. Staten Island reported the lowest rates of individual offenses throughout the four years. Individual offense rates increased in the Bronx from 2014 through 2017. On the contrary, Brooklyn witnessed a significant plummeting in offense rates through the years 2014 to 2017.
