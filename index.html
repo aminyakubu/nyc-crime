@@ -19,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -169,6 +172,101 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -215,20 +313,22 @@ $(document).ready(function () {
 </div>
 
 
-<center>
-<br> </br>
-<center>
+<p><br></p>
+<div id="group-members-amin-yakubu-ay2416-jacky-choi-jmc2392-yaa-klu-ykk2116-jyoti-ankam-jva2106" class="section level3">
+<h3>Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106</h3>
+<p><br></p>
 <head>
 <p><link rel="stylesheet" href="styles.css" type="text/css"> <link rel="stylesheet" href="academicons/css/academicons.min.css"/> <link rel="apple-touch-icon" href="/images/nyc2.jpg" ></p>
 <p><br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br></p>
+<p><br></p>
+</div>
 <div id="background" class="section level2">
 <h2>Background</h2>
-<p>The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to The Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city.</p>
+<p>The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to the Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city.</p>
 </div>
 <div id="project-description" class="section level2">
 <h2>Project Description</h2>
-<p>Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 <br></p>
-<p>We conducted exploratory analysis of different crimes across New York City. We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically. We also looked for associations between crime and time (day/seasonality), and other trends.</p>
+<p>We conducted various exploratory and formal analyses of different variables associated with reported crimes and events across New York City (e.g., sociodemographics, day/seasonality, and other trends). We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.</p>
 </div>
 <div id="data-sources" class="section level2">
 <h2>Data sources</h2>
@@ -237,15 +337,17 @@ $(document).ready(function () {
 </div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
-<p>For the analyses, we used both graphical elements (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also used flexdashboard and shiny app controls to provide stratification by different variables.</p>
+<p>For the analyses, we used both graphical elements and functions (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also included a Flex Dashboard and Shiny app controls to provide stratification by different variables.</p>
 </div>
 <div id="other" class="section level2">
 <h2>Other</h2>
-<p>[Relevant links]</p>
+<p>Email any one of us if you have any questions: <a href="mailto:%3Cay2416@cumc.columbia.edu%3E">Amin Yakubu</a> | <a href="mailto:%3Cjmc2392@cumc.columbia.edu%3E">Jacky Choi</a> | <a href="mailto:%3Cykk2116@cumc.columbia.edu%3E">Yaa Klu</a> | <a href="mailto:%3Cjva2106@cumc.columbia.edu%3E">Jyoti Ankam</a></p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 

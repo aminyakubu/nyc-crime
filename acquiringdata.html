@@ -22,9 +22,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -214,49 +211,51 @@ $(document).ready(function () {
 </div>
 
 
-<p>—{r setup, include = true} title: “Exploratory Analyses” output: html_document: toc: true toc_float: true — <br></p>
-<div id="exploratory-analysis-1---length-of-reported-eventcrime-by-borough" class="section level2">
-<h2>Exploratory Analysis 1 - Length of Reported Event/Crime by Borough</h2>
-<p><br> As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.</p>
-<p><br> First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.</p>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2   boro_nm
-## 1   2015-01-28   2015-01-28     felony     0 secs          0 manhattan
-## 2   2014-12-23   2014-12-23     felony     0 secs          0    queens
-## 3   2015-03-28   2015-03-28     felony     0 secs          0    queens
-## 4   2014-12-24   2014-12-24     felony     0 secs          0     bronx
-## 5   2015-04-25   2015-04-26     felony 86400 secs          1    queens
-## 6   2016-07-03   2016-07-03     felony     0 secs          0  brooklyn</code></pre>
-<p><br> We can look at the data in a table to examine general trends and get a feel of my data.</p>
-<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
-##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2015-01-28     2015-01-28     felony       0 secs                 0.00  manhattan     &quot;
-##  [4] &quot;2014-12-23     2014-12-23     felony       0 secs                 0.00  queens        &quot;
-##  [5] &quot;2015-03-28     2015-03-28     felony       0 secs                 0.00  queens        &quot;
-##  [6] &quot;2014-12-24     2014-12-24     felony       0 secs                 0.00  bronx         &quot;
-##  [7] &quot;2015-04-25     2015-04-26     felony       86400 secs             1.00  queens        &quot;
-##  [8] &quot;2016-07-03     2016-07-03     felony       0 secs                 0.00  brooklyn      &quot;
-##  [9] &quot;2016-10-20     2016-10-20     felony       0 secs                 0.00  bronx         &quot;
-## [10] &quot;2017-04-11     2017-04-11     felony       0 secs                 0.00  brooklyn      &quot;
-## [11] &quot;2015-04-27     2015-04-28     felony       86400 secs             1.00  bronx         &quot;
-## [12] &quot;2014-08-30     2014-08-30     felony       0 secs                 0.00  brooklyn      &quot;</code></pre>
-<p><br> We can also look at whether the length of time for the reported event/crime differs by borough visually. <img src="Exploratory_files/figure-html/length_of_time_of_reported_event-1.png" width="672" /></p>
-<p><br> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
-<p><br> You can find the code for this exploratory analysis <a href="code_date_borough.html">here</a>.</p>
-<p><br> <br></p>
+<div id="nyc-crime-data" class="section level1">
+<h1>NYC Crime Data</h1>
+<div id="accessing-the-data." class="section level3">
+<h3>Accessing the data.</h3>
+<p>The data was accessed through the SODA Consumer API on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
+<p>The <code>tidyverse</code>, <code>Rsocrata</code> and <code>lubridate</code> libraries are required to connect with the API and subsequently manipulate and clean the data.</p>
+<pre class="r"><code>library(tidyverse)
+library(RSocrata)
+library(lubridate)</code></pre>
+<pre class="r"><code>## Install the required package with:
+## install.packages(&quot;RSocrata) if not already installed
+
+nyc_crime = read.socrata(
+  &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
+  app_token = &quot;jK8jo5IhF6gBPFqZ1va8ITny0&quot;,
+  email     = &quot;yakubuamin@ymail.com&quot;,
+  password  = &quot;daTA@12345&quot; )
+
+saveRDS(nyc_crime, file = &quot;data/nyc_crime.rds&quot;)</code></pre>
+<p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
 </div>
-<div id="exploratory-analysis-2---offense-rates-by-borough" class="section level2">
-<h2>Exploratory Analysis 2 - Offense Rates by Borough</h2>
-<p>Include Jyoti’s</p>
-<p><br> <br></p>
+<div id="subsetting" class="section level3">
+<h3>Subsetting</h3>
+<p>We are interested in looking at incidence i.e. when the crime happens, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.</p>
+<pre class="r"><code># This code was used to retrieve and assess the observations with missing date of crime occurrence
+
+crime_missing_cp = nyc_crime %&gt;% 
+  filter(is.na(cmplnt_fr_dt))
+
+#Cleaning and subsetting the data
+
+nyc_felony_misdemeanor = nyc_crime %&gt;% 
+  janitor::clean_names() %&gt;% 
+  filter(!is.na(cmplnt_fr_dt)) %&gt;%
+  mutate(year = year(cmplnt_fr_dt))%&gt;%
+  mutate_if(is.character, tolower) %&gt;% 
+  filter(year %in% 2014:2017) %&gt;% 
+  filter(law_cat_cd == &quot;felony&quot; | law_cat_cd == &quot;misdemeanor&quot;) %&gt;% 
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+
+saveRDS(nyc_felony_misdemeanor, file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
+<p>Our dataset for analysis has 1,645,149 observations and 31 variables.</p>
+<p>To use our dataset, use the following code after cloning our repository.</p>
+<pre class="r"><code>readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
 </div>
-<div id="exploratory-analysis-3---top-crimes-and-associated-demographics-by-borough" class="section level2">
-<h2>Exploratory Analysis 3 - Top Crimes and Associated Demographics by Borough</h2>
-<p>Include Yaa’s</p>
-<p><br> <br></p>
-</div>
-<div id="exploratory-analysis-4---geographical-distribution-of-crimes" class="section level2">
-<h2>Exploratory Analysis 4 - Geographical Distribution of Crimes</h2>
-<p>Include Amin’s</p>
 </div>
 
 

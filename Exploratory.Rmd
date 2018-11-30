@@ -1,12 +1,13 @@
----
+---{r setup, include = true}
 title: "Exploratory Analyses"
 output:
+  html_document:
     toc: true
-    toc_depth: 2
+    toc_float: true
 ---
-
 <br>
-## Exploratory Analysis 1
+
+## Exploratory Analysis 1 - Length of Reported Event/Crime by Borough
 
 <br>
 As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
@@ -73,3 +74,24 @@ From the graph above, we can see a couple of things. First, there are, numerical
 
 <br>
 You can find the code for this exploratory analysis [here](code_date_borough.html).
+
+<br>
+<br>
+
+## Exploratory Analysis 2 - Offense Rates by Borough
+Include Jyoti's
+
+<br>
+<br>
+
+## Exploratory Analysis 3 - Top Crimes and Associated Demographics by Borough
+Include Yaa's
+
+<br>
+<br>
+
+## Exploratory Analysis 4 - Geographical Distribution of Crimes
+Include Amin's
+
+
+
