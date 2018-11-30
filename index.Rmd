@@ -1,7 +1,24 @@
+
+<center>
 ---
-title: "Holy cow!"
+title: "Factors Associated With New York City Crime From 2014 to 2017"
 ---
 
-### I have a webpage!
+<br>
+</br>
+<center>
 
-And I can put all kinds of stuff on it!
+<link rel="stylesheet" href="styles.css" type="text/css">
+<link rel="stylesheet" href="academicons/css/academicons.min.css"/>
+<link rel="apple-touch-icon" href="/images/nyc2.jpg" >
+
+<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br>
+
+## Project Description
+
+Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 <br>
+
+We conducted exploratory analysis of different crimes across New York City. We thought it would be interesting to look at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.
+
+We also looked for associations between crime and time (day/seasonality), and other trends.  
+
