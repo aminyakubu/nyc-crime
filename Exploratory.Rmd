@@ -1,4 +1,4 @@
----{r setup, include = true}
+---
 title: "Exploratory Analyses"
 output:
   html_document:
@@ -11,7 +11,6 @@ output:
 
 <br>
 As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -49,7 +48,7 @@ head(crime_table, 12)
 
 <br>
 We can also look at whether the length of time for the reported event/crime differs by borough visually.
-```{r length_of_time_of_reported_event}
+```{r length_of_time_of_reported_event, echo = FALSE}
 crime_data2 <- crime_data[complete.cases(crime_data),]
 
 crime_graph2 = 
@@ -79,7 +78,112 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 <br>
 
 ## Exploratory Analysis 2 - Offense Rates by Borough
-Include Jyoti's
+
+For our second exploratory analysis, we chose to examine offense rates by borough. Doing so gives us an understanding as to what NYPD can prioritize their efforts to when stemming crime.
+```{r,  include = FALSE}
+library(tidyverse)
+library(rvest)
+library(plotly)
+library(sqldf)
+```
+
+
+First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
+```{r, include = FALSE}
+crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
+
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+boro_pop = read_html(url)
+
+boro_pop %>%
+  html_nodes(css = "table")
+
+pop_df = (boro_pop %>% html_nodes(css = "table")) %>% 
+  .[[1]] %>%
+  html_table() %>% 
+  as_tibble() %>% 
+ janitor::clean_names()
+
+names(pop_df)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+pop_df = pop_df %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+
+```
+
+We created a data frame containing our final data.
+```{r}
+nycc_df = crime_df %>% 
+  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm))
+ 
+crime_df %>% 
+  distinct(pd_cd) %>% 
+  count()
+
+combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>% 
+  summarise(count = n())
+
+
+full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
+mutate(off_rate = ((count/population)*100)) 
+
+full[,'off_rate'] = round(full[,'off_rate'],2)
+```
+
+Lastly, we visually look at the individual offenses by borough over the four years.
+```{r, echo = FALSE}
+test <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2017'
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2017 <- test[!duplicated(test$boro_nm), ]
+
+
+test2 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2016'
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2016 <- test2[!duplicated(test2$boro_nm), ]
+
+
+test3 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2015'
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2015 <- test3[!duplicated(test3$boro_nm), ]
+
+
+test4 <- sqldf("SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = '2014'
+              ORDER BY boro_nm, off_rate DESC")
+
+test_2014 <- test4[!duplicated(test4$boro_nm), ]
+
+test_new = rbind(test_2017, test_2016, test_2015, test_2014)
+ 
+
+trend = ggplot(test_new, aes(x = boro_nm, y = off_rate, color = year)) +
+geom_point() + 
+theme(legend.position = "bottom") +
+  labs(
+  x = "Borough",
+  y = "Offense rate",
+  caption = "NYC_Crime"
+  ) +
+geom_smooth(se = FALSE) +
+theme(legend.position = "bottom")
+
+ggplotly(trend)
+
+```
+
+From this exploratory subanalysis, we can see that the rates of individual offenses are highest in the boroughs of Bronx and Brooklyn, followed by Manhattan and Queens. Staten Island reported the lowest rates of individual offenses throughout the four years. Individual offense rates increased in the Bronx from 2014 through 2017. On the contrary, Brooklyn witnessed a significant plummeting in offense rates through the years 2014 to 2017.
 
 <br>
 <br>
