@@ -1,0 +1,89 @@
+---
+title: "Reverse Geocoding"
+author: "Amin Yakubu"
+date: "11/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggmap)
+library(revgeo)
+library(tidyverse)
+library(photon)
+```
+
+```{r}
+
+if(!requireNamespace("devtools")) install.packages("devtools")
+devtools::install_github("dkahle/ggmap", ref = "tidyup")
+ggmap(get_googlemap())
+register_google(key = "AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE")
+
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds") 
+
+revgeocode(c(lon = -97.1161, lat = 31.55098))
+```
+
+Loading the dataset 
+
+```{r}
+### sex_drug_weapons dataset
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+sex_drug_weapons = sex_drug_weapons %>% filter(!is.na(longitude) | !is.na(latitude)) 
+```
+
+
+```{r}
+require(devtools)  
+devtools::install_github(repo = 'rCarto/photon', force = TRUE)  
+
+a = sex_drug_weapons %>% sample_n(5)
+
+df_1 = sex_drug_weapons %>% sample_n(3500)
+
+zipcodes = df_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ reverse(x = .x, y = .y)))
+
+library(devtools)
+install_github('mhudecheck/revgeo')
+
+zipcodes = df_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
+
+zipcodes %>% unnest() %>% View
+       
+### Dataset 1
+df_1 = sex_drug_weapons %>% sample_n(500)
+
+zip_1 = df_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(zip_1, file = "datasets/zip_1.rds")
+
+#### Dataset 2
+
+df_2 = anti_join(sex_drug_weapons, zip_1, by = "cmplnt_num")
+
+
+### Sampling 500 because so as not to exceed the API query limit
+zip_df_1 = zip_df %>% sample_n(500)
+
+### Reverse geocoding each longitude and latitude
+zip_names_1 = zip_df_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
+
+### SAving the dataset so we don't call the API to everytime
+saveRDS(zip_names_1, file = "datasets/nyc_rape_zip.rds")
+
+### Using antijoin to find the other data set
+
+zip_df_2 = anti_join(zip_df, zip_df_1, by = "cmplnt_num")
+
+### Reverse geocoding to get their zip codes
+zip_names_2 = zip_df_2 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = "hash", item = "zip")))
+```
+

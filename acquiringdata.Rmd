@@ -1,6 +1,9 @@
 ---
 title: "NYC Crime Data"
-output: github_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -19,6 +22,7 @@ The `tidyverse`, `Rsocrata` and `lubridate` libraries are required to connect wi
 library(tidyverse)
 library(RSocrata)
 library(lubridate)
+library(photon)
 ```
 
 ```{r, eval = FALSE}
@@ -56,7 +60,7 @@ nyc_felony_crimes = nyc_crime %>%
   select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
 
 #### selecting crimes of interest
-sex_drug_weapons = crime_df %>% 
+sex_drug_weapons = nyc_felony_crimes %>% 
   filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
                       ## Drug related felony crimes
                       500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
@@ -64,7 +68,7 @@ sex_drug_weapons = crime_df %>%
                       781, 792, 793, 796)) %>% 
   mutate(longitude = as.numeric(longitude),
          latitude = as.numeric(latitude)) %>% 
-  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
+  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
   mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
          crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), "Sex-Related", 
                                if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), "Drug-Related", 
@@ -76,6 +80,45 @@ saveRDS(sex_drug_weapons, file = "./datasets/sex_drug_weapons.rds")
 
 Our dataset for analysis has 588,704 observations and 31 variables for nyc_felony_crimes and it's subset sex_drug_weapons has 46,692 observations and 14 variables. 
 
+### Reverse Geocoding
+
+The dataset comes without zipcode or neighborhood information. There are only geographic coordinates. This makes chloropleth mapping very difficut. We will reverse geocode the coordinates. 
+
+### Felony Drug offenses
+
+```{r}
+#### Sampling the just year 2017 and selecting all felony drug rape reports
+
+### Drug offenses in 2017
+drug_2017 = sex_drug_weapons %>% filter(crime_group == "Drug-Related" & year == 2017)
+
+### Sampling to reduce the dataset so has not not get rejected by google API
+drug_2017_1 = drug_2017 %>% sample_n(2290)
+
+drug_2017_zip_1 = drug_2017_1 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(drug_2017_zip_1, file = "datasets/drug_2017_zip_1.rds")
+
+#### Getting the data not sample. Second half of the data
+drug_2017_2 = anti_join(drug_2017, drug_2017_zip_1, by = "cmplnt_num")
+
+#### Iterating to get the data
+drug_2017_zip_2 = drug_2017_2 %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(drug_2017_zip_2, file = "datasets/drug_2017_zip_2.rds")
+
+### Joining to have the complete dataset
+
+complete_drug_zip_2017 = bind_rows(drug_2017_zip_1, drug_2017_zip_2) 
+
+saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
+```
+
+### Sex Drug offenses
+
+### Usage
 To use our dataset, use the following code after cloning our repository. 
 
 ```{r, eval = FALSE}
@@ -86,7 +129,8 @@ readRDS(file = "./datasets/nyc_felony_crimes.rds")
 ### sex_drug_weapons dataset
 readRDS(file = "./datasets/sex_drug_weapons.rds")
 
-sex_drug_weapons %>% 
-  summarize_all(funs(sum(is.na(.))))
+### Drug offenses for 2017 with zipcodes
+saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
+
 ```
 

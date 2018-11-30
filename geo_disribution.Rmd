@@ -2,14 +2,18 @@
 title: "Geographical Distribution of Select Sexual Crimes"
 author: "Amin Yakubu"
 date: "11/26/2018"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
+
 
 Loading the required libraries
 
@@ -105,6 +109,7 @@ download.file(map_url, "./datasets/nyc_zip_map.geojson")
 
 ```{r}
 map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
 ```
 
 ```{r}
@@ -120,6 +125,12 @@ Now let's plot our polygons
 #### Distribution of reported rape and attempted rape in 2017 
 
 ```{r}
+
+library(sp)
+library(tmap)
+
+# Use qtm() to create a choropleth map of gdp
+qtm(shp = map_json, fill = "number")
 
 # create color palette with colorNumeric()
 nyc_pal <- colorNumeric("Reds", domain = NULL)
@@ -238,5 +249,26 @@ leaflet()  %>%
             opacity = .5,
             title = "Crime Group",
             position = "topleft")
+```
+
+```{r}
+if(!requireNamespace("devtools")) install.packages("devtools")
+devtools::install_github("dkahle/ggmap", ref = "tidyup")
+ggmap(get_googlemap())
+register_google(key = "AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE")
+
+nyc = c(lon = -74.0059, lat = 40.7128)
+
+nyc_map = get_map(location = nyc, zoom = 10, api_key = "AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE")
+
+ggmap(nyc_map)
+ggplot(data = sex_drug_weapons, aes(longitude, latitude, color = crime_group)) + geom_point(aes(alpha = .4))
+```
+
+```{r}
+zip_names = sex_drug_weapons %>% filter(!is.na(longitude) | !is.na(latitude)) %>% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+revgeocode(c(lon = -97.1161, lat = 31.55098))
 ```
 
