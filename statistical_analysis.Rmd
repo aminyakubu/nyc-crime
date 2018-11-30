@@ -38,7 +38,7 @@ sex_drug_weapons = crime_df %>%
 
 Association between borough and crime, adjusting for average income
 
-Model statement for the multinomial logistic regression is below 
+### Model statement for the multinomial logistic regression is below 
 
 `In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island`
 
@@ -48,10 +48,12 @@ Model statement for the multinomial logistic regression is below
 ```{r}
 ### Making manhattan the and sex-related crime the reference groups 
 sex_drug_weapons = sex_drug_weapons%>%
-  mutate(crime_group = forcats::fct_relevel(crime_group, "Sex-Related"),
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
          boro_nm = forcats::fct_relevel(boro_nm, "manhattan"))
 
 ```
+
+### Tabulation
 
 ```{r}
 with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
@@ -59,13 +61,45 @@ with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
 ```
 
 ```{r}
-multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
-  mutate( OR = exp(estimate)) %>% knitr::kable()
+fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
+  mutate( OR = exp(estimate))
+
+fit %>% knitr::kable()
+
 ```
 
-The odds of drug related vs. sex-related crimes will increase by 6.443667 if moving from manhattan to Bronx. 
+```{r}
+fit %>% ggplot(aes(x = term, y = OR, fill = term)) + geom_col(width = .1) + facet_grid(~ y.level) + coord_flip() + 
+  theme(legend.position="none")
 
-The odds of drug related vs. sex-related crimes will increase by 3.189424 if moving from manhattan to Brooklyn.
+```
 
-The odds of drug related vs. sex-related crimes will increase by 2.444266 if moving from manhattan to Brooklyn.
+### Interpretation
+
+The odds of sex-related crimes in manhattan is 1.79.
+The odds  of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. 
+The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn.
+The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens.
+The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island. 
+
+The odds of weapon related crimes in manhattan is 2.7. 
+
+The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx.
+The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. 
+The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. 
+The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island. 
+
+
+```{r, eval = FALSE}
+x = sex_drug_weapons %>% filter(vic_race != "unknown") %>% filter(crime_group != "Sex-Related") %>% 
+  mutate(race = if_else(vic_race == "white", "white", "minority")) %>% 
+  mutate(race = as.factor(race),
+         crime_group = as.factor(crime_group))
+
+glm(crime_group ~ race, family = binomial(), data = x) %>% broom::tidy() %>% 
+  mutate( OR = exp(estimate)) %>% knitr::kable()
+
+multinom(crime_group ~ race, data = x) %>% broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% knitr::kable(digits = 4)
+```
 

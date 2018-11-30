@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
 ```
 
 ```{r}
@@ -14,6 +15,7 @@ library(tidyverse)
 library(lubridate)
 library(patchwork)
 library(chron)
+library(rvest)
 ```
 
 Loading the dataset
@@ -26,9 +28,6 @@ sex_crimes = crime_df %>%
          latitude = as.numeric(latitude)) %>% 
   select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc)
 
-sex_crimes %>% group_by(prem_typ_desc) %>% summarize(n = n()) %>% View
-
-x = read.delim("https://www2.census.gov/geo/docs/maps-data/data/rel/zcta_county_rel_10.txt", sep = "," ) 
 ```
 
 #### Season trends
@@ -103,28 +102,9 @@ season_df %>%
   ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col() + facet_wrap(~boro_nm) + 
   theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
   
-
 ```
 
 
-```{r}
-year = read_html("http://worldpopulationreview.com/us-cities/new-york-city-population/") %>% 
-  html_nodes("td:nth-child(1)") %>% html_text()
 
-population = read_html("http://worldpopulationreview.com/us-cities/new-york-city-population/") %>% 
-  html_nodes("td:nth-child(2)") %>% html_text()
-
-x = tibble(year = as.numeric(year),
-           population = population) %>% drop_na() %>% 
-  mutate(population = as.numeric(gsub("," , "", population)))
-
-read_csv("https://data.cityofnewyork.us/api/views/kku6-nxdu/rows.csv?accessType=DOWNLOAD") %>% View
-
-season_df %>% 
-  summarize_all(funs(sum(is.na(.))))
-
-filter_df %>% group_by(vic_race) %>% summarize(number = n()) %>% 
-  ggplot(aes(x = vic_race, y = number)) + geom_col()
-```
 
 

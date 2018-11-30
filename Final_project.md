@@ -4,28 +4,33 @@ Yaa Klu
 11/17/2018
 
 ``` r
-crime_nyc = readRDS(file = "datasets/nyc_felony_misdemeanor.rds")
+library(tidyverse)
+```
+
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+
+    ## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+    ## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
+    ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+    ## ✔ readr   1.1.1     ✔ forcats 0.3.0
+
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
+crime_nyc = readRDS(file = "datasets/nyc_felony_crimes.rds")
+
+crime_nyc %>% filter(law_cat_cd == "felony") %>% distinct(pd_cd, pd_desc) %>% 
+  mutate(x = str_detect(pd_desc, "rape")) %>% 
+  View
 ```
 
 ``` r
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
-    ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
-    ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
-    ## ✔ readr   1.1.1     ✔ forcats 0.3.0
-
-    ## ── Conflicts ───────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-**Crime category by race/ethnicity, age, sex and other
-sociodemographics** \*\* top ten offense, general chracteristics** **
-top 5, general characteristics** **filter out unknown and analyze top 5
-crimes for unknowns\*\*
+**Crime category by race/ethnicity, age, sex and other sociodemographics** \*\* top ten offense, general chracteristics** ** top 5, general characteristics** **filter out unknown and analyze top 5 crimes for unknowns\*\*
 
 Removing missing variables
 
@@ -51,7 +56,7 @@ com_crime_nyc %>%
     ## # A tibble: 1 x 1
     ##       n
     ##   <int>
-    ## 1   336
+    ## 1   213
 
 ``` r
 com_crime_nyc %>%
@@ -64,18 +69,18 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| pd\_desc                           | pd\_cd | number |
-| :--------------------------------- | :----- | -----: |
-| assault 2,1,unclassified           | 109    |  44270 |
-| criminal contempt 1                | 198    |  25455 |
-| robbery,personal electronic device | 386    |  10930 |
-| robbery,open area unclassified     | 397    |   8998 |
-| mischief,criminal, uncl 2nd        | 269    |   8675 |
-| strangulation 1st                  | 105    |   8159 |
-| forgery,etc.,unclassified-felo     | 729    |   8115 |
-| weapons possession 3               | 793    |   6217 |
-| burglary,residence,day             | 221    |   5381 |
-| mischief, criminal 3 & 2, of m     | 267    |   5333 |
+| pd\_desc                           | pd\_cd |  number|
+|:-----------------------------------|:-------|-------:|
+| assault 2,1,unclassified           | 109    |   44270|
+| criminal contempt 1                | 198    |   25455|
+| robbery,personal electronic device | 386    |   10930|
+| robbery,open area unclassified     | 397    |    8998|
+| mischief,criminal, uncl 2nd        | 269    |    8675|
+| strangulation 1st                  | 105    |    8159|
+| forgery,etc.,unclassified-felo     | 729    |    8115|
+| weapons possession 3               | 793    |    6217|
+| burglary,residence,day             | 221    |    5381|
+| mischief, criminal 3 & 2, of m     | 267    |    5333|
 
 Suspect Age
 
@@ -89,13 +94,13 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| susp\_age\_group | number |
-| :--------------- | -----: |
-| 25-44            | 273331 |
-| unknown          | 219984 |
-| 18-24            | 120824 |
-| 45-64            |  92508 |
-| \<18             |  34589 |
+| susp\_age\_group |  number|
+|:-----------------|-------:|
+| unknown          |   90145|
+| 25-44            |   88550|
+| 18-24            |   41309|
+| 45-64            |   27591|
+| &lt;18           |   11531|
 
 Suspect Sex
 
@@ -109,13 +114,13 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| susp\_sex | number |
-| :-------- | -----: |
-| m         | 485088 |
-| u         | 133048 |
-| f         | 128976 |
+| susp\_sex |  number|
+|:----------|-------:|
+| m         |  171270|
+| u         |   56662|
+| f         |   32782|
 
-Victim’s sex
+Victim's sex
 
 ``` r
 com_crime_nyc %>%
@@ -127,13 +132,13 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| vic\_sex | number |
-| :------- | -----: |
-| f        | 305303 |
-| m        | 238304 |
-| e        | 105972 |
+| vic\_sex |  number|
+|:---------|-------:|
+| f        |  104643|
+| m        |   99208|
+| e        |   32145|
 
-Victim’s age
+Victim's age
 
 ``` r
 com_crime_nyc %>%
@@ -145,15 +150,15 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| vic\_age\_group | number |
-| :-------------- | -----: |
-| 25-44           | 258662 |
-| unknown         | 220115 |
-| 45-64           | 120287 |
-| 18-24           |  87259 |
-| \<18            |  38136 |
+| vic\_age\_group |  number|
+|:----------------|-------:|
+| 25-44           |   94015|
+| unknown         |   62936|
+| 45-64           |   44114|
+| 18-24           |   32805|
+| &lt;18          |   14706|
 
-Suspect’s age
+Suspect's age
 
 ``` r
 com_crime_nyc %>%
@@ -165,15 +170,15 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| susp\_race     | number |
-| :------------- | -----: |
-| black          | 293349 |
-| unknown        | 161358 |
-| white hispanic | 143259 |
-| white          |  75717 |
-| black hispanic |  44328 |
+| susp\_race     |  number|
+|:---------------|-------:|
+| black          |  106066|
+| unknown        |   66282|
+| white hispanic |   43845|
+| white          |   21080|
+| black hispanic |   14385|
 
-Victim’s race
+Victim's race
 
 ``` r
 com_crime_nyc %>%
@@ -185,15 +190,15 @@ com_crime_nyc %>%
   knitr::kable()
 ```
 
-| vic\_race                | number |
-| :----------------------- | -----: |
-| unknown                  | 233989 |
-| black                    | 198086 |
-| white hispanic           | 135812 |
-| white                    | 100832 |
-| asian / pacific islander |  45235 |
+| vic\_race                |  number|
+|:-------------------------|-------:|
+| black                    |   72052|
+| unknown                  |   68123|
+| white hispanic           |   49005|
+| white                    |   40332|
+| asian / pacific islander |   19303|
 
-Suspect’s race
+Suspect's race
 
 ``` r
 com_crime_nyc %>%
@@ -205,13 +210,13 @@ com_crime_nyc %>%
   knitr::kable()
 ```
 
-| pd\_desc                       | susp\_race     | number |
-| :----------------------------- | :------------- | -----: |
-| assault 3                      | black          |  50605 |
-| assault 3                      | white hispanic |  28076 |
-| larceny,petit from store-shopl | black          |  23689 |
-| aggravated harassment 2        | black          |  20440 |
-| assault 2,1,unclassified       | black          |  19349 |
+| pd\_desc                           | susp\_race     |  number|
+|:-----------------------------------|:---------------|-------:|
+| assault 2,1,unclassified           | black          |   19349|
+| criminal contempt 1                | black          |   12186|
+| assault 2,1,unclassified           | white hispanic |    9213|
+| assault 2,1,unclassified           | unknown        |    7201|
+| robbery,personal electronic device | black          |    6029|
 
 ``` r
 com_crime_nyc %>%
@@ -223,13 +228,13 @@ com_crime_nyc %>%
   knitr::kable()
 ```
 
-| susp\_race     | vic\_race      | number |
-| :------------- | :------------- | -----: |
-| black          | black          | 134775 |
-| black          | unknown        |  97564 |
-| white hispanic | white hispanic |  61768 |
-| white hispanic | unknown        |  48060 |
-| unknown        | black          |  40837 |
+| susp\_race     | vic\_race      |  number|
+|:---------------|:---------------|-------:|
+| black          | black          |   48186|
+| black          | unknown        |   30387|
+| white hispanic | white hispanic |   19906|
+| unknown        | black          |   16444|
+| unknown        | white          |   14946|
 
 ``` r
 com_crime_nyc %>%
@@ -241,13 +246,13 @@ com_crime_nyc %>%
   knitr::kable()
 ```
 
-| susp\_race     | pd\_desc                       | number |
-| :------------- | :----------------------------- | -----: |
-| black          | assault 3                      |  50605 |
-| white hispanic | assault 3                      |  28076 |
-| black          | larceny,petit from store-shopl |  23689 |
-| black          | aggravated harassment 2        |  20440 |
-| black          | assault 2,1,unclassified       |  19349 |
+| susp\_race     | pd\_desc                           |  number|
+|:---------------|:-----------------------------------|-------:|
+| black          | assault 2,1,unclassified           |   19349|
+| black          | criminal contempt 1                |   12186|
+| white hispanic | assault 2,1,unclassified           |    9213|
+| unknown        | assault 2,1,unclassified           |    7201|
+| black          | robbery,personal electronic device |    6029|
 
 ``` r
 com_crime_nyc %>%
@@ -259,13 +264,13 @@ com_crime_nyc %>%
   knitr::kable() 
 ```
 
-| pd\_desc                       | susp\_age\_group | number |
-| :----------------------------- | :--------------- | -----: |
-| assault 3                      | 25-44            |  50378 |
-| aggravated harassment 2        | 25-44            |  24954 |
-| assault 3                      | unknown          |  22327 |
-| assault 3                      | 18-24            |  21397 |
-| larceny,petit from store-shopl | 25-44            |  18165 |
+| pd\_desc                 | susp\_age\_group |  number|
+|:-------------------------|:-----------------|-------:|
+| assault 2,1,unclassified | 25-44            |   17072|
+| criminal contempt 1      | 25-44            |   14486|
+| assault 2,1,unclassified | unknown          |   11356|
+| assault 2,1,unclassified | 18-24            |    6801|
+| assault 2,1,unclassified | 45-64            |    6350|
 
 **filter out unknown and analyze top 5 crimes for unknowns**
 
@@ -277,277 +282,180 @@ filter(com_crime_nyc, susp_age_group == 'unknown') %>%
   knitr::kable() 
 ```
 
-| pd\_cd |     n |
-| :----- | ----: |
-| 101    | 22327 |
-| 103    |     4 |
-| 104    |     2 |
-| 105    |   311 |
-| 106    |   119 |
-| 107    |     3 |
-| 108    |    20 |
-| 109    | 11356 |
-| 110    |    21 |
-| 111    |     5 |
-| 112    |    12 |
-| 113    |  3392 |
-| 114    |   415 |
-| 115    |   532 |
-| 117    |  1991 |
-| 125    |    16 |
-| 153    |    80 |
-| 155    |    27 |
-| 157    |   519 |
-| 159    |   119 |
-| 164    |    26 |
-| 166    |     2 |
-| 168    |   219 |
-| 170    |    94 |
-| 174    |    11 |
-| 175    |  1643 |
-| 177    |   173 |
-| 178    |     1 |
-| 179    |    25 |
-| 181    |    20 |
-| 183    |    13 |
-| 185    |    18 |
-| 186    |     6 |
-| 187    |     5 |
-| 191    |    27 |
-| 193    |     7 |
-| 195    |    17 |
-| 197    |    50 |
-| 198    |   620 |
-| 199    |    15 |
-| 203    |   304 |
-| 204    |    53 |
-| 205    |   604 |
-| 209    |     4 |
-| 211    |   760 |
-| 213    |  2123 |
-| 214    |   264 |
-| 221    |  3193 |
-| 223    |  2515 |
-| 224    |   909 |
-| 231    |   483 |
-| 233    |   330 |
-| 234    |    56 |
-| 241    |    78 |
-| 243    |   199 |
-| 244    |    61 |
-| 254    | 11066 |
-| 256    |   383 |
-| 258    |  4545 |
-| 259    |  8033 |
-| 261    |     6 |
-| 263    |   254 |
-| 264    |    95 |
-| 265    |     1 |
-| 266    |    20 |
-| 267    |  2877 |
-| 268    |    83 |
-| 269    |  2016 |
-| 271    |    10 |
-| 273    |    13 |
-| 277    |    57 |
-| 285    |     1 |
-| 293    |     2 |
-| 301    |   442 |
-| 303    |   563 |
-| 305    |   405 |
-| 307    |   180 |
-| 313    |  1307 |
-| 321    |  9140 |
-| 323    |    10 |
-| 327    |     1 |
-| 329    |    18 |
-| 331    |    14 |
-| 333    | 12770 |
-| 335    |   112 |
-| 338    | 13882 |
-| 339    |  6021 |
-| 341    |    10 |
-| 343    |  3347 |
-| 344    |    67 |
-| 347    |   469 |
-| 349    |  2079 |
-| 350    |    19 |
-| 351    |    17 |
-| 357    |  1782 |
-| 360    |    70 |
-| 361    |   197 |
-| 363    |    58 |
-| 365    |    16 |
-| 366    |   188 |
-| 367    |   178 |
-| 371    |    13 |
-| 373    |     5 |
-| 375    |    44 |
-| 377    |   294 |
-| 379    |    65 |
-| 380    |   142 |
-| 381    |     1 |
-| 382    |   532 |
-| 383    |   331 |
-| 384    |   883 |
-| 385    |    41 |
-| 386    |  4451 |
-| 387    |   150 |
-| 388    |  1020 |
-| 389    |   314 |
-| 390    |   587 |
-| 391    |   151 |
-| 392    |    56 |
-| 393    |     7 |
-| 394    |   190 |
-| 395    |    13 |
-| 396    |   481 |
-| 397    |  4019 |
-| 398    |   319 |
-| 399    |   552 |
-| 401    |   362 |
-| 402    |  1568 |
-| 403    |  1154 |
-| 404    |  1505 |
-| 405    |  1266 |
-| 406    |  1041 |
-| 407    |   321 |
-| 408    |   604 |
-| 409    |   662 |
-| 410    |   968 |
-| 411    |   923 |
-| 412    |  1963 |
-| 414    |   177 |
-| 415    |  1158 |
-| 416    |   658 |
-| 417    |   641 |
-| 418    |   733 |
-| 419    |   637 |
-| 420    |   629 |
-| 421    |  3796 |
-| 422    |  1069 |
-| 423    |     2 |
-| 424    |  1051 |
-| 425    |  1102 |
-| 426    |   151 |
-| 428    |   145 |
-| 430    |   574 |
-| 431    |    33 |
-| 432    |   254 |
-| 433    |  1707 |
-| 434    |    37 |
-| 435    |    41 |
-| 437    |   499 |
-| 438    |  2595 |
-| 439    |  1917 |
-| 441    |  3503 |
-| 442    |    14 |
-| 443    |   750 |
-| 445    |     2 |
-| 450    |    52 |
-| 451    |   740 |
-| 455    |    30 |
-| 457    |   695 |
-| 461    |   232 |
-| 462    |   549 |
-| 464    |     4 |
-| 466    |   108 |
-| 475    |     2 |
-| 476    |     1 |
-| 478    |  1376 |
-| 479    |     6 |
-| 489    |   111 |
-| 490    |    16 |
-| 493    |     2 |
-| 494    |     7 |
-| 498    |     2 |
-| 500    |     3 |
-| 503    |     3 |
-| 511    |     8 |
-| 512    |     2 |
-| 515    |     7 |
-| 519    |     1 |
-| 520    |     2 |
-| 521    |    11 |
-| 544    |     3 |
-| 557    |     1 |
-| 567    |    14 |
-| 568    |     3 |
-| 569    |    10 |
-| 586    |     2 |
-| 588    |     1 |
-| 591    |     3 |
-| 593    |     6 |
-| 594    |     7 |
-| 596    |    78 |
-| 627    |     3 |
-| 639    | 13079 |
-| 640    |   140 |
-| 643    |     2 |
-| 644    |    40 |
-| 645    |     4 |
-| 647    |    25 |
-| 649    |   146 |
-| 652    |     1 |
-| 659    |     2 |
-| 661    |   529 |
-| 662    |     4 |
-| 663    |     9 |
-| 664    |     1 |
-| 665    |    88 |
-| 674    |     1 |
-| 681    |   307 |
-| 683    |     2 |
-| 687    |     1 |
-| 688    |    12 |
-| 694    |     1 |
-| 696    |     8 |
-| 697    |     3 |
-| 698    |     1 |
-| 701    |     1 |
-| 703    |    18 |
-| 705    |    46 |
-| 707    |   109 |
-| 708    |   116 |
-| 711    |     4 |
-| 718    |  1102 |
-| 719    |     9 |
-| 723    |     5 |
-| 724    |     1 |
-| 725    |     2 |
-| 727    |     8 |
-| 729    |   608 |
-| 739    |  3128 |
-| 742    |     1 |
-| 748    |   215 |
-| 749    |   405 |
-| 750    |     8 |
-| 759    |    73 |
-| 760    |     3 |
-| 770    |    21 |
-| 772    |    41 |
-| 779    |    14 |
-| 781    |     5 |
-| 782    |    56 |
-| 792    |    42 |
-| 793    |    42 |
-| 799    |     9 |
-| 802    |     2 |
-| 809    |     2 |
-| 812    |    30 |
-| 815    |     2 |
-| 817    |    36 |
-| 818    |    34 |
-| 844    |    21 |
-| 847    |    64 |
-| 848    |     1 |
-| 878    |   804 |
-| 887    |     3 |
-| 905    |    10 |
-| 916    |  4465 |
-| 918    |     4 |
-| 922    |     6 |
-| NA     |     5 |
+| pd\_cd |      n|
+|:-------|------:|
+| 103    |      4|
+| 104    |      2|
+| 105    |    311|
+| 106    |    119|
+| 107    |      3|
+| 108    |     20|
+| 109    |  11356|
+| 110    |     21|
+| 112    |     12|
+| 117    |   1991|
+| 125    |     16|
+| 153    |     80|
+| 155    |     27|
+| 157    |    519|
+| 159    |    119|
+| 164    |     26|
+| 166    |      2|
+| 168    |    219|
+| 177    |    173|
+| 178    |      1|
+| 179    |     25|
+| 183    |     13|
+| 185    |     18|
+| 186    |      6|
+| 187    |      5|
+| 193    |      7|
+| 197    |     50|
+| 198    |    620|
+| 199    |     15|
+| 204    |     53|
+| 211    |    760|
+| 213    |   2123|
+| 214    |    264|
+| 221    |   3193|
+| 223    |   2515|
+| 224    |    909|
+| 231    |    483|
+| 233    |    330|
+| 234    |     56|
+| 241    |     78|
+| 243    |    199|
+| 244    |     61|
+| 261    |      6|
+| 263    |    254|
+| 264    |     95|
+| 265    |      1|
+| 266    |     20|
+| 267    |   2877|
+| 268    |     83|
+| 269    |   2016|
+| 273    |     13|
+| 285    |      1|
+| 293    |      2|
+| 360    |     70|
+| 361    |    197|
+| 363    |     58|
+| 365    |     16|
+| 366    |    188|
+| 367    |    178|
+| 371    |     13|
+| 373    |      5|
+| 375    |     44|
+| 377    |    294|
+| 379    |     65|
+| 380    |    142|
+| 381    |      1|
+| 382    |    532|
+| 383    |    331|
+| 384    |    883|
+| 385    |     41|
+| 386    |   4451|
+| 387    |    150|
+| 388    |   1020|
+| 389    |    314|
+| 390    |    587|
+| 391    |    151|
+| 392    |     56|
+| 393    |      7|
+| 394    |    190|
+| 395    |     13|
+| 396    |    481|
+| 397    |   4019|
+| 398    |    319|
+| 399    |    552|
+| 401    |    362|
+| 402    |   1568|
+| 403    |   1154|
+| 404    |   1505|
+| 405    |   1266|
+| 406    |   1041|
+| 407    |    321|
+| 408    |    604|
+| 409    |    662|
+| 410    |    968|
+| 411    |    923|
+| 412    |   1963|
+| 414    |    177|
+| 415    |   1158|
+| 416    |    658|
+| 417    |    641|
+| 418    |    733|
+| 419    |    637|
+| 420    |    629|
+| 421    |   3796|
+| 422    |   1069|
+| 423    |      2|
+| 424    |   1051|
+| 425    |   1102|
+| 426    |    151|
+| 428    |    145|
+| 430    |    574|
+| 431    |     33|
+| 432    |    254|
+| 433    |   1707|
+| 434    |     37|
+| 435    |     41|
+| 437    |    499|
+| 438    |   2595|
+| 439    |   1917|
+| 441    |   3503|
+| 442    |     14|
+| 443    |    750|
+| 445    |      2|
+| 450    |     52|
+| 451    |    740|
+| 455    |     30|
+| 457    |    695|
+| 461    |    232|
+| 489    |    111|
+| 493    |      2|
+| 494    |      7|
+| 498    |      2|
+| 500    |      3|
+| 503    |      3|
+| 512    |      2|
+| 515    |      7|
+| 519    |      1|
+| 520    |      2|
+| 521    |     11|
+| 557    |      1|
+| 568    |      3|
+| 586    |      2|
+| 588    |      1|
+| 594    |      7|
+| 596    |     78|
+| 640    |    140|
+| 644    |     40|
+| 663    |      9|
+| 664    |      1|
+| 665    |     88|
+| 674    |      1|
+| 694    |      1|
+| 696    |      8|
+| 697    |      3|
+| 698    |      1|
+| 708    |    116|
+| 711    |      4|
+| 723    |      5|
+| 724    |      1|
+| 725    |      2|
+| 727    |      8|
+| 729    |    608|
+| 739    |   3128|
+| 760    |      3|
+| 772    |     41|
+| 779    |     14|
+| 781    |      5|
+| 792    |     42|
+| 793    |     42|
+| 844    |     21|
+| 847    |     64|
+| NA     |      5|
 
 select top 10 crimes into a new dataset
 
@@ -578,28 +486,20 @@ consider suspects demographics by the top ten crimes suspect age group
 ```
 
     ## 
-    ##      -2     -54     -65     -67     -72    -948    -955    -960    -969 
-    ##       1       1       1       1       1       1       1       1       1 
-    ##    -974    -981     <18    1014    1016   18-24    2015    2016    2017 
-    ##       1       1   19483       1       1   65187       2       3       5 
-    ##   25-44   45-64     65+     923     927     931     935     940     945 
-    ##  157213   54899    3673       1       1       1       1       1       1 
-    ## unknown 
-    ##   96539
+    ##      -2     -67     <18    1014    1016   18-24    2016    2017   25-44 
+    ##       1       1    6491       1       1   23252       2       2   53784 
+    ##   45-64     65+     926     940     945 unknown 
+    ##   17419    1083       1       1       1   29493
 
 ``` r
 sort(table(mydataextract4$susp_age_group))
 ```
 
     ## 
-    ##      -2     -54     -65     -67     -72    -948    -955    -960    -969 
-    ##       1       1       1       1       1       1       1       1       1 
-    ##    -974    -981    1014    1016     923     927     931     935     940 
-    ##       1       1       1       1       1       1       1       1       1 
-    ##     945    2015    2016    2017     65+     <18   45-64   18-24 unknown 
-    ##       1       2       3       5    3673   19483   54899   65187   96539 
-    ##   25-44 
-    ##  157213
+    ##      -2     -67    1014    1016     926     940     945    2016    2017 
+    ##       1       1       1       1       1       1       1       2       2 
+    ##     65+     <18   45-64   18-24 unknown   25-44 
+    ##    1083    6491   17419   23252   29493   53784
 
 ``` r
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -625,7 +525,7 @@ labs(
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
 ```
 
-![](Final_project_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Final_project_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 consider suspects demographics by the top ten crimes. suspect race
 
@@ -635,13 +535,13 @@ consider suspects demographics by the top ten crimes. suspect race
 
     ## 
     ## american indian/alaskan native       asian / pacific islander 
-    ##                           1266                          16011 
+    ##                            339                           5436 
     ##                          black                 black hispanic 
-    ##                         164908                          24715 
+    ##                          61228                           8165 
     ##                        unknown                          white 
-    ##                          64214                          43409 
+    ##                          19207                          11434 
     ##                 white hispanic 
-    ##                          82500
+    ##                          25724
 
 ``` r
 sort(table(mydataextract4$susp_race))
@@ -649,13 +549,13 @@ sort(table(mydataextract4$susp_race))
 
     ## 
     ## american indian/alaskan native       asian / pacific islander 
-    ##                           1266                          16011 
+    ##                            339                           5436 
     ##                 black hispanic                          white 
-    ##                          24715                          43409 
+    ##                           8165                          11434 
     ##                        unknown                 white hispanic 
-    ##                          64214                          82500 
+    ##                          19207                          25724 
     ##                          black 
-    ##                         164908
+    ##                          61228
 
 ``` r
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -679,7 +579,7 @@ labs(
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
 ```
 
-![](Final_project_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](Final_project_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 sex
 
@@ -688,16 +588,16 @@ table(mydataextract4$susp_sex)
 ```
 
     ## 
-    ##      f      m      u 
-    ##  93107 255185  48731
+    ##     f     m     u 
+    ## 20936 95522 15075
 
 ``` r
 sort(table(mydataextract4$susp_sex))
 ```
 
     ## 
-    ##      u      f      m 
-    ##  48731  93107 255185
+    ##     u     f     m 
+    ## 15075 20936 95522
 
 ``` r
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -705,18 +605,18 @@ suspect_sextopten=table(mydata$pd_desc,mydata$susp_sex)
 suspect_sextopten
 ```
 
-    ##                                   
-    ##                                        f     m     u
-    ##   aggravated harassment 2          18799 31918  4863
-    ##   assault 2,1,unclassified         11512 27308  5444
-    ##   assault 3                        28826 79940  8159
-    ##   criminal contempt 1               4505 20737   210
-    ##   criminal mischief,unclassified 4  4307 15285  5305
-    ##   larceny,petit from building,un    3996 10872 10369
-    ##   larceny,petit from store-shopl   13718 33747  3891
-    ##   marijuana, possession 4 & 5       2111 16572     7
-    ##   menacing,unclassified             4241 14308   906
-    ##   mischief, criminal 4, of motor    1085  4479  9574
+    ##                                     
+    ##                                          f     m     u
+    ##   assault 2,1,unclassified           11512 27308  5444
+    ##   burglary,residence,day               259  2615  2507
+    ##   criminal contempt 1                 4505 20737   210
+    ##   forgery,etc.,unclassified-felo       661  7013   441
+    ##   mischief, criminal 3 & 2, of m       576  2337  2420
+    ##   mischief,criminal,    uncl 2nd      1477  6070  1128
+    ##   robbery,open area unclassified       444  7191  1362
+    ##   robbery,personal electronic device   651  8840  1439
+    ##   strangulation 1st                    601  7461    96
+    ##   weapons possession 3                 249  5942    26
 
 ``` r
 suspect_sextopten2=as.data.frame(suspect_sextopten)
@@ -735,4 +635,4 @@ labs(
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))
 ```
 
-![](Final_project_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](Final_project_files/figure-markdown_github/unnamed-chunk-23-1.png)
