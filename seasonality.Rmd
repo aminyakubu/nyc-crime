@@ -26,7 +26,7 @@ sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 #### Season trends
 
 ```{r}
-season_df = sex_crimes %>% 
+season_df = sex_drug_weapons %>% 
   mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
          month = months(cmplnt_fr_dt),
          month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
@@ -38,22 +38,60 @@ season_df = sex_crimes %>%
 
 
 season_df %>% 
-  group_by(boro_nm, year, quarter) %>% 
+  group_by(boro_nm, quarter, crime_group) %>% 
   filter(!is.na(boro_nm)) %>% 
   summarize(number = n()) %>% 
-  filter(year == 2017) %>% 
   ggplot(aes(x = boro_nm, y = number, fill = as.factor(quarter))) + 
   geom_bar(stat = "identity")
+
+season_df %>% 
+  group_by(boro_nm, quarter, crime_group) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = boro_nm, y = number, fill = as.factor(quarter))) + 
+  geom_bar(stat = "identity") + facet_wrap(~ crime_group)
 
 season_df %>% 
   group_by(boro_nm, year, month) %>% 
   filter(!is.na(boro_nm)) %>% 
   summarize(number = n()) %>% 
-  ## filter(year == 2017) %>% 
   ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
   geom_line()  + facet_wrap(~ year) +
   theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
 
+year4 = season_df %>% filter(year == 2014) %>% 
+  group_by(boro_nm, month, crime_group) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
+  geom_line()  + facet_wrap(~ crime_group) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+
+year5 = season_df %>% filter(year == 2015) %>% 
+  group_by(boro_nm, month, crime_group) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
+  geom_line()  + facet_wrap(~ crime_group) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+
+year6 = season_df %>% filter(year == 2016) %>% 
+  group_by(boro_nm, month, crime_group) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
+  geom_line()  + facet_wrap(~ crime_group) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+
+year7 = season_df %>% filter(year == 2017) %>% 
+  group_by(boro_nm, month, crime_group) %>% 
+  filter(!is.na(boro_nm)) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = month, y = number, color = boro_nm, group = boro_nm)) + 
+  geom_line()  + facet_wrap(~ crime_group) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
+
+(year4 + year5) / (year6 + year7)
 ```
 
 #### Time 
@@ -69,20 +107,51 @@ season_df %>%
 
 ```{r}
 season_df %>% 
-  group_by(day, hour) %>% 
+  group_by(day, hour) %>% filter(crime_group == "Sex-Related") %>% 
   summarize(number = n()) %>% 
   ggplot(aes(x = as.factor(hour), y = day)) +
   geom_tile(aes(fill = number), colour = "white") +
   scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") +
   labs(
-    title = "Day of the Week on crime activity",
+    title = "Day of the Week on Sex-Related crime activity",
     x = "Hour of day",
     y = "Day of the Week"
   ) + theme_classic() +
   theme(plot.subtitle = element_text(hjust = 0.5))
 ```
 
-We see that majority of the sex crimes occurs at midnight on all days. 
+```{r}
+season_df %>% filter(crime_group == "Drug-Related") %>% 
+  group_by(day, hour) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = day)) +
+  geom_tile(aes(fill = number), colour = "white") +
+  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") +
+  labs(
+    title = "Day of the Week on Drug-Related crime activity",
+    x = "Hour of day",
+    y = "Day of the Week"
+  ) + theme_classic() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+season_df %>% filter(crime_group == "Weapon-Related") %>% 
+  group_by(day, hour) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = day)) +
+  geom_tile(aes(fill = number), colour = "white") +
+  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") +
+  labs(
+    title = "Day of the Week on Weapon-Related crime activity",
+    x = "Hour of day",
+    y = "Day of the Week"
+  ) + theme_classic() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+```
+
+The pictures of Weapon-Related and Drug related have similar color patterns which suggests these crimes are taking place together or around the same time. Surprisingly, Mondays and Tuesdays are quiet days for Drug related and Weapon related felony crimes. 
+We see that overwhelming majority of the sex crimes occurs at midnight on all days. 
 
 #### Victim race 
 
@@ -90,7 +159,7 @@ We see that majority of the sex crimes occurs at midnight on all days.
 season_df %>% 
   group_by(vic_sex) %>% summarize(number = n())
 
-season_df %>% 
+season_df %>% filter(vic_race != "unknown") %>% 
   group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
   ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col() + facet_wrap(~boro_nm) + 
   theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8))
