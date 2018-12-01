@@ -9,11 +9,9 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Amin Yakubu" />
 
-<meta name="date" content="2018-11-27" />
 
-<title>seasonality</title>
+<title>NYC Crime Data</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -287,11 +285,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-<<<<<<< HEAD
   <a href="exploratory.html">Exploratory Analyses</a>
-=======
-  <a href="Exploratory.html">Exploratory Analyses</a>
->>>>>>> 63be14824910fdf7ab7f891f81d4381260621923
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -314,36 +308,114 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">seasonality</h1>
-<h4 class="author"><em>Amin Yakubu</em></h4>
-<h4 class="date"><em>11/27/2018</em></h4>
+<h1 class="title toc-ignore">NYC Crime Data</h1>
 
 </div>
 
 
-<p>Loading the dataset</p>
-<div id="season-trends" class="section level4">
-<h4>Season trends</h4>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-2.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-3.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-4.png" width="672" /></p>
+<div id="accessing-the-data." class="section level3">
+<h3>Accessing the data.</h3>
+<p>The data was accessed through the SODA Consumer API on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
+<p>The <code>tidyverse</code>, <code>Rsocrata</code> and <code>lubridate</code> libraries are required to connect with the API and subsequently manipulate and clean the data.</p>
+<pre class="r"><code>library(tidyverse)
+library(RSocrata)
+library(lubridate)
+library(photon)</code></pre>
+<pre class="r"><code>## Install the required package with:
+## install.packages(&quot;RSocrata) if not already installed
+
+nyc_crime = read.socrata(
+  &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
+  app_token = &quot;jK8jo5IhF6gBPFqZ1va8ITny0&quot;,
+  email     = &quot;yakubuamin@ymail.com&quot;,
+  password  = &quot;daTA@12345&quot; )</code></pre>
+<p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
 </div>
-<div id="time" class="section level4">
-<h4>Time</h4>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>The pictures of Weapon-Related and Drug related have similar color patterns which suggests these crimes are taking place together or around the same time. Surprisingly, Mondays and Tuesdays are quiet days for Drug related and Weapon related felony crimes. We see that overwhelming majority of the sex crimes occurs at midnight on all days.</p>
+<div id="subsetting" class="section level3">
+<h3>Subsetting</h3>
+<p>We are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years. We also interested in felony crimes so take out misdeamenors and violations.</p>
+<pre class="r"><code># This code was used to retrieve and assess the observations with missing date of crime occurrence
+
+crime_missing_cp = nyc_crime %&gt;% 
+  summarize_all(funs(sum(is.na(.))))
+
+#Cleaning and subsetting the data
+
+nyc_felony_crimes = nyc_crime %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(year = year(cmplnt_fr_dt))%&gt;%
+  mutate_if(is.character, tolower) %&gt;% 
+  filter(year %in% 2014:2017) %&gt;% 
+  filter(law_cat_cd == &quot;felony&quot;) %&gt;% 
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+
+#### selecting crimes of interest
+sex_drug_weapons = nyc_felony_crimes %&gt;% 
+  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
+                      ## Drug related felony crimes
+                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
+                      ### Weapon related felony crimes
+                      781, 792, 793, 796)) %&gt;% 
+  mutate(longitude = as.numeric(longitude),
+         latitude = as.numeric(latitude)) %&gt;% 
+  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %&gt;% 
+  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
+         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
+                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), &quot;Drug-Related&quot;, 
+                                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))
+
+saveRDS(nyc_felony_crimes, file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
+saveRDS(sex_drug_weapons, file = &quot;./datasets/sex_drug_weapons.rds&quot;)</code></pre>
+<p>Our dataset for analysis has 588,704 observations and 31 variables for nyc_felony_crimes and it’s subset sex_drug_weapons has 46,692 observations and 14 variables.</p>
 </div>
-<div id="victim-race" class="section level4">
-<h4>Victim race</h4>
-<pre><code>## # A tibble: 4 x 2
-##   vic_sex number
-##   &lt;chr&gt;    &lt;int&gt;
-## 1 d          295
-## 2 e        35226
-## 3 f         8822
-## 4 m         2349</code></pre>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div id="reverse-geocoding" class="section level3">
+<h3>Reverse Geocoding</h3>
+<p>The dataset comes without zipcode or neighborhood information. There are only geographic coordinates. This makes chloropleth mapping very difficut. We will reverse geocode the coordinates.</p>
+</div>
+<div id="felony-drug-offenses" class="section level3">
+<h3>Felony Drug offenses</h3>
+<pre class="r"><code>#### Sampling the just year 2017 and selecting all felony drug rape reports
+
+### Drug offenses in 2017
+drug_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Drug-Related&quot; &amp; year == 2017)
+
+### Sampling to reduce the dataset so has not not get rejected by google API
+drug_2017_1 = drug_2017 %&gt;% sample_n(2290)
+
+drug_2017_zip_1 = drug_2017_1 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(drug_2017_zip_1, file = &quot;datasets/drug_2017_zip_1.rds&quot;)
+
+#### Getting the data not sample. Second half of the data
+drug_2017_2 = anti_join(drug_2017, drug_2017_zip_1, by = &quot;cmplnt_num&quot;)
+
+#### Iterating to get the data
+drug_2017_zip_2 = drug_2017_2 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(drug_2017_zip_2, file = &quot;datasets/drug_2017_zip_2.rds&quot;)
+
+### Joining to have the complete dataset
+
+complete_drug_zip_2017 = bind_rows(drug_2017_zip_1, drug_2017_zip_2) 
+
+saveRDS(complete_drug_zip_2017, file = &quot;datasets/complete_drug_zip_2017.rds&quot;)</code></pre>
+</div>
+<div id="sex-drug-offenses" class="section level3">
+<h3>Sex Drug offenses</h3>
+</div>
+<div id="usage" class="section level3">
+<h3>Usage</h3>
+<p>To use our dataset, use the following code after cloning our repository.</p>
+<pre class="r"><code>### nyc_felony_crimes dataset
+readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
+
+### sex_drug_weapons dataset
+readRDS(file = &quot;./datasets/sex_drug_weapons.rds&quot;)
+
+### Drug offenses for 2017 with zipcodes
+saveRDS(complete_drug_zip_2017, file = &quot;datasets/complete_drug_zip_2017.rds&quot;)</code></pre>
 </div>
 
 
