@@ -285,7 +285,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -445,7 +445,41 @@ saveRDS(complete_weapon_zip_2017, file = &quot;datasets/complete_weapon_zip_2017
 
 ### Weapons, sex, drug for 2017 with zipcodes
 
-readRDS(file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+df = readRDS(file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+</div>
+<div id="data-dictionary" class="section level3">
+<h3>Data dictionary</h3>
+<p>
+<code>cmplnt_num</code>: randomly generated persistent ID for each complaint <br>
+<p>
+<code>boro_nm</code>: the name of the borough in which the incident occurred <br>
+<p>
+<code>cmplnt_fr_dt</code>: exact date of occurrence for the reported incident <br>
+<p>
+<code>cmplnt_fr_tm</code>: exact time of occurrence for the reported incident <br>
+<p>
+<code>latitude</code>: midblock latitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br>
+<p>
+<code>longitude</code>: midblock longitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br>
+<p>
+<code>ky_cd</code>: three-digit offense classification code <br>
+<p>
+<code>ofns_desc</code>: description of offense corresponding with key code <br>
+<p>
+<code>pd_cd</code>: three-digit internal classification code (more granular than Key Code) <br>
+<p>
+<code>pd_desc</code>: description of internal classification corresponding with PD code <br> <code>vic_race</code>: victim’s race description <br>
+<p>
+<code>vic_sex</code>: victim’s sex description (D=Business/Organization, E=PSNY/People of the State of New York, F=Female, M=Male) <br>
+<p>
+<code>year</code>: year the incident occurred <br>
+<p>
+<code>prem_typ_desc</code>: specific description of premises; grocery store, residence, street, etc. <br>
+<p>
+<code>crime_group</code>: sex-related felony offenses, drug-related felony offenses, weapon-related felony offenses <br>
+<p>
+<code>zip</code>: reverse geocoded address of the incident <br>
+<p>
 </div>
 
 
