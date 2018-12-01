@@ -2,8 +2,8 @@
 title: "date_and_borough"
 author: "Jacky Choi"
 date: "November 18, 2018"
-output: github_document
----
+output:
+  html_document
 
 This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.
 
