@@ -49,7 +49,9 @@ with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
 ```{r, results = "hide"}
 fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
   mutate( OR = exp(estimate))
+```
 
+```{r}
 fit %>% knitr::kable()
 
 ```
