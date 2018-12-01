@@ -9,11 +9,9 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Amin Yakubu" />
 
-<meta name="date" content="2018-11-27" />
 
-<title>seasonality</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,15 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -174,101 +166,6 @@ $(document).ready(function () {
 
 
 
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -287,11 +184,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-<<<<<<< HEAD
-  <a href="exploratory.html">Exploratory Analyses</a>
-=======
   <a href="Exploratory.html">Exploratory Analyses</a>
->>>>>>> 63be14824910fdf7ab7f891f81d4381260621923
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -314,42 +207,59 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">seasonality</h1>
-<h4 class="author"><em>Amin Yakubu</em></h4>
-<h4 class="date"><em>11/27/2018</em></h4>
 
 </div>
 
 
-<p>Loading the dataset</p>
-<div id="season-trends" class="section level4">
-<h4>Season trends</h4>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-2.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-3.png" width="672" /><img src="seasonality_files/figure-html/unnamed-chunk-3-4.png" width="672" /></p>
+<div id="nyc-crime-data" class="section level1">
+<h1>NYC Crime Data</h1>
+<div id="accessing-the-data." class="section level3">
+<h3>Accessing the data.</h3>
+<p>The data was accessed through the SODA Consumer API on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
+<p>The <code>tidyverse</code>, <code>Rsocrata</code> and <code>lubridate</code> libraries are required to connect with the API and subsequently manipulate and clean the data.</p>
+<pre class="r"><code>library(tidyverse)
+library(RSocrata)
+library(lubridate)</code></pre>
+<pre class="r"><code>## Install the required package with:
+## install.packages(&quot;RSocrata) if not already installed
+
+nyc_crime = read.socrata(
+  &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
+  app_token = &quot;jK8jo5IhF6gBPFqZ1va8ITny0&quot;,
+  email     = &quot;yakubuamin@ymail.com&quot;,
+  password  = &quot;daTA@12345&quot; )
+
+saveRDS(nyc_crime, file = &quot;data/nyc_crime.rds&quot;)</code></pre>
+<p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
 </div>
-<div id="time" class="section level4">
-<h4>Time</h4>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>The pictures of Weapon-Related and Drug related have similar color patterns which suggests these crimes are taking place together or around the same time. Surprisingly, Mondays and Tuesdays are quiet days for Drug related and Weapon related felony crimes. We see that overwhelming majority of the sex crimes occurs at midnight on all days.</p>
+<div id="subsetting" class="section level3">
+<h3>Subsetting</h3>
+<p>We are interested in looking at incidence i.e. when the crime happens, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.</p>
+<pre class="r"><code># This code was used to retrieve and assess the observations with missing date of crime occurrence
+
+crime_missing_cp = nyc_crime %&gt;% 
+  filter(is.na(cmplnt_fr_dt))
+
+#Cleaning and subsetting the data
+
+nyc_felony_misdemeanor = nyc_crime %&gt;% 
+  janitor::clean_names() %&gt;% 
+  filter(!is.na(cmplnt_fr_dt)) %&gt;%
+  mutate(year = year(cmplnt_fr_dt))%&gt;%
+  mutate_if(is.character, tolower) %&gt;% 
+  filter(year %in% 2014:2017) %&gt;% 
+  filter(law_cat_cd == &quot;felony&quot; | law_cat_cd == &quot;misdemeanor&quot;) %&gt;% 
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+
+saveRDS(nyc_felony_misdemeanor, file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
+<p>Our dataset for analysis has 1,645,149 observations and 31 variables.</p>
+<p>To use our dataset, use the following code after cloning our repository.</p>
+<pre class="r"><code>readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
 </div>
-<div id="victim-race" class="section level4">
-<h4>Victim race</h4>
-<pre><code>## # A tibble: 4 x 2
-##   vic_sex number
-##   &lt;chr&gt;    &lt;int&gt;
-## 1 d          295
-## 2 e        35226
-## 3 f         8822
-## 4 m         2349</code></pre>
-<p><img src="seasonality_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 
 
 
-</div>
-</div>
 
 </div>
 
