@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
 ---
 
-```{r include=FALSE}
+```{r flex_libraries}
 library(flexdashboard)
 library(plotly)
 library(tidyverse)
@@ -27,9 +27,10 @@ library(sp)
 library(tmap)
 library(chron)
 library(lubridate)
+library(rvest)
 ```
 
-```{r}
+```{r flex_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
@@ -40,7 +41,7 @@ Column {data-width=600}
 
 ### Chart A
 
-```{r}
+```{r flex_chatA}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 
 crimes_df = crimes_df %>% 
@@ -82,8 +83,8 @@ Column {data-width=400}
 
 ### Chart B: Trend of Crime rate
 
-```{r}
-sex_drug_weapons = readRDS("./nyc-crime/datasets/sex_drug_weapons.rds")
+```{r flex_chartB}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
 
@@ -119,7 +120,7 @@ ggplotly(x)
 
 ### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity
 
-```{r}
+```{r flex_chartC}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 season_df = sex_drug_weapons %>% 

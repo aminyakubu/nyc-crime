@@ -6,7 +6,7 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r acquiringdata_setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -19,14 +19,14 @@ The data was accessed through the SODA Consumer API on 17th November, 2018. Clic
 
 The `tidyverse`, `Rsocrata` and `lubridate` libraries are required to connect with the API and subsequently manipulate and clean the data.
 
-```{r, eval = FALSE}
+```{r acquiringdata_libraries, eval = FALSE}
 library(tidyverse)
 library(RSocrata)
 library(lubridate)
 library(photon)
 ```
 
-```{r, eval = FALSE}
+```{r acquiringdata_api, eval = FALSE}
 ## Install the required package with:
 ## install.packages("RSocrata) if not already installed
 
@@ -44,7 +44,7 @@ The acquired data has 6,036,805 observations and 35 variables. Broadly, the vari
 
 We are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years. We also interested in felony crimes so take out misdeamenors and violations. 
 
-```{r, eval = FALSE}
+```{r acquiringdata_manip, eval = FALSE}
 # This code was used to retrieve and assess the observations with missing date of crime occurrence
 
 crime_missing_cp = nyc_crime %>% 
@@ -87,7 +87,7 @@ The dataset comes without zipcode or neighborhood information. There are only ge
 
 ### Felony Drug offenses
 
-```{r, eval = FALSE}
+```{r acquiringdata_drug, eval = FALSE}
 #### Sampling the just year 2017 and selecting all felony drug rape reports
 
 ### Drug offenses in 2017
@@ -121,7 +121,7 @@ saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 
 The same process will be used for the sexual related crimes. There are 1993 observations therefore there's no need to split the data before reverse geocoding.
 
-```{r, eval = FALSE}
+```{r acquiringdata_sex, eval = FALSE}
 sex_2017 = sex_drug_weapons %>% filter(crime_group == "Sex-Related" & year == 2017)
 
 complete_sex_zip_2017 = sex_2017 %>% 
@@ -132,7 +132,7 @@ saveRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
 
 ### Felony Weapon offenses
 
-```{r, eval = FALSE}
+```{r acquiringdata_weapons, eval = FALSE}
 weapon_2017 = sex_drug_weapons %>% filter(crime_group == "Weapon-Related" & year == 2017)
 
 complete_weapon_zip_2017 = weapon_2017 %>% 
@@ -143,7 +143,7 @@ saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds"
 
 Dataset with the 3 crimes together with their zipcodes
 
-```{r, eval = FALSE}
+```{r acquiringdata_zip, eval = FALSE}
 all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, complete_weapon_zip_2017) 
 
 saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2017.rds")
@@ -153,7 +153,7 @@ saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2
 
 To use our dataset, use the following code after cloning our repository. 
 
-```{r, eval = FALSE}
+```{r acquiringdata_usage, eval = FALSE}
 
 ### nyc_felony_crimes dataset
 readRDS(file = "./datasets/nyc_felony_crimes.rds")
@@ -176,6 +176,7 @@ df = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
 ### Data dictionary
+
 Following is the list of all the 16 variables in the dataset with their descriptions:
 
 <p> `cmplnt_num`: randomly generated persistent ID for each complaint <br> <p>

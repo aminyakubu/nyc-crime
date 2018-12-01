@@ -9,11 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Jacky Choi" />
+<meta name="author" content="Amin Yakubu" />
 
-<meta name="date" content="2018-11-18" />
+<meta name="date" content="2018-11-29" />
 
-<title>date_and_borough</title>
+<title>Reverse Geocoding</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -218,73 +218,78 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">date_and_borough</h1>
-<h4 class="author"><em>Jacky Choi</em></h4>
-<h4 class="date"><em>November 18, 2018</em></h4>
+<h1 class="title toc-ignore">Reverse Geocoding</h1>
+<h4 class="author"><em>Amin Yakubu</em></h4>
+<h4 class="date"><em>11/29/2018</em></h4>
 
 </div>
 
 
-<p>This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.</p>
-<p>First, I load the tidyverse and patchwork package.</p>
-<pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
-<p>Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.</p>
-<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
+<pre class="r"><code>library(ggmap)
+library(revgeo)
+library(tidyverse)
+library(photon)</code></pre>
+<pre class="r"><code>if(!requireNamespace(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
+devtools::install_github(&quot;dkahle/ggmap&quot;, ref = &quot;tidyup&quot;)
+ggmap(get_googlemap())
+register_google(key = &quot;AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE&quot;)
 
-crime_data = crime_df %&gt;% 
-  janitor::clean_names() %&gt;%
-  sample_n(1000) %&gt;% 
-  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %&gt;% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = &quot;days&quot;, na.rm = TRUE))) %&gt;% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
+sex_drug_weapons = readRDS(file = &quot;./datasets/sex_drug_weapons.rds&quot;) 
 
-head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-## 1   2017-06-06         &lt;NA&gt;     felony   NA secs         NA    queens
-## 2   2017-02-20         &lt;NA&gt;     felony   NA secs         NA manhattan
-## 3   2014-12-27   2014-12-27     felony    0 secs          0     bronx
-## 4   2017-10-04   2017-10-04     felony    0 secs          0 manhattan
-## 5   2014-10-19         &lt;NA&gt;     felony   NA secs         NA manhattan
-## 6   2016-08-01   2016-08-01     felony    0 secs          0  brooklyn</code></pre>
-<p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
-<pre class="r"><code>crime_table = 
-  crime_data %&gt;% 
-  knitr::kable(digits = 2)
+revgeocode(c(lon = -97.1161, lat = 31.55098))</code></pre>
+<p>Loading the dataset</p>
+<pre class="r"><code>### sex_drug_weapons dataset
+sex_drug_weapons = readRDS(file = &quot;./datasets/sex_drug_weapons.rds&quot;)
 
-head(crime_table, 12)</code></pre>
-<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
-##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2017-06-06     NA             felony       NA                       NA  queens        &quot;
-##  [4] &quot;2017-02-20     NA             felony       NA                       NA  manhattan     &quot;
-##  [5] &quot;2014-12-27     2014-12-27     felony       0 secs                 0.00  bronx         &quot;
-##  [6] &quot;2017-10-04     2017-10-04     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2014-10-19     NA             felony       NA                       NA  manhattan     &quot;
-##  [8] &quot;2016-08-01     2016-08-01     felony       0 secs                 0.00  brooklyn      &quot;
-##  [9] &quot;2016-07-30     NA             felony       NA                       NA  brooklyn      &quot;
-## [10] &quot;2016-01-09     2016-01-09     felony       0 secs                 0.00  brooklyn      &quot;
-## [11] &quot;2017-08-11     2017-08-11     felony       0 secs                 0.00  manhattan     &quot;
-## [12] &quot;2014-05-14     2014-05-17     felony       259200 secs            3.00  brooklyn      &quot;</code></pre>
-<p>I can also look at whether the length of time for the reported event/crime differs by borough visually.</p>
-<pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
+sex_drug_weapons = sex_drug_weapons %&gt;% filter(!is.na(longitude) | !is.na(latitude)) </code></pre>
+<pre class="r"><code>require(devtools)  
+devtools::install_github(repo = &#39;rCarto/photon&#39;, force = TRUE)  
 
-crime_graph2 = 
-  crime_data2 %&gt;% 
-  group_by(boro_nm, law_cat_cd) %&gt;% 
-  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
-  geom_point() +
-    labs(
-    title = &quot;Spread of Times of Reported Event, By Borough&quot;,
-    x = &quot;Borough&quot;,
-    y = &quot;Length of Reported Event&quot;,
-    caption = &quot;Data from the crime_data file&quot;
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = &quot;bottom&quot;)
+a = sex_drug_weapons %&gt;% sample_n(5)
 
-crime_graph2</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="date_borough_files/figure-html/date_borough_length_of_time_of_reported_event-1.png" width="672" /> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
+df_1 = sex_drug_weapons %&gt;% sample_n(3500)
+
+zipcodes = df_1 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ reverse(x = .x, y = .y)))
+
+library(devtools)
+install_github(&#39;mhudecheck/revgeo&#39;)
+
+zipcodes = df_1 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = &quot;hash&quot;, item = &quot;zip&quot;)))
+
+zipcodes %&gt;% unnest() %&gt;% View
+       
+### Dataset 1
+df_1 = sex_drug_weapons %&gt;% sample_n(500)
+
+zip_1 = df_1 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
+
+saveRDS(zip_1, file = &quot;datasets/zip_1.rds&quot;)
+
+#### Dataset 2
+
+df_2 = anti_join(sex_drug_weapons, zip_1, by = &quot;cmplnt_num&quot;)
+
+
+### Sampling 500 because so as not to exceed the API query limit
+zip_df_1 = zip_df %&gt;% sample_n(500)
+
+### Reverse geocoding each longitude and latitude
+zip_names_1 = zip_df_1 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = &quot;hash&quot;, item = &quot;zip&quot;)))
+
+### SAving the dataset so we don&#39;t call the API to everytime
+saveRDS(zip_names_1, file = &quot;datasets/nyc_rape_zip.rds&quot;)
+
+### Using antijoin to find the other data set
+
+zip_df_2 = anti_join(zip_df, zip_df_1, by = &quot;cmplnt_num&quot;)
+
+### Reverse geocoding to get their zip codes
+zip_names_2 = zip_df_2 %&gt;% 
+  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeo(longitude = .x , latitude= .y, output = &quot;hash&quot;, item = &quot;zip&quot;)))</code></pre>
 
 
 

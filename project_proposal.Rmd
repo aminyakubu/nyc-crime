@@ -4,7 +4,7 @@ date: "11/7/2018"
 output: github_document 
 ---
 
-```{r setup, include=FALSE}
+```{r proposal_setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 

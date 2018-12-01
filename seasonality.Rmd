@@ -8,13 +8,14 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r seasonality_setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
-```{r}
+```{r seasonality_libraries}
 library(tidyverse)
 library(lubridate)
 library(patchwork)
@@ -23,13 +24,13 @@ library(rvest)
 ```
 
 Loading the dataset
-```{r}
+```{r seasonality_data}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds") 
 ```
 
 #### Season trends
 
-```{r}
+```{r seasonality_trend}
 season_df = sex_drug_weapons %>% 
   mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
          month = months(cmplnt_fr_dt),
@@ -100,7 +101,7 @@ year7 = season_df %>% filter(year == 2017) %>%
 
 #### Time 
 
-```{r}
+```{r seasonality_time}
  
 season_df %>% 
   group_by(boro_nm, hour) %>% 
@@ -109,7 +110,7 @@ season_df %>%
   
 ```
 
-```{r}
+```{r seasonality_plot_sex}
 season_df %>% 
   group_by(day, hour) %>% filter(crime_group == "Sex-Related") %>% 
   summarize(number = n()) %>% 
@@ -124,7 +125,7 @@ season_df %>%
   theme(plot.subtitle = element_text(hjust = 0.5))
 ```
 
-```{r}
+```{r seasonality_plot_drug}
 season_df %>% filter(crime_group == "Drug-Related") %>% 
   group_by(day, hour) %>% 
   summarize(number = n()) %>% 
@@ -139,7 +140,7 @@ season_df %>% filter(crime_group == "Drug-Related") %>%
   theme(plot.subtitle = element_text(hjust = 0.5))
 ```
 
-```{r}
+```{r seasonality_plot}
 season_df %>% filter(crime_group == "Weapon-Related") %>% 
   group_by(day, hour) %>% 
   summarize(number = n()) %>% 
@@ -159,7 +160,7 @@ We see that overwhelming majority of the sex crimes occurs at midnight on all da
 
 #### Victim race 
 
-```{r}
+```{r seasonality_race}
 season_df %>% 
   group_by(vic_sex) %>% summarize(number = n())
 

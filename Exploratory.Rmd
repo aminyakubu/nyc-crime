@@ -19,11 +19,14 @@ output:
 <br>
 As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
 
-```{r setup, include = FALSE}
+```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 
+```
+
+```{r exp_libraries}
 library(patchwork)
 library(tidyverse)
 library(rvest)
@@ -51,7 +54,7 @@ library(tmap)
 <br>
 First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
 
-```{r tidy_crime_data, echo = FALSE}
+```{r exp_tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 crime_data = crime_df %>% 
@@ -65,7 +68,7 @@ crime_data = crime_df %>%
 
 <br>
 We can look at the data in a table to examine general trends and get a feel of my data.
-```{r crime_data_table, echo = FALSE}
+```{r exp_crime_data_table, echo = FALSE}
 crime_table = 
   crime_data %>% 
   knitr::kable(digits = 2)
@@ -74,7 +77,7 @@ crime_table =
 
 <br>
 We can also look at whether the length of time for the reported event/crime differs by borough visually.
-```{r length_of_time_of_reported_event, echo = FALSE}
+```{r exp_length_of_time_of_reported_event, echo = FALSE}
 crime_data2 <- crime_data[complete.cases(crime_data),]
 
 crime_graph2 = 
@@ -109,7 +112,7 @@ For our second exploratory analysis, we chose to examine offense rates by boroug
 
 
 First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
-```{r, include = FALSE}
+```{r, exploratory_pop, include = FALSE}
 crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
@@ -134,7 +137,7 @@ pop_df = pop_df %>%
 ```
 
 We created a data frame containing our final data.
-```{r}
+```{r, exploratory_jyoti}
 nycc_df = crime_df %>% 
   mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm))
  
@@ -153,7 +156,7 @@ mutate(off_rate = ((count/population)*100))
 ```
 
 Lastly, we visually look at the individual offenses by borough over the four years.
-```{r, echo = FALSE}
+```{r,exploratory_sql, echo = FALSE}
 test <- sqldf("SELECT boro_nm, year, off_rate
               FROM full
               WHERE off_rate IS NOT NULL and year = '2017'
@@ -217,22 +220,20 @@ Include Yaa's
 ## Exploratory Analysis 4 - Geographical Distribution of Crimes
 Reading in the datasets
 
-```{r}
+```{r, exploratory_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
 ### Dataset for 4 years without addresses
 crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
-```
 
-```{r}
 ### Selecting zipcodes from address
 crimes_df = crimes_df %>% 
   mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
 
 ```
 
-```{r}
+```{r, exp_leaflet}
 year_2014 = filter(crimes_14_17, year == 2014) %>% 
   filter(!is.na(longitude) | !is.na(latitude))
 
@@ -284,7 +285,7 @@ leaflet()  %>%
             position = "topleft")
 ```
 
-```{r}
+```{r, eval = FALSE}
 
 map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
@@ -293,14 +294,11 @@ download.file(map_url, "./datasets/nyc_zip_map.geojson")
 
 #### Crime distribution by zipcode for 2017
 
-```{r}
+```{r, exp_zips}
 
 group_zip = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 
 map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
-```
-
-```{r}
 
 map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
 
@@ -319,7 +317,7 @@ total = tm_shape(map_w_data) +
 
 ```
 
-```{r}
+```{r, exp_drug}
 drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())
@@ -345,7 +343,7 @@ drug = tm_shape(map_w_drug) +
 ```
 
 
-```{r}
+```{r, exp_weapon}
 weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())
@@ -372,7 +370,7 @@ weapon = tm_shape(map_w_weapon) +
 ```
 
 
-```{r}
+```{r, exp_sex}
 sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())

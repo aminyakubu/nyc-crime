@@ -2,18 +2,17 @@
 title: "Final_project"
 author: "Yaa Klu"
 date: "11/17/2018"
-output:
-  html_document
+output: html_document
 ---
 
-```{r}
+```{r final_project_data}
 
 library(tidyverse)
+
 crime_nyc = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 crime_nyc %>% filter(law_cat_cd == "felony") %>% distinct(pd_cd, pd_desc) %>% 
-  mutate(x = str_detect(pd_desc, "rape")) %>% 
-  View
+  mutate(x = str_detect(pd_desc, "rape")) 
 ```
  
 
@@ -29,7 +28,7 @@ library(tidyverse)
 
 
 Removing missing variables
-```{r}
+```{r final_project_missing}
 com_crime_nyc = crime_nyc %>% 
   janitor::clean_names(dat = .) %>% 
   filter(!is.na(susp_sex)) %>%
@@ -42,7 +41,7 @@ com_crime_nyc = crime_nyc %>%
 
 
 Highest number of crimes (top 5)
-```{r}
+```{r final_project_highest}
 com_crime_nyc %>%
   distinct(pd_desc) %>%
   count()
@@ -59,7 +58,7 @@ com_crime_nyc %>%
 
 
 Suspect Age
-```{r}
+```{r final_project_age}
 com_crime_nyc %>%
   group_by(susp_age_group) %>%
   summarise(number = n()) %>%
@@ -70,7 +69,7 @@ com_crime_nyc %>%
 ```
 
 Suspect Sex
-```{r}
+```{r final_project_sex}
 com_crime_nyc %>%
   group_by(susp_sex) %>%
   summarise(number = n()) %>%
@@ -82,7 +81,7 @@ com_crime_nyc %>%
 ```
 
 Victim's sex
-```{r}
+```{r final_project_sexx}
 com_crime_nyc %>%
   group_by(vic_sex) %>%
   summarise(number = n()) %>%
@@ -93,7 +92,7 @@ com_crime_nyc %>%
 ```
 
 Victim's age
-```{r}
+```{r final_project_vicage}
 com_crime_nyc %>%
   group_by(vic_age_group) %>%
   summarise(number = n()) %>%
@@ -104,7 +103,7 @@ com_crime_nyc %>%
 ```
 
 Suspect's age
-```{r}
+```{r final_project_susage}
 com_crime_nyc %>%
   group_by(susp_race) %>%
   summarise(number = n()) %>%
@@ -116,7 +115,7 @@ com_crime_nyc %>%
 
 
 Victim's race
-```{r}
+```{r final_project_vrace}
 com_crime_nyc %>%
   group_by(vic_race) %>%
   summarise(number = n()) %>%
@@ -128,7 +127,7 @@ com_crime_nyc %>%
 
 
 Suspect's race
-```{r}
+```{r final_project_srace}
 com_crime_nyc %>%
   group_by(pd_desc, susp_race) %>%
   summarise(number = n()) %>%
@@ -140,7 +139,7 @@ com_crime_nyc %>%
 ```
 
 
-```{r}
+```{r final_project_und}
 com_crime_nyc %>%
   group_by(susp_race, vic_race) %>%
   summarise(number = n()) %>%
@@ -151,7 +150,7 @@ com_crime_nyc %>%
 ```
 
 
-```{r}
+```{r final_project_come}
 com_crime_nyc %>%
   group_by(susp_race, pd_desc) %>%
   summarise(number = n()) %>%
@@ -162,7 +161,7 @@ com_crime_nyc %>%
 ```
 
 
-```{r}
+```{r final_project_table}
 com_crime_nyc %>%
   group_by(pd_desc, susp_age_group) %>%
   summarise(number = n()) %>%
@@ -174,7 +173,7 @@ com_crime_nyc %>%
 
 
 **filter out unknown and analyze top 5 crimes for unknowns**
-```{r}
+```{r final_project_filter}
 filter(com_crime_nyc, susp_age_group == 'unknown') %>%
   group_by(pd_cd) %>%
   summarise(n = n()) %>%
@@ -184,7 +183,7 @@ filter(com_crime_nyc, susp_age_group == 'unknown') %>%
 
 
 select top 10 crimes into a new dataset
-```{r}
+```{r final_project_crimesdata}
 top_ten_crime = com_crime_nyc %>%
   group_by(pd_desc, pd_cd) %>%
   summarise(number = n()) %>%
@@ -193,7 +192,7 @@ top_ten_crime = com_crime_nyc %>%
  # arrange(desc(number)) %>%
 ```
 
-```{r}
+```{r final_project_function}
 mydataextract3 = list()
 cc = top_ten_crime$pd_cd
 for(j in 1:length(cc)){
@@ -207,7 +206,7 @@ mydataextract4 = do.call(rbind, mydataextract3)
 
 consider suspects demographics by the top ten crimes
 suspect age group
-```{r}
+```{r final_project_tablesage}
  table(mydataextract4$susp_age_group)
 sort(table(mydataextract4$susp_age_group))
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -218,7 +217,7 @@ suspect_agetopten=table(mydata$pd_desc,mydata$susp_age_group)
 
 
 
-```{r}
+```{r final_project_yaa}
 suspect_agetopten2=as.data.frame(suspect_agetopten)
 mycolnames=c('Crime', 'Agegroup', 'Freq')
 colnames(suspect_agetopten2)=mycolnames
@@ -239,7 +238,7 @@ labs(
 
 consider suspects demographics by the top ten crimes.
 suspect race
-```{r}
+```{r final_project_consider}
  table(mydataextract4$susp_race)
 sort(table(mydataextract4$susp_race))
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -248,7 +247,7 @@ suspect_racetopten=table(mydata$pd_desc,mydata$susp_race)
 
 
 
-```{r}
+```{r final_project_sustable}
 suspect_racetopten2=as.data.frame(suspect_racetopten)
 mycolnames=c('Crime', 'Race', 'Freq')
 colnames(suspect_racetopten2)=mycolnames
@@ -268,7 +267,7 @@ labs(
 
 
 sex
-```{r}
+```{r final_project_tablesex}
 table(mydataextract4$susp_sex)
 sort(table(mydataextract4$susp_sex))
 #keep age groups < 18, 18-24, 25-44, 45-64, 65+, unknown
@@ -276,7 +275,7 @@ suspect_sextopten=table(mydata$pd_desc,mydata$susp_sex)
 suspect_sextopten
 ```
 
-```{r}
+```{r final_project_graphs}
 suspect_sextopten2=as.data.frame(suspect_sextopten)
 mycolnames=c('Crime', 'Sex', 'Freq')
 colnames(suspect_sextopten2)=mycolnames

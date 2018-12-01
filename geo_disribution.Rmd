@@ -8,7 +8,7 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r geo_setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(warning = FALSE)
 
 Loading the required libraries
 
-```{r}
+```{r geo_libraries}
 library(tidyverse)
 library(htmltools)
 library(htmlwidgets)
@@ -40,22 +40,20 @@ library(tmap)
 
 Reading in the datasets
 
-```{r}
+```{r geo_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
 ### Dataset for 4 years without addresses
 crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
-```
 
-```{r}
 ### Selecting zipcodes from address
 crimes_df = crimes_df %>% 
   mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
 
 ```
 
-```{r}
+```{r geo_year_leaflet}
 year_2014 = filter(crimes_14_17, year == 2014) %>% 
   filter(!is.na(longitude) | !is.na(latitude))
 
@@ -107,7 +105,7 @@ leaflet()  %>%
             position = "topleft")
 ```
 
-```{r}
+```{r geo_mapfile, eval = FALSE}
 
 map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
@@ -116,14 +114,14 @@ download.file(map_url, "./datasets/nyc_zip_map.geojson")
 
 #### Crime distribution by zipcode for 2017
 
-```{r}
+```{r geo_zip}
 
 group_zip = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 
 map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 ```
 
-```{r}
+```{r geo_join}
 
 map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
 
@@ -142,7 +140,7 @@ total = tm_shape(map_w_data) +
 
 ```
 
-```{r}
+```{r geo_drug}
 drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())
@@ -168,7 +166,7 @@ drug = tm_shape(map_w_drug) +
 ```
 
 
-```{r}
+```{r geo_weapons}
 weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())
@@ -195,7 +193,7 @@ weapon = tm_shape(map_w_weapon) +
 ```
 
 
-```{r}
+```{r geo_sex}
 sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
   group_by(zipcode) %>% 
   summarize(number = n())

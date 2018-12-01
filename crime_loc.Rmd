@@ -2,22 +2,21 @@
 title: "Exploratory Analysis"
 author: "Jyoti Ankam"
 date: "November 17, 2018"
-<<<<<<< HEAD
-output:
-  html_document
-=======
 output: html_document
->>>>>>> 63be14824910fdf7ab7f891f81d4381260621923
 ---
 
-```{r setup, include=FALSE}
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r crime_loc_setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(message = FALSE)
 ```
 
 Loading the relevant libraries
 
-```{r}
+```{r crime_loc_libraries}
 library(tidyverse)
 library(rvest)
 library(plotly)
@@ -26,14 +25,14 @@ library(sqldf)
 
 Reading the dataset
 
-```{r}
+```{r crime_loc_data}
 
 crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
 ```
 
 Loading information from the US census on total population in the individual NYC boroughs to calculate offense rates in each borough
-```{r}
+```{r, crime_loc_jyoti}
 
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
 boro_pop = read_html(url)
@@ -56,13 +55,13 @@ pop_df = pop_df %>%
 
 ```
 
-```{r}
+```{r crime_loc_df}
 nycc_df = crime_df %>% 
   mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm))
 ```
  
 Looking at the individual offenses by borough over the four years:
-```{r}
+```{r crime_loc_off}
 
 crime_df %>% 
   distinct(pd_cd) %>% 

@@ -4,9 +4,10 @@ Data Science Final Project Proposal
 
 ### Group Members
 
-Amin Yakubu (ay2146, GitHub: aminyakubu), Jyoti Ankam (jva2106, GitHub: jyotiankam), Yaa (ykk2116), Jacky Choi (jmc2392, GitHub: jmc2392)
+Amin Yakubu (ay2146, GitHub: aminyakubu), Jyoti Ankam (jva2106, GitHub: jyotiankam), Yaa Asantewaa Klu (ykk2116, GitHub:yaaklu), Jacky Choi (jmc2392, GitHub: jmc2392)
 
-### Tentative Project Title
+Tentative Project Title
+-----------------------
 
 Factors Associated With Crime Distribution in New York City
 
