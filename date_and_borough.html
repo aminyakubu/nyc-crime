@@ -11,7 +11,7 @@
 
 
 
-<title>Factors Associated With New York City Crime From 2014 to 2017</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,9 +22,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -210,40 +207,85 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Factors Associated With New York City Crime From 2014 to 2017</h1>
 
 </div>
 
 
-<p><br></p>
-<div id="group-members-amin-yakubu-ay2416-jacky-choi-jmc2392-yaa-klu-ykk2116-jyoti-ankam-jva2106" class="section level3">
-<h3>Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106</h3>
-<p><br></p>
-<head>
-<p><link rel="stylesheet" href="styles.css" type="text/css"> <link rel="stylesheet" href="academicons/css/academicons.min.css"/> <link rel="apple-touch-icon" href="/images/nyc2.jpg" ></p>
-<p><br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br></p>
-<p><br></p>
+<div id="date_and_borough" class="section level1">
+<h1>date_and_borough</h1>
+<p>Jacky Choi November 18, 2018</p>
+<p>This is one of the exploratory analyses for our P8105 - Data Science group project.</p>
+<p>First, I load the tidyverse and patchwork package.</p>
+<pre><code>## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --
+
+## v ggplot2 3.0.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.6
+## v tidyr   0.8.1     v stringr 1.3.1
+## v readr   1.1.1     v forcats 0.3.0
+
+## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+
+## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+<p>Next, I read in the CSV file and tidy it up. I limit the data to just individuals in the borough of Queens and randomly sample 500 observations from the data frame.</p>
+<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)
+
+crime_data = crime_df %&gt;% 
+  janitor::clean_names() %&gt;%
+  sample_n(500) %&gt;% 
+  filter(boro_nm == &quot;queens&quot;) %&gt;% 
+  separate(cmplnt_fr_dt, into = c(&quot;year_of_complaint&quot;, &quot;month_complaint&quot;, &quot;day_complaint&quot;), sep = &quot;-&quot;) %&gt;% 
+  select(year_of_complaint, law_cat_cd, boro_nm)
+
+head(crime_data)</code></pre>
+<pre><code>##   year_of_complaint  law_cat_cd boro_nm
+## 1              2014      felony  queens
+## 2              2014 misdemeanor  queens
+## 3              2017      felony  queens
+## 4              2014 misdemeanor  queens
+## 5              2015      felony  queens
+## 6              2017      felony  queens</code></pre>
+<p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
+<pre class="r"><code>crime_table = 
+  crime_data %&gt;% 
+  knitr::kable(digits = 2)
+
+head(crime_table, 12)</code></pre>
+<pre><code>##  [1] &quot;year_of_complaint   law_cat_cd    boro_nm &quot;
+##  [2] &quot;------------------  ------------  --------&quot;
+##  [3] &quot;2014                felony        queens  &quot;
+##  [4] &quot;2014                misdemeanor   queens  &quot;
+##  [5] &quot;2017                felony        queens  &quot;
+##  [6] &quot;2014                misdemeanor   queens  &quot;
+##  [7] &quot;2015                felony        queens  &quot;
+##  [8] &quot;2017                felony        queens  &quot;
+##  [9] &quot;2015                misdemeanor   queens  &quot;
+## [10] &quot;2016                misdemeanor   queens  &quot;
+## [11] &quot;2015                misdemeanor   queens  &quot;
+## [12] &quot;2016                misdemeanor   queens  &quot;</code></pre>
+<p>It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.</p>
+<pre class="r"><code>crime_graph = 
+  crime_data %&gt;% 
+  ggplot(aes(x = year_of_complaint, y = law_cat_cd)) + 
+  geom_point() +
+    labs(
+    title = &quot;Categories of Offenses, By Year of Complaint, In Queens&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;Category&quot;,
+    caption = &quot;Data from the crime_data file&quot;
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = &quot;bottom&quot;)
+
+crime_graph</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<div class="figure">
+<img src="date_and_borough_files/figure-markdown_github/graph_crime_data-1.png" />
+
 </div>
-<div id="background" class="section level2">
-<h2>Background</h2>
-<p>The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to the Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city.</p>
-</div>
-<div id="project-description" class="section level2">
-<h2>Project Description</h2>
-<p>We conducted various exploratory and formal analyses of different variables associated with reported crimes and events across New York City (e.g., sociodemographics, day/seasonality, and other trends). We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.</p>
-</div>
-<div id="data-sources" class="section level2">
-<h2>Data sources</h2>
-<p>We used the dataset collected by the NYPD - specifically, the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables.</p>
-<p><a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">The link to the dataset is here:</a></p>
-</div>
-<div id="analyses" class="section level2">
-<h2>Analyses</h2>
-<p>For the analyses, we used both graphical elements and functions (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also included a Flex Dashboard and Shiny app controls to provide stratification by different variables.</p>
-</div>
-<div id="other" class="section level2">
-<h2>Other</h2>
-<p>Email any one of us if you have any questions: <a href="mailto:%3Cay2416@cumc.columbia.edu%3E">Amin Yakubu</a> | <a href="mailto:%3Cjmc2392@cumc.columbia.edu%3E">Jacky Choi</a> | <a href="mailto:%3Cykk2116@cumc.columbia.edu%3E">Yaa Klu</a> | <a href="mailto:%3Cjva2106@cumc.columbia.edu%3E">Jyoti Ankam</a></p>
+<p>I can also look at whether the length of time for the reported event/crime differs by borough.</p>
 </div>
 
 

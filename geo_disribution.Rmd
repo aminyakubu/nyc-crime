@@ -24,6 +24,7 @@ library(htmlwidgets)
 library(leaflet)
 library(leaflet.extras)
 
+
 library(rgdal)
 if (!require(geojsonio)) {
     install.packages("geojsonio")

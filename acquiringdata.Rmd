@@ -172,6 +172,28 @@ readRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds"
 
 ### Weapons, sex, drug for 2017 with zipcodes
 
-readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
+df = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
+
+### Data dictionary
+Following is the list of all the 16 variables in the dataset with their descriptions:
+
+<p> `cmplnt_num`: randomly generated persistent ID for each complaint <br> <p>
+
+`boro_nm`: the name of the borough in which the incident occurred <br> <p>
+`cmplnt_fr_dt`: exact date of occurrence for the reported incident <br> <p>
+`cmplnt_fr_tm`: exact time of occurrence for the reported incident <br> <p>
+`latitude`: midblock latitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br> <p>
+`longitude`: midblock longitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br> <p>
+`ky_cd`: three-digit offense classification code <br> <p>
+`ofns_desc`: description of offense corresponding with key code <br> <p>
+`pd_cd`: three-digit internal classification code (more granular than Key Code) <br> <p>
+`pd_desc`: description of internal classification corresponding with PD code <br>
+`vic_race`: victim’s race description <br> <p>
+`vic_sex`: victim’s sex description (D=Business/Organization, E=PSNY/People of the State of New York, F=Female, M=Male) <br> <p>
+`year`: year the incident occurred <br> <p>
+`prem_typ_desc`: specific description of premises; grocery store, residence, street, etc. <br> <p>
+`crime_group`: sex-related felony offenses, drug-related felony offenses, weapon-related felony offenses <br> <p>
+`zip`: reverse geocoded address of the incident <br> <p>
+
 
