@@ -39,7 +39,7 @@ crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 Column {data-width=600}
 -----------------------------------------------------------------------
 
-### Chart A
+### Chart A: Geographic distribution
 
 ```{r flex_chatA}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
@@ -61,7 +61,7 @@ map_json %>%
   leaflet() %>% 
   #addTiles() %>% 
   addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
-  setView(lat = 40.7, lng = -74.0, zoom = 10) %>% 
+  setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
   addPolygons(weight = 1, 
               color = nyc_pal(map_json@data$number), 
               fillOpacity = 0.5, opacity = 5, 
@@ -139,7 +139,9 @@ p = season_df %>% filter(vic_race != "unknown") %>%
   ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col()  + 
   theme(legend.position = "left", axis.title.x=element_blank(),
         axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
+        axis.ticks.x=element_blank()) +
+  labs(y = "Total Number") + viridis::scale_fill_viridis(discrete = TRUE,
+                                                         name = "Race/Ethnicity")
 
 
 ggplotly(p)

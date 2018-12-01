@@ -225,37 +225,14 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>library(nnet)
-library(tidyverse)</code></pre>
-<pre class="r"><code>crime_df = readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;) 
-
-sex_drug_weapons = crime_df %&gt;% 
-  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
-                      ## Drug related felony crimes
-                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
-                      ### Weapon related felony crimes
-                      781, 792, 793, 796)) %&gt;% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude)) %&gt;% 
-  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %&gt;% 
-  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
-         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
-                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), &quot;Drug-Related&quot;, 
-                                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))</code></pre>
 <p>Association between borough and crime, adjusting for average income</p>
 <div id="model-statement-for-the-multinomial-logistic-regression-is-below" class="section level3">
 <h3>Model statement for the multinomial logistic regression is below</h3>
 <p><code>In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island</code></p>
 <p><code>In(P(crimegroup=weapon related)/P(crime group=sex related) )=β_20 + β_21 Bronx+β_22 Brooklyn+β_23 Queens+ β_24 Staten_island</code></p>
-<pre class="r"><code>### Making manhattan the and sex-related crime the reference groups 
-sex_drug_weapons = sex_drug_weapons %&gt;%
-  mutate(crime_group = forcats::fct_relevel(crime_group, &quot;Drug-Related&quot;),
-         boro_nm = forcats::fct_relevel(boro_nm, &quot;manhattan&quot;))</code></pre>
 </div>
 <div id="tabulation" class="section level3">
 <h3>Tabulation</h3>
-<pre class="r"><code>with(sex_drug_weapons, table(boro_nm, crime_group)) %&gt;%
-  knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -298,14 +275,11 @@ sex_drug_weapons = sex_drug_weapons %&gt;%
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %&gt;% broom::tidy() %&gt;% 
-  mutate( OR = exp(estimate))</code></pre>
 <pre><code>## # weights:  18 (10 variable)
 ## initial  value 51295.306370 
 ## iter  10 value 48639.952850
 ## final  value 48196.448352 
 ## converged</code></pre>
-<pre class="r"><code>fit %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -411,15 +385,7 @@ sex_drug_weapons = sex_drug_weapons %&gt;%
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>ggplot(fit, aes(x = term, y = OR)) +
-  geom_segment( aes(x = term, xend = term, y = 0, yend = OR), color = &quot;grey&quot;) +
-  geom_point(color = &quot;orange&quot;, size = 3) + facet_grid(~ y.level)</code></pre>
 <p><img src="statistical_analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>  theme_light() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.border = element_blank(),
-    axis.ticks.x = element_blank())</code></pre>
 <pre><code>## List of 62
 ##  $ line                 :List of 6
 ##   ..$ colour       : chr &quot;black&quot;
@@ -830,16 +796,6 @@ sex_drug_weapons = sex_drug_weapons %&gt;%
 <p>The odds of sex-related crimes in manhattan is 1.79. The odds of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn. The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens. The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island.</p>
 <p>The odds of weapon related crimes in manhattan is 2.7.</p>
 <p>The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx. The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island.</p>
-<pre class="r"><code>x = sex_drug_weapons %&gt;% filter(vic_race != &quot;unknown&quot;) %&gt;% filter(crime_group != &quot;Sex-Related&quot;) %&gt;% 
-  mutate(race = if_else(vic_race == &quot;white&quot;, &quot;white&quot;, &quot;minority&quot;)) %&gt;% 
-  mutate(race = as.factor(race),
-         crime_group = as.factor(crime_group))
-
-glm(crime_group ~ race, family = binomial(), data = x) %&gt;% broom::tidy() %&gt;% 
-  mutate( OR = exp(estimate)) %&gt;% knitr::kable()
-
-multinom(crime_group ~ race, data = x) %&gt;% broom::tidy() %&gt;% 
-  mutate(OR = exp(estimate)) %&gt;% knitr::kable(digits = 4)</code></pre>
 </div>
 
 

@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = TRUE)
 knitr::opts_chunk$set(message = TRUE)
 ```
@@ -83,7 +83,7 @@ ggplot(fit, aes(x = term, y = OR)) +
 
 ### Interpretation
 
-The odds of sex-related crimes in manhattan is 1.79.
+The odds of sex-related crimes in manhattan is 1.79. 
 The odds  of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. 
 The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn.
 The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens.
