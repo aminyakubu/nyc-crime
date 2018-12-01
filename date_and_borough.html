@@ -11,7 +11,7 @@
 
 
 
-<title>Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,9 +22,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -210,83 +207,86 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</h1>
 
 </div>
 
 
-<p><br> #<strong>Code</strong></p>
-<p><br> This is the code for the first exploratory analysis in which we examined the length of the reported event/crime by borough.</p>
-<p><br></p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages -------------- tidyverse 1.2.1 --</code></pre>
-<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
+<div id="date_and_borough" class="section level1">
+<h1>date_and_borough</h1>
+<p>Jacky Choi November 18, 2018</p>
+<p>This is one of the exploratory analyses for our P8105 - Data Science group project.</p>
+<p>First, I load the tidyverse and patchwork package.</p>
+<pre><code>## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --
+
+## v ggplot2 3.0.0     v purrr   0.2.5
 ## v tibble  1.4.2     v dplyr   0.7.6
 ## v tidyr   0.8.1     v stringr 1.3.1
-## v readr   1.1.1     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ----------------- tidyverse_conflicts() --
+## v readr   1.1.1     v forcats 0.3.0
+
+## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
-<pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
+## x dplyr::lag()    masks stats::lag()
+
+## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
-<pre class="r"><code>library(patchwork)</code></pre>
-<p><br></p>
-<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
+<p>Next, I read in the CSV file and tidy it up. I limit the data to just individuals in the borough of Queens and randomly sample 500 observations from the data frame.</p>
+<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)
 
 crime_data = crime_df %&gt;% 
   janitor::clean_names() %&gt;%
-  sample_n(1000) %&gt;% 
-  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %&gt;% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = &quot;days&quot;, na.rm = TRUE))) %&gt;% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
+  sample_n(500) %&gt;% 
+  filter(boro_nm == &quot;queens&quot;) %&gt;% 
+  separate(cmplnt_fr_dt, into = c(&quot;year_of_complaint&quot;, &quot;month_complaint&quot;, &quot;day_complaint&quot;), sep = &quot;-&quot;) %&gt;% 
+  select(year_of_complaint, law_cat_cd, boro_nm)
 
 head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-## 1   2017-04-19   2017-04-19     felony    0 secs          0    queens
-## 2   2014-07-10   2014-07-10     felony    0 secs          0  brooklyn
-## 3   2016-05-19         &lt;NA&gt;     felony   NA secs         NA    queens
-## 4   2015-08-09   2015-08-09     felony    0 secs          0 manhattan
-## 5   2017-09-16   2017-09-16     felony    0 secs          0 manhattan
-## 6   2015-08-14   2015-08-14     felony    0 secs          0     bronx</code></pre>
-<p><br></p>
+<pre><code>##   year_of_complaint  law_cat_cd boro_nm
+## 1              2014      felony  queens
+## 2              2014 misdemeanor  queens
+## 3              2017      felony  queens
+## 4              2014 misdemeanor  queens
+## 5              2015      felony  queens
+## 6              2017      felony  queens</code></pre>
+<p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
   knitr::kable(digits = 2)
 
 head(crime_table, 12)</code></pre>
-<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
-##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2017-04-19     2017-04-19     felony       0 secs                 0.00  queens        &quot;
-##  [4] &quot;2014-07-10     2014-07-10     felony       0 secs                 0.00  brooklyn      &quot;
-##  [5] &quot;2016-05-19     NA             felony       NA                       NA  queens        &quot;
-##  [6] &quot;2015-08-09     2015-08-09     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2017-09-16     2017-09-16     felony       0 secs                 0.00  manhattan     &quot;
-##  [8] &quot;2015-08-14     2015-08-14     felony       0 secs                 0.00  bronx         &quot;
-##  [9] &quot;2014-01-17     2014-01-17     felony       0 secs                 0.00  staten island &quot;
-## [10] &quot;2017-03-14     2017-03-14     felony       0 secs                 0.00  manhattan     &quot;
-## [11] &quot;2015-08-31     2015-09-01     felony       86400 secs             1.00  bronx         &quot;
-## [12] &quot;2016-01-15     2016-01-16     felony       86400 secs             1.00  queens        &quot;</code></pre>
-<p><br></p>
-<pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
-
-crime_graph2 = 
-  crime_data2 %&gt;% 
-  group_by(boro_nm, law_cat_cd) %&gt;% 
-  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
+<pre><code>##  [1] &quot;year_of_complaint   law_cat_cd    boro_nm &quot;
+##  [2] &quot;------------------  ------------  --------&quot;
+##  [3] &quot;2014                felony        queens  &quot;
+##  [4] &quot;2014                misdemeanor   queens  &quot;
+##  [5] &quot;2017                felony        queens  &quot;
+##  [6] &quot;2014                misdemeanor   queens  &quot;
+##  [7] &quot;2015                felony        queens  &quot;
+##  [8] &quot;2017                felony        queens  &quot;
+##  [9] &quot;2015                misdemeanor   queens  &quot;
+## [10] &quot;2016                misdemeanor   queens  &quot;
+## [11] &quot;2015                misdemeanor   queens  &quot;
+## [12] &quot;2016                misdemeanor   queens  &quot;</code></pre>
+<p>It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.</p>
+<pre class="r"><code>crime_graph = 
+  crime_data %&gt;% 
+  ggplot(aes(x = year_of_complaint, y = law_cat_cd)) + 
   geom_point() +
     labs(
-    title = &quot;Spread of Times of Reported Event, By Borough&quot;,
-    x = &quot;Borough&quot;,
-    y = &quot;Length of Reported Event&quot;,
+    title = &quot;Categories of Offenses, By Year of Complaint, In Queens&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;Category&quot;,
     caption = &quot;Data from the crime_data file&quot;
     ) +
   geom_smooth(se = FALSE) +
   theme(legend.position = &quot;bottom&quot;)
 
-crime_graph2</code></pre>
+crime_graph</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="code_date_borough_files/figure-html/length_of_time_of_reported_event-1.png" width="672" /></p>
+<div class="figure">
+<img src="date_and_borough_files/figure-markdown_github/graph_crime_data-1.png" />
+
+</div>
+<p>I can also look at whether the length of time for the reported event/crime differs by borough.</p>
+</div>
 
 
 

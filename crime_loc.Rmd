@@ -2,7 +2,12 @@
 title: "Exploratory Analysis"
 author: "Jyoti Ankam"
 date: "November 17, 2018"
+<<<<<<< HEAD
+output:
+  html_document
+=======
 output: html_document
+>>>>>>> 63be14824910fdf7ab7f891f81d4381260621923
 ---
 
 ```{r setup, include=FALSE}

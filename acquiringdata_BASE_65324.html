@@ -11,7 +11,7 @@
 
 
 
-<title>Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,9 +22,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -187,7 +184,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="exploratory.html">Exploratory Analyses</a>
+  <a href="Exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -210,83 +207,56 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</h1>
 
 </div>
 
 
-<p><br> #<strong>Code</strong></p>
-<p><br> This is the code for the first exploratory analysis in which we examined the length of the reported event/crime by borough.</p>
-<p><br></p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages -------------- tidyverse 1.2.1 --</code></pre>
-<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
-## v tibble  1.4.2     v dplyr   0.7.6
-## v tidyr   0.8.1     v stringr 1.3.1
-## v readr   1.1.1     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ----------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
-<pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
-<pre class="r"><code>library(patchwork)</code></pre>
-<p><br></p>
-<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
+<div id="nyc-crime-data" class="section level1">
+<h1>NYC Crime Data</h1>
+<div id="accessing-the-data." class="section level3">
+<h3>Accessing the data.</h3>
+<p>The data was accessed through the SODA Consumer API on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
+<p>The <code>tidyverse</code>, <code>Rsocrata</code> and <code>lubridate</code> libraries are required to connect with the API and subsequently manipulate and clean the data.</p>
+<pre class="r"><code>library(tidyverse)
+library(RSocrata)
+library(lubridate)</code></pre>
+<pre class="r"><code>## Install the required package with:
+## install.packages(&quot;RSocrata) if not already installed
 
-crime_data = crime_df %&gt;% 
-  janitor::clean_names() %&gt;%
-  sample_n(1000) %&gt;% 
-  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %&gt;% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = &quot;days&quot;, na.rm = TRUE))) %&gt;% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
+nyc_crime = read.socrata(
+  &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
+  app_token = &quot;jK8jo5IhF6gBPFqZ1va8ITny0&quot;,
+  email     = &quot;yakubuamin@ymail.com&quot;,
+  password  = &quot;daTA@12345&quot; )
 
-head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-## 1   2017-04-19   2017-04-19     felony    0 secs          0    queens
-## 2   2014-07-10   2014-07-10     felony    0 secs          0  brooklyn
-## 3   2016-05-19         &lt;NA&gt;     felony   NA secs         NA    queens
-## 4   2015-08-09   2015-08-09     felony    0 secs          0 manhattan
-## 5   2017-09-16   2017-09-16     felony    0 secs          0 manhattan
-## 6   2015-08-14   2015-08-14     felony    0 secs          0     bronx</code></pre>
-<p><br></p>
-<pre class="r"><code>crime_table = 
-  crime_data %&gt;% 
-  knitr::kable(digits = 2)
+saveRDS(nyc_crime, file = &quot;data/nyc_crime.rds&quot;)</code></pre>
+<p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
+</div>
+<div id="subsetting" class="section level3">
+<h3>Subsetting</h3>
+<p>We are interested in looking at incidence i.e. when the crime happens, therefore we will filter out variables without exact date of occurrence. There were 655 out of 6,036,805 observations without exact date of crime occurrence. Also we are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years.</p>
+<pre class="r"><code># This code was used to retrieve and assess the observations with missing date of crime occurrence
 
-head(crime_table, 12)</code></pre>
-<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
-##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2017-04-19     2017-04-19     felony       0 secs                 0.00  queens        &quot;
-##  [4] &quot;2014-07-10     2014-07-10     felony       0 secs                 0.00  brooklyn      &quot;
-##  [5] &quot;2016-05-19     NA             felony       NA                       NA  queens        &quot;
-##  [6] &quot;2015-08-09     2015-08-09     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2017-09-16     2017-09-16     felony       0 secs                 0.00  manhattan     &quot;
-##  [8] &quot;2015-08-14     2015-08-14     felony       0 secs                 0.00  bronx         &quot;
-##  [9] &quot;2014-01-17     2014-01-17     felony       0 secs                 0.00  staten island &quot;
-## [10] &quot;2017-03-14     2017-03-14     felony       0 secs                 0.00  manhattan     &quot;
-## [11] &quot;2015-08-31     2015-09-01     felony       86400 secs             1.00  bronx         &quot;
-## [12] &quot;2016-01-15     2016-01-16     felony       86400 secs             1.00  queens        &quot;</code></pre>
-<p><br></p>
-<pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
+crime_missing_cp = nyc_crime %&gt;% 
+  filter(is.na(cmplnt_fr_dt))
 
-crime_graph2 = 
-  crime_data2 %&gt;% 
-  group_by(boro_nm, law_cat_cd) %&gt;% 
-  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
-  geom_point() +
-    labs(
-    title = &quot;Spread of Times of Reported Event, By Borough&quot;,
-    x = &quot;Borough&quot;,
-    y = &quot;Length of Reported Event&quot;,
-    caption = &quot;Data from the crime_data file&quot;
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = &quot;bottom&quot;)
+#Cleaning and subsetting the data
 
-crime_graph2</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="code_date_borough_files/figure-html/length_of_time_of_reported_event-1.png" width="672" /></p>
+nyc_felony_misdemeanor = nyc_crime %&gt;% 
+  janitor::clean_names() %&gt;% 
+  filter(!is.na(cmplnt_fr_dt)) %&gt;%
+  mutate(year = year(cmplnt_fr_dt))%&gt;%
+  mutate_if(is.character, tolower) %&gt;% 
+  filter(year %in% 2014:2017) %&gt;% 
+  filter(law_cat_cd == &quot;felony&quot; | law_cat_cd == &quot;misdemeanor&quot;) %&gt;% 
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+
+saveRDS(nyc_felony_misdemeanor, file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
+<p>Our dataset for analysis has 1,645,149 observations and 31 variables.</p>
+<p>To use our dataset, use the following code after cloning our repository.</p>
+<pre class="r"><code>readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)</code></pre>
+</div>
+</div>
 
 
 
