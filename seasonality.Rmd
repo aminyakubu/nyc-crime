@@ -12,7 +12,6 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ```{r seasonality_libraries}
@@ -111,10 +110,25 @@ season_df %>%
 ```
 
 ```{r seasonality_plot_sex}
+
+season_df %>% 
+  group_by(day, hour, crime_group) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = day)) + 
+  geom_tile(aes(fill = number), colour = "white") +
+  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") + facet_wrap(~crime_group) +
+  labs(
+    title = "Day of the Week on Sex-Related crime activity",
+    x = "Hour of day",
+    y = "Day of the Week"
+  ) + theme_classic() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+
+
 season_df %>% 
   group_by(day, hour) %>% filter(crime_group == "Sex-Related") %>% 
   summarize(number = n()) %>% 
-  ggplot(aes(x = as.factor(hour), y = day)) +
+  ggplot(aes(x = as.factor(hour), y = day)) + 
   geom_tile(aes(fill = number), colour = "white") +
   scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") +
   labs(
