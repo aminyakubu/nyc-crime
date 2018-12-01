@@ -5,6 +5,7 @@ output:
     toc: true
     toc_float: true
 ---
+
 <br>
 
 ## Exploratory Analysis 1 - Length of Reported Event/Crime by Borough
@@ -16,13 +17,33 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 
-library(tidyverse)
-devtools::install_github("thomasp85/patchwork")
 library(patchwork)
+library(tidyverse)
+library(rvest)
+library(plotly)
+library(sqldf)
+library(tidyverse)
+library(htmltools)
+library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+
+library(rgdal)
+if (!require(geojsonio)) {
+    install.packages("geojsonio")
+    library(geojsonio)
+}
+library(sp)
+library(maps)
+library(ggmap)
+library(maptools)
+library(sp)
+library(tmap)
 ```
 
 <br>
 First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
+
 ```{r tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
 
@@ -33,7 +54,6 @@ crime_data = crime_df %>%
   mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
-head(crime_data)
 ```
 
 <br>
@@ -43,7 +63,6 @@ crime_table =
   crime_data %>% 
   knitr::kable(digits = 2)
 
-head(crime_table, 12)
 ```
 
 <br>
@@ -80,12 +99,6 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 ## Exploratory Analysis 2 - Offense Rates by Borough
 
 For our second exploratory analysis, we chose to examine offense rates by borough. Doing so gives us an understanding as to what NYPD can prioritize their efforts to when stemming crime.
-```{r,  include = FALSE}
-library(tidyverse)
-library(rvest)
-library(plotly)
-library(sqldf)
-```
 
 
 First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
@@ -129,7 +142,7 @@ combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>%
 full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
 mutate(off_rate = ((count/population)*100)) 
 
-full[,'off_rate'] = round(full[,'off_rate'],2)
+#full[,'off_rate'] = round(full[,'off_rate'],2)
 ```
 
 Lastly, we visually look at the individual offenses by borough over the four years.
@@ -195,7 +208,192 @@ Include Yaa's
 <br>
 
 ## Exploratory Analysis 4 - Geographical Distribution of Crimes
-Include Amin's
+Reading in the datasets
+
+```{r}
+###Dataset for 2017 with addresses
+crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
+
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
+
+```{r}
+### Selecting zipcodes from address
+crimes_df = crimes_df %>% 
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+
+```
+
+```{r}
+year_2014 = filter(crimes_14_17, year == 2014) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2015 = filter(crimes_14_17, year == 2015) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2016 = filter(crimes_14_17, year == 2016) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2017 = filter(crimes_14_17, year == 2017) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+pal <- colorFactor(palette = c("blue", "red", "green"), 
+               levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
+
+leaflet()  %>% 
+  addTiles() %>% 
+#Setting view on NYC. The values are the coordinates of NYC
+    setView(lat = 40.7, lng = -74.0, zoom = 11) %>%
+  addCircleMarkers(data = year_2014,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2014") %>% 
+  addCircleMarkers(data = year_2015,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2015") %>% 
+  addCircleMarkers(data = year_2016,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2016") %>% 
+  addCircleMarkers(data = year_2017,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2017") %>%
+  addLayersControl(overlayGroups = c("2014", "2015", "2016", "2017")) %>% 
+   addLegend(pal = pal, 
+            values = c("Sex-Related", "Weapon-Related", "Drug-Related"),
+            opacity = .5,
+            title = "Crime Group",
+            position = "topleft")
+```
+
+```{r}
+
+map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
+
+download.file(map_url, "./datasets/nyc_zip_map.geojson")
+```
+
+#### Crime distribution by zipcode for 2017
+
+```{r}
+
+group_zip = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
+
+map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+```
+
+```{r}
+
+map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_data@data <-  
+  map_w_data@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+total = tm_shape(map_w_data) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "Total Crime",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+```
+
+```{r}
+drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_drug <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_drug = sp::merge(map_json_drug, drug_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_drug@data <-  
+  map_w_drug@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+drug = tm_shape(map_w_drug) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "2017 Drug-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+
+```
+
+
+```{r}
+weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_weapon <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_weapon = sp::merge(map_json_drug, weapon_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_weapon@data <-  
+  map_w_weapon@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+
+weapon = tm_shape(map_w_weapon) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Weapon-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+  # Add tm_credits()
+```
+
+
+```{r}
+sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_sex <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_sex = sp::merge(map_json_sex, sex_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_sex@data <-  
+  map_w_sex@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+sex = tm_shape(map_w_sex) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Sex-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+current.mode <- tmap_mode("plot")
+tmap_arrange(total, sex, drug, weapon)
+tmap_mode(current.mode)
+```
+
+
 
 
 

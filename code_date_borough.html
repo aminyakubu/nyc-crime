@@ -187,7 +187,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -219,14 +219,14 @@ $(document).ready(function () {
 <p><br> This is the code for the first exploratory analysis in which we examined the length of the reported event/crime by borough.</p>
 <p><br></p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
-<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
-## v tibble  1.4.2     v dplyr   0.7.6
-## v tidyr   0.8.1     v stringr 1.3.1
-## v readr   1.1.1     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre><code>## ── Attaching packages ────────────────────</code></pre>
+<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
+## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ──── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
@@ -242,13 +242,13 @@ crime_data = crime_df %&gt;%
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2       boro_nm
-## 1   2016-11-22   2016-11-22     felony    0 secs          0      brooklyn
-## 2   2015-07-14   2015-07-14     felony    0 secs          0      brooklyn
-## 3   2015-02-23   2015-02-23     felony    0 secs          0 staten island
-## 4   2015-07-16         &lt;NA&gt;     felony   NA secs         NA      brooklyn
-## 5   2015-12-14   2015-12-14     felony    0 secs          0      brooklyn
-## 6   2015-11-20   2015-11-20     felony    0 secs          0      brooklyn</code></pre>
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2   boro_nm
+## 1   2015-07-01   2015-07-01     felony     0 secs          0  brooklyn
+## 2   2017-01-01   2017-01-01     felony     0 secs          0 manhattan
+## 3   2016-10-30   2016-10-30     felony     0 secs          0    queens
+## 4   2014-11-28   2014-11-28     felony     0 secs          0     bronx
+## 5   2014-02-13   2014-02-14     felony 86400 secs          1 manhattan
+## 6   2017-12-04   2017-12-04     felony     0 secs          0  brooklyn</code></pre>
 <p><br></p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -257,16 +257,16 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2016-11-22     2016-11-22     felony       0 secs                 0.00  brooklyn      &quot;
-##  [4] &quot;2015-07-14     2015-07-14     felony       0 secs                 0.00  brooklyn      &quot;
-##  [5] &quot;2015-02-23     2015-02-23     felony       0 secs                 0.00  staten island &quot;
-##  [6] &quot;2015-07-16     NA             felony       NA                       NA  brooklyn      &quot;
-##  [7] &quot;2015-12-14     2015-12-14     felony       0 secs                 0.00  brooklyn      &quot;
-##  [8] &quot;2015-11-20     2015-11-20     felony       0 secs                 0.00  brooklyn      &quot;
-##  [9] &quot;2017-08-30     2017-08-30     felony       0 secs                 0.00  staten island &quot;
-## [10] &quot;2017-08-23     2017-08-23     felony       0 secs                 0.00  manhattan     &quot;
-## [11] &quot;2017-03-20     NA             felony       NA                       NA  staten island &quot;
-## [12] &quot;2016-04-26     NA             felony       NA                       NA  bronx         &quot;</code></pre>
+##  [3] &quot;2015-07-01     2015-07-01     felony       0 secs                 0.00  brooklyn      &quot;
+##  [4] &quot;2017-01-01     2017-01-01     felony       0 secs                 0.00  manhattan     &quot;
+##  [5] &quot;2016-10-30     2016-10-30     felony       0 secs                 0.00  queens        &quot;
+##  [6] &quot;2014-11-28     2014-11-28     felony       0 secs                 0.00  bronx         &quot;
+##  [7] &quot;2014-02-13     2014-02-14     felony       86400 secs             1.00  manhattan     &quot;
+##  [8] &quot;2017-12-04     2017-12-04     felony       0 secs                 0.00  brooklyn      &quot;
+##  [9] &quot;2015-04-30     2015-04-30     felony       0 secs                 0.00  brooklyn      &quot;
+## [10] &quot;2016-08-28     2016-08-28     felony       0 secs                 0.00  bronx         &quot;
+## [11] &quot;2016-10-05     2016-10-05     felony       0 secs                 0.00  queens        &quot;
+## [12] &quot;2017-05-04     2017-05-04     felony       0 secs                 0.00  brooklyn      &quot;</code></pre>
 <p><br></p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 

@@ -168,7 +168,7 @@ readRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 readRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
 
 ### Weapon offenses for 2017 with zipcodes
-saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
+readRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
 
 ### Weapons, sex, drug for 2017 with zipcodes
 

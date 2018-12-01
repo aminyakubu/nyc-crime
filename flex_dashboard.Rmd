@@ -1,0 +1,92 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(tidyverse)
+library(htmltools)
+library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+library(rgdal)
+if (!require(geojsonio)) {
+    install.packages("geojsonio")
+    library(geojsonio)
+}
+library(sp)
+library(maps)
+library(ggmap)
+library(maptools)
+library(sp)
+library(tmap)
+```
+
+```{r}
+###Dataset for 2017 with addresses
+crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+crime_group_sum = crimes_df %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json@data <-  
+  map_json@data %>% left_join(crime_group_sum, by = c("postalCode" = "zipcode")) %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# create color palette with colorNumeric()
+nyc_pal <- colorNumeric("Reds", domain = map_json@data$number)
+
+map_json %>% 
+  leaflet() %>% 
+  #addTiles() %>% 
+  addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
+  setView(lat = 40.7, lng = -74.0, zoom = 10) %>% 
+  addPolygons(weight = 1, 
+              color = nyc_pal(map_json@data$number), 
+              fillOpacity = 0.5, opacity = 5, 
+              smoothFactor = 0.2, 
+  # add labels that display mumber
+              label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
+              # highlight polygons on hover
+              highlight = highlightOptions(weight = 2, color = "black",
+              bringToFront = TRUE)) %>% 
+   addLegend(pal = nyc_pal,
+                   values = c(0:305),
+                   opacity = 0.75,
+                   title = "Total crimes by Zipcode",
+                   position = "topleft") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+
+
