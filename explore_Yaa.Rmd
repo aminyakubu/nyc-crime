@@ -16,9 +16,11 @@ felony_crime = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 
 
 ```{r}
-felony_crime_clean = felony_crime %>% 
-  janitor::clean_names(dat = .) %>% 
-  filter(!is.na(vic_sex)) %>%
-  filter(!is.na(vic_race))
+
+overall_felony = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 ```
+
+
+
+
 
