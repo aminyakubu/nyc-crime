@@ -1,12 +1,12 @@
 ---
-title: "Untitled"
+title: "Sex-Related, Weapon-Related & Drug-Related Crimes in NYC"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
 ---
 
-```{r setup, include=FALSE}
+```{r include=FALSE}
 library(flexdashboard)
 library(plotly)
 library(tidyverse)
@@ -25,6 +25,8 @@ library(ggmap)
 library(maptools)
 library(sp)
 library(tmap)
+library(chron)
+library(lubridate)
 ```
 
 ```{r}
@@ -33,7 +35,7 @@ crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
 ```
 
-Column {data-width=650}
+Column {data-width=600}
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -41,9 +43,10 @@ Column {data-width=650}
 ```{r}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 
-crime_group_sum = crimes_df %>% 
-  group_by(zipcode) %>% 
-  summarize(number = n())
+crimes_df = crimes_df %>% 
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+
+crime_group_sum = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 
 map_json@data <-  
   map_json@data %>% left_join(crime_group_sum, by = c("postalCode" = "zipcode")) %>% 
@@ -74,19 +77,72 @@ map_json %>%
                    position = "topleft") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
 ```
 
-Column {data-width=350}
+Column {data-width=400}
 -----------------------------------------------------------------------
 
-### Chart B
+### Chart B: Trend of Crime rate
 
 ```{r}
+sex_drug_weapons = readRDS("./nyc-crime/datasets/sex_drug_weapons.rds")
 
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+
+grouped_df = sex_drug_weapons %>% group_by(boro_nm, year) %>% 
+  summarise(number = n())
+
+full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100)
+
+x = full %>% filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) +
+  labs(x = "Year",
+       y = "Crime rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    ) + theme_classic()
+
+ggplotly(x)
 ```
 
-### Chart C
+### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity
 
 ```{r}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
+season_df = sex_drug_weapons %>% 
+  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
+         month = months(cmplnt_fr_dt),
+         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December")),
+         day = weekdays(cmplnt_fr_dt),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
+         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
+         hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
+
+
+p = season_df %>% filter(vic_race != "unknown") %>% 
+  group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
+  ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col()  + 
+  theme(legend.position = "left", axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+
+ggplotly(p)
+  
 ```
 
 

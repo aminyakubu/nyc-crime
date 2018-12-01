@@ -4,7 +4,11 @@ navbar:
   title: "Home"
   right:
     - text: "Exploratory Analyses"
-      href: flex_dashboard.html
+      href: Exploratory.html 
+    - text: "Flex Dashobard"
+      href: flex_dashboard.html 
+    - text: "Statistical Analysis"
+      href: statistical_analysis.html 
     - icon: fa-envelope fa-lg
       href: mailto:<jmc2392@cumc.columbia.edu>
     - icon: fa-github fa-lg
