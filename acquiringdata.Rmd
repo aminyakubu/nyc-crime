@@ -176,7 +176,7 @@ df = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
 ### Data dictionary
-
+Following is the list of all the 16 variables in the dataset with their descriptions:
 
 <p> `cmplnt_num`: randomly generated persistent ID for each complaint <br> <p>
 
