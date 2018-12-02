@@ -70,9 +70,6 @@ clean_complete %>%
   top_n(5, number) %>%
   arrange(desc(number)) %>%
   knitr::kable()
-
-
-
 ```
 
 
