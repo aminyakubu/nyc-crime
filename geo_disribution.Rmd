@@ -8,7 +8,7 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r geo_setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -17,13 +17,12 @@ knitr::opts_chunk$set(warning = FALSE)
 
 Loading the required libraries
 
-```{r}
+```{r geo_libraries}
 library(tidyverse)
 library(htmltools)
 library(htmlwidgets)
 library(leaflet)
 library(leaflet.extras)
-library(revgeo)
 
 
 library(rgdal)
@@ -35,157 +34,40 @@ library(sp)
 library(maps)
 library(ggmap)
 library(maptools)
+library(sp)
+library(tmap)
 ```
 
 Reading in the datasets
 
-```{r}
+```{r geo_data}
+###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
-```
 
-```{r}
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
+### Selecting zipcodes from address
 crimes_df = crimes_df %>% 
-  mutate(zipcode = as.numeric(str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))) %>% 
-  summarize_all(funs(sum(is.na(.))))
-
-crimes_df %>% filter(is.na(zipcode))
-
-crimes_df %>% 
-
-zip_df_1 = readRDS(file = "./datasets/nyc_rape_zip.rds")
-
-zip_df_2 = readRDS(file = "./datasets/nyc_rape_zip_2.rds")
-
-all_zip_df = bind_rows(zip_df_1, zip_df_2) 
-
-all_zip_df = all_zip_df %>% mutate(zip = as.character(zip)) %>% 
-  mutate(zip = str_replace(zip, "list\\(zip =", ""),
-         zip = str_replace(zip, "\\)", ""),
-         zipcode = gsub('"', '', zip),
-         zipcode = str_replace(zipcode, ":[0-9][0-9][0-9][0-9][0-9]", ""),
-         zipcode = str_replace(zipcode, "-[0-9][0-9][0-9][0-9]", ""),
-         zipcode = as.numeric(zipcode),
-         zipcode = as.factor(zipcode))
-
-all_zip_df  %>%
-  summarize_all(funs(sum(is.na(.))))
-
-group_zip = all_zip_df %>% group_by(zipcode) %>% summarize(number = n())
-
-map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
-
-download.file(map_url, "./datasets/nyc_zip_map.geojson")
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
 
 ```
 
-```{r}
-map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
-
-```
-
-```{r}
-map_json@data = 
-  map_json@data %>% 
-  left_join(group_zip, by = c("postalCode" = "zipcode")) %>% mutate(number = as.numeric(number)) %>% 
-  mutate(number = if_else(is.na(number), 0, number))
-
-```
-
-Now let's plot our polygons
-
-#### Distribution of reported rape and attempted rape in 2017 
-
-```{r}
-
-library(sp)
-library(tmap)
-
-# Use qtm() to create a choropleth map of gdp
-qtm(shp = map_json, fill = "number")
-
-# create color palette with colorNumeric()
-nyc_pal <- colorNumeric("Reds", domain = NULL)
-
-map_json %>% 
-  leaflet() %>% 
-  #addTiles() %>% 
-  #addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
-  setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addPolygons(weight = 2, group = "zipcode",
-              color = nyc_pal(map_json@data$number), 
-              fillOpacity = 0.5, opacity = 5, 
-              smoothFactor = 0.2, 
-  # add labels that display mumber
-              label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
-              # highlight polygons on hover
-              highlight = highlightOptions(weight = 2, color = "black",
-              bringToFront = TRUE)) %>% 
-  addSearchFeatures(options = searchFeaturesOptions(zoom = 12), targetGroups = "zipcode") %>% 
-   addLegend(pal = nyc_pal,
-                   values = c(0:50),
-                   opacity = 0.75,
-                   title = "Number of reported rape",
-                   position = "topleft") %>% addControl("Distrition of reported rape and attempted race cases by Zip codes", position = "topright")
-
-```
-
-#### Distribution of sexual related crimes in NYC
-
-```{r}
-
-sex_related = filter(sex_drug_weapons, crime_group == "Sex-Related") %>% 
+```{r geo_year_leaflet}
+year_2014 = filter(crimes_14_17, year == 2014) %>% 
   filter(!is.na(longitude) | !is.na(latitude))
 
-drug_related = filter(sex_drug_weapons, crime_group == "Drug-Related") %>% 
+year_2015 = filter(crimes_14_17, year == 2015) %>% 
   filter(!is.na(longitude) | !is.na(latitude))
 
-weapon_related = filter(sex_drug_weapons, crime_group == "Weapon-Related") %>% 
+year_2016 = filter(crimes_14_17, year == 2016) %>% 
   filter(!is.na(longitude) | !is.na(latitude))
 
-pal <- 
-   colorFactor(palette = c("blue", "red", "green"), 
+year_2017 = filter(crimes_14_17, year == 2017) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+pal <- colorFactor(palette = c("blue", "red", "green"), 
                levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
-
-m1 <- leaflet()  %>% 
-  addTiles() %>% 
-#Setting view on NYC. The values are the coordinates of NYC
-    setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addCircleMarkers(data = sex_related,
-                   lng = ~ longitude,
-                   lat = ~ latitude, 
-                   radius = 1,
-                   color = ~pal(crime_group),
-                   group = "Sex-Related") %>% 
-  addCircleMarkers(data = drug_related,
-                   lng = ~ longitude,
-                   lat = ~ latitude, 
-                   radius = 1,
-                   color = ~pal(crime_group),
-                   group = "Drug-Related") %>% 
-  addCircleMarkers(data = weapon_related,
-                   lng = ~ longitude,
-                   lat = ~ latitude, 
-                   radius = 1,
-                   color = ~pal(crime_group),
-                   group = "Weapon-Related") 
-
-```
-
-Adding years 
-
-```{r}
-year_2014 = filter(sex_drug_weapons, year == 2014) %>% 
-  filter(!is.na(longitude) | !is.na(latitude))
-
-year_2015 = filter(sex_drug_weapons, year == 2015) %>% 
-  filter(!is.na(longitude) | !is.na(latitude))
-
-year_2016 = filter(sex_drug_weapons, year == 2016) %>% 
-  filter(!is.na(longitude) | !is.na(latitude))
-
-year_2017 =filter(sex_drug_weapons, year == 2017) %>% 
-  filter(!is.na(longitude) | !is.na(latitude))
 
 leaflet()  %>% 
   addTiles() %>% 
@@ -223,18 +105,120 @@ leaflet()  %>%
             position = "topleft")
 ```
 
-```{r}
-if(!requireNamespace("devtools")) install.packages("devtools")
-devtools::install_github("dkahle/ggmap", ref = "tidyup")
-ggmap(get_googlemap())
-register_google(key = "AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE")
+```{r geo_mapfile, eval = FALSE}
 
-nyc = c(lon = -74.0059, lat = 40.7128)
+map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
-nyc_map = get_map(location = nyc, zoom = 10, api_key = "AIzaSyDw5EnVgVgN0M-_0G67bieKEGS0KVEvgNE")
+download.file(map_url, "./datasets/nyc_zip_map.geojson")
+```
 
-ggmap(nyc_map)
-ggplot(data = sex_drug_weapons, aes(longitude, latitude, color = crime_group)) + geom_point(aes(alpha = .4))
+#### Crime distribution by zipcode for 2017
+
+```{r geo_zip}
+
+group_zip = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
+
+map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+```
+
+```{r geo_join}
+
+map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_data@data <-  
+  map_w_data@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+total = tm_shape(map_w_data) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "Total Crime",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+```
+
+```{r geo_drug}
+drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_drug <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_drug = sp::merge(map_json_drug, drug_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_drug@data <-  
+  map_w_drug@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+drug = tm_shape(map_w_drug) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "2017 Drug-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+
+```
+
+
+```{r geo_weapons}
+weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_weapon <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_weapon = sp::merge(map_json_drug, weapon_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_weapon@data <-  
+  map_w_weapon@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+
+weapon = tm_shape(map_w_weapon) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Weapon-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+  # Add tm_credits()
+```
+
+
+```{r geo_sex}
+sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_sex <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_sex = sp::merge(map_json_sex, sex_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_sex@data <-  
+  map_w_sex@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+sex = tm_shape(map_w_sex) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Sex-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+current.mode <- tmap_mode("plot")
+tmap_arrange(total, sex, drug, weapon)
+tmap_mode(current.mode)
 ```
 
 

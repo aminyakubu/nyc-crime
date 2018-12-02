@@ -9,9 +9,11 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Jacky Choi" />
 
+<meta name="date" content="2018-11-18" />
 
-<title></title>
+<title>date_and_borough</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -187,7 +189,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="exploratory.html">Exploratory Analyses</a>
+  <a href="Exploratory.html">Exploratory Analyses</a>
+</li>
+<li>
+  <a href="flex_dashboard.html">Flex Dashobard</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="acquiringdata.html">The Data</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -210,12 +221,13 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">date_and_borough</h1>
+<h4 class="author"><em>Jacky Choi</em></h4>
+<h4 class="date"><em>November 18, 2018</em></h4>
 
 </div>
 
 
-<hr />
-<p>title: “date_and_borough” author: “Jacky Choi” date: “November 18, 2018” output: html_document</p>
 <p>This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.</p>
 <p>First, I load the tidyverse and patchwork package.</p>
 <pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
@@ -232,12 +244,12 @@ crime_data = crime_df %&gt;%
 
 head(crime_data)</code></pre>
 <pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-## 1   2015-06-08   2015-06-08     felony    0 secs          0     bronx
-## 2   2014-04-19   2014-04-19     felony    0 secs          0 manhattan
-## 3   2017-07-25   2017-07-25     felony    0 secs          0 manhattan
-## 4   2014-05-14   2014-05-14     felony    0 secs          0    queens
-## 5   2014-05-09   2014-05-09     felony    0 secs          0    queens
-## 6   2015-01-12   2015-01-12     felony    0 secs          0    queens</code></pre>
+## 1   2016-01-01   2016-01-01     felony    0 secs          0 manhattan
+## 2   2014-08-30   2014-08-30     felony    0 secs          0    queens
+## 3   2016-07-21         &lt;NA&gt;     felony   NA secs         NA  brooklyn
+## 4   2016-07-07   2016-07-07     felony    0 secs          0 manhattan
+## 5   2015-08-12         &lt;NA&gt;     felony   NA secs         NA    queens
+## 6   2014-01-10   2014-01-10     felony    0 secs          0  brooklyn</code></pre>
 <p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -246,16 +258,16 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2015-06-08     2015-06-08     felony       0 secs                 0.00  bronx         &quot;
-##  [4] &quot;2014-04-19     2014-04-19     felony       0 secs                 0.00  manhattan     &quot;
-##  [5] &quot;2017-07-25     2017-07-25     felony       0 secs                 0.00  manhattan     &quot;
-##  [6] &quot;2014-05-14     2014-05-14     felony       0 secs                 0.00  queens        &quot;
-##  [7] &quot;2014-05-09     2014-05-09     felony       0 secs                 0.00  queens        &quot;
-##  [8] &quot;2015-01-12     2015-01-12     felony       0 secs                 0.00  queens        &quot;
-##  [9] &quot;2016-12-31     2016-12-31     felony       0 secs                 0.00  queens        &quot;
-## [10] &quot;2016-08-02     2016-08-02     felony       0 secs                 0.00  brooklyn      &quot;
-## [11] &quot;2015-02-10     2015-02-20     felony       864000 secs           10.00  manhattan     &quot;
-## [12] &quot;2014-03-01     2015-04-07     felony       34729200 secs        401.96  manhattan     &quot;</code></pre>
+##  [3] &quot;2016-01-01     2016-01-01     felony       0 secs                 0.00  manhattan     &quot;
+##  [4] &quot;2014-08-30     2014-08-30     felony       0 secs                 0.00  queens        &quot;
+##  [5] &quot;2016-07-21     NA             felony       NA                       NA  brooklyn      &quot;
+##  [6] &quot;2016-07-07     2016-07-07     felony       0 secs                 0.00  manhattan     &quot;
+##  [7] &quot;2015-08-12     NA             felony       NA                       NA  queens        &quot;
+##  [8] &quot;2014-01-10     2014-01-10     felony       0 secs                 0.00  brooklyn      &quot;
+##  [9] &quot;2016-06-01     2016-06-01     felony       0 secs                 0.00  queens        &quot;
+## [10] &quot;2015-11-02     2015-11-02     felony       0 secs                 0.00  manhattan     &quot;
+## [11] &quot;2014-02-26     2014-02-26     felony       0 secs                 0.00  queens        &quot;
+## [12] &quot;2017-07-07     2017-07-08     felony       86400 secs             1.00  bronx         &quot;</code></pre>
 <p>I can also look at whether the length of time for the reported event/crime differs by borough visually.</p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 
@@ -275,7 +287,7 @@ crime_graph2 =
 
 crime_graph2</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="date_borough_files/figure-html/length_of_time_of_reported_event-1.png" width="672" /> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
+<p><img src="date_borough_files/figure-html/date_borough_length_of_time_of_reported_event-1.png" width="672" /> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
 
 
 

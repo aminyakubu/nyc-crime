@@ -8,26 +8,26 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r trend_analysis_setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
-```{r}
+```{r trend_analysis_libraries}
 library(tidyverse)
 library(rvest)
 library(httr)
 library(plotly)
 ```
 
-```{r}
+```{r trend_analysis_data}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds") 
 ```
 
 The last official census in the USA was in 2010. We will use the 2017 United States Census Bureau estimate population for the years of 2017, 2016, 2015 and 2014 as we do not expect a significant population change. 
 
-```{r}
+```{r trend_analysis_pop}
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
 
 nyc_population = read_html(url) %>%  html_nodes(css = "table") %>% .[[1]] %>% 
@@ -46,7 +46,7 @@ nyc_population = nyc_population %>%
 
 Combined weapons, sexual and drug related felony crime rates trends by borough
 
-```{r}
+```{r trend_analysis_join}
 grouped_df = sex_drug_weapons %>% group_by(boro_nm, year) %>% 
   summarise(number = n())
 
@@ -69,7 +69,7 @@ ggplotly(x)
 
 Stratify to see specific trends of the crimes 
 
-```{r}
+```{r trend_analysis_stratify}
 stratify_df = sex_drug_weapons %>% group_by(boro_nm, crime_group, year) %>% 
   summarise(number = n())
 
@@ -77,7 +77,7 @@ population_df = left_join(stratify_df, nyc_population, by = "boro_nm") %>%
   mutate(crime_rate = (number/population)*100)
 ```
 
-```{r}
+```{r trend_analysis_graph}
 population_df %>% filter(!is.na(boro_nm)) %>% 
   ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
   geom_point() + geom_line(size = 1) + facet_grid(~crime_group) +

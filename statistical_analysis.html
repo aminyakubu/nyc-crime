@@ -9,9 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Amin Yakubu" />
 
-<meta name="date" content="2018-11-29" />
 
 <title>Statistical Analysis</title>
 
@@ -189,7 +187,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="exploratory.html">Exploratory Analyses</a>
+  <a href="Exploratory.html">Exploratory Analyses</a>
+</li>
+<li>
+  <a href="flex_dashboard.html">Flex Dashobard</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="acquiringdata.html">The Data</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -213,51 +220,18 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Statistical Analysis</h1>
-<h4 class="author"><em>Amin Yakubu</em></h4>
-<h4 class="date"><em>11/29/2018</em></h4>
 
 </div>
 
 
-<pre class="r"><code>library(nnet)
-library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
-<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
-## v tibble  1.4.2     v dplyr   0.7.6
-## v tidyr   0.8.1     v stringr 1.3.1
-## v readr   1.1.1     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>crime_df = readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;) 
-
-sex_drug_weapons = crime_df %&gt;% 
-  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
-                      ## Drug related felony crimes
-                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
-                      ### Weapon related felony crimes
-                      781, 792, 793, 796)) %&gt;% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude)) %&gt;% 
-  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %&gt;% 
-  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
-         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
-                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), &quot;Drug-Related&quot;, 
-                                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))</code></pre>
 <p>Association between borough and crime, adjusting for average income</p>
 <div id="model-statement-for-the-multinomial-logistic-regression-is-below" class="section level3">
 <h3>Model statement for the multinomial logistic regression is below</h3>
 <p><code>In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island</code></p>
 <p><code>In(P(crimegroup=weapon related)/P(crime group=sex related) )=β_20 + β_21 Bronx+β_22 Brooklyn+β_23 Queens+ β_24 Staten_island</code></p>
-<pre class="r"><code>### Making manhattan the and sex-related crime the reference groups 
-sex_drug_weapons = sex_drug_weapons %&gt;%
-  mutate(crime_group = forcats::fct_relevel(crime_group, &quot;Drug-Related&quot;),
-         boro_nm = forcats::fct_relevel(boro_nm, &quot;manhattan&quot;))</code></pre>
 </div>
 <div id="tabulation" class="section level3">
 <h3>Tabulation</h3>
-<pre class="r"><code>with(sex_drug_weapons, table(boro_nm, crime_group)) %&gt;%
-  knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -300,14 +274,6 @@ sex_drug_weapons = sex_drug_weapons %&gt;%
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %&gt;% broom::tidy() %&gt;% 
-  mutate( OR = exp(estimate))</code></pre>
-<pre><code>## # weights:  18 (10 variable)
-## initial  value 51295.306370 
-## iter  10 value 48639.952850
-## final  value 48196.448352 
-## converged</code></pre>
-<pre class="r"><code>fit %&gt;% knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -413,435 +379,13 @@ sex_drug_weapons = sex_drug_weapons %&gt;%
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>ggplot(fit, aes(x = term, y = OR)) +
-  geom_segment( aes(x = term, xend = term, y = 0, yend = OR), color = &quot;grey&quot;) +
-  geom_point(color = &quot;orange&quot;, size = 3) + facet_grid(~ y.level)</code></pre>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>  theme_light() +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.border = element_blank(),
-    axis.ticks.x = element_blank())</code></pre>
-<pre><code>## List of 62
-##  $ line                 :List of 6
-##   ..$ colour       : chr &quot;black&quot;
-##   ..$ size         : num 0.5
-##   ..$ linetype     : num 1
-##   ..$ lineend      : chr &quot;butt&quot;
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
-##  $ rect                 :List of 5
-##   ..$ fill         : chr &quot;white&quot;
-##   ..$ colour       : chr &quot;black&quot;
-##   ..$ size         : num 0.5
-##   ..$ linetype     : num 1
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ text                 :List of 11
-##   ..$ family       : chr &quot;&quot;
-##   ..$ face         : chr &quot;plain&quot;
-##   ..$ colour       : chr &quot;black&quot;
-##   ..$ size         : num 11
-##   ..$ hjust        : num 0.5
-##   ..$ vjust        : num 0.5
-##   ..$ angle        : num 0
-##   ..$ lineheight   : num 0.9
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.title.x         :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 2.75pt 0pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.title.x.top     :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 0
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 2.75pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.title.y         :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : num 90
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 2.75pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.title.y.right   :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 0
-##   ..$ angle        : num -90
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 2.75pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.text            :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : chr &quot;grey30&quot;
-##   ..$ size         : &#39;rel&#39; num 0.8
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.text.x          :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 2.2pt 0pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.text.x.top      :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 0
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 2.2pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.text.y          :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 1
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 2.2pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.text.y.right    :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 2.2pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ axis.ticks           :List of 6
-##   ..$ colour       : chr &quot;grey70&quot;
-##   ..$ size         : &#39;rel&#39; num 0.5
-##   ..$ linetype     : NULL
-##   ..$ lineend      : NULL
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
-##  $ axis.ticks.length    : &#39;unit&#39; num 2.75pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ axis.line            : list()
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
-##  $ axis.line.x          : NULL
-##  $ axis.line.y          : NULL
-##  $ legend.background    :List of 5
-##   ..$ fill         : NULL
-##   ..$ colour       : logi NA
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ legend.margin        : &#39;margin&#39; num [1:4] 5.5pt 5.5pt 5.5pt 5.5pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ legend.spacing       : &#39;unit&#39; num 11pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ legend.spacing.x     : NULL
-##  $ legend.spacing.y     : NULL
-##  $ legend.key           :List of 5
-##   ..$ fill         : chr &quot;white&quot;
-##   ..$ colour       : logi NA
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ legend.key.size      : &#39;unit&#39; num 1.2lines
-##   ..- attr(*, &quot;valid.unit&quot;)= int 3
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;lines&quot;
-##  $ legend.key.height    : NULL
-##  $ legend.key.width     : NULL
-##  $ legend.text          :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 0.8
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ legend.text.align    : NULL
-##  $ legend.title         :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ legend.title.align   : NULL
-##  $ legend.position      : chr &quot;right&quot;
-##  $ legend.direction     : NULL
-##  $ legend.justification : chr &quot;center&quot;
-##  $ legend.box           : NULL
-##  $ legend.box.margin    : &#39;margin&#39; num [1:4] 0cm 0cm 0cm 0cm
-##   ..- attr(*, &quot;valid.unit&quot;)= int 1
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;cm&quot;
-##  $ legend.box.background: list()
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
-##  $ legend.box.spacing   : &#39;unit&#39; num 11pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ panel.background     :List of 5
-##   ..$ fill         : chr &quot;white&quot;
-##   ..$ colour       : logi NA
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ panel.border         : list()
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
-##  $ panel.spacing        : &#39;unit&#39; num 5.5pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ panel.spacing.x      : NULL
-##  $ panel.spacing.y      : NULL
-##  $ panel.grid           :List of 6
-##   ..$ colour       : chr &quot;grey87&quot;
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ lineend      : NULL
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
-##  $ panel.grid.minor     :List of 6
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 0.25
-##   ..$ linetype     : NULL
-##   ..$ lineend      : NULL
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
-##  $ panel.ontop          : logi FALSE
-##  $ plot.background      :List of 5
-##   ..$ fill         : NULL
-##   ..$ colour       : chr &quot;white&quot;
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ plot.title           :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 1.2
-##   ..$ hjust        : num 0
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 5.5pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ plot.subtitle        :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 5.5pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ plot.caption         :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 0.8
-##   ..$ hjust        : num 1
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 5.5pt 0pt 0pt 0pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ plot.tag             :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 1.2
-##   ..$ hjust        : num 0.5
-##   ..$ vjust        : num 0.5
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ plot.tag.position    : chr &quot;topleft&quot;
-##  $ plot.margin          : &#39;margin&#39; num [1:4] 5.5pt 5.5pt 5.5pt 5.5pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ strip.background     :List of 5
-##   ..$ fill         : chr &quot;grey70&quot;
-##   ..$ colour       : logi NA
-##   ..$ size         : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
-##  $ strip.placement      : chr &quot;inside&quot;
-##  $ strip.text           :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : chr &quot;white&quot;
-##   ..$ size         : &#39;rel&#39; num 0.8
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : &#39;margin&#39; num [1:4] 4.4pt 4.4pt 4.4pt 4.4pt
-##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ strip.text.x         : NULL
-##  $ strip.text.y         :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : num -90
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
-##  $ strip.switch.pad.grid: &#39;unit&#39; num 2.75pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ strip.switch.pad.wrap: &#39;unit&#39; num 2.75pt
-##   ..- attr(*, &quot;valid.unit&quot;)= int 8
-##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
-##  $ panel.grid.major     :List of 6
-##   ..$ colour       : NULL
-##   ..$ size         : &#39;rel&#39; num 0.5
-##   ..$ linetype     : NULL
-##   ..$ lineend      : NULL
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
-##  $ axis.ticks.x         : list()
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
-##  $ panel.grid.major.x   : list()
-##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
-##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;theme&quot; &quot;gg&quot;
-##  - attr(*, &quot;complete&quot;)= logi TRUE
-##  - attr(*, &quot;validate&quot;)= logi TRUE</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="interpretation" class="section level3">
 <h3>Interpretation</h3>
 <p>The odds of sex-related crimes in manhattan is 1.79. The odds of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn. The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens. The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island.</p>
 <p>The odds of weapon related crimes in manhattan is 2.7.</p>
 <p>The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx. The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island.</p>
-<pre class="r"><code>x = sex_drug_weapons %&gt;% filter(vic_race != &quot;unknown&quot;) %&gt;% filter(crime_group != &quot;Sex-Related&quot;) %&gt;% 
-  mutate(race = if_else(vic_race == &quot;white&quot;, &quot;white&quot;, &quot;minority&quot;)) %&gt;% 
-  mutate(race = as.factor(race),
-         crime_group = as.factor(crime_group))
-
-glm(crime_group ~ race, family = binomial(), data = x) %&gt;% broom::tidy() %&gt;% 
-  mutate( OR = exp(estimate)) %&gt;% knitr::kable()
-
-multinom(crime_group ~ race, data = x) %&gt;% broom::tidy() %&gt;% 
-  mutate(OR = exp(estimate)) %&gt;% knitr::kable(digits = 4)</code></pre>
 </div>
 
 

@@ -5,6 +5,7 @@ output:
     toc: true
     toc_float: true
 ---
+
 <br>
 
 <style>
@@ -17,20 +18,46 @@ output:
 
 <br>
 As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
-```{r setup, include = FALSE}
+
+```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 
-library(tidyverse)
-devtools::install_github("thomasp85/patchwork")
+```
+
+```{r exp_libraries}
 library(patchwork)
+library(tidyverse)
+library(rvest)
+library(plotly)
+library(sqldf)
+library(tidyverse)
+library(htmltools)
+library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+library(chron)
+library(lubridate)
+
+library(rgdal)
+if (!require(geojsonio)) {
+    install.packages("geojsonio")
+    library(geojsonio)
+}
+library(sp)
+library(maps)
+library(ggmap)
+library(maptools)
+library(sp)
+library(tmap)
 ```
 
 <br>
 First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
-```{r tidy_crime_data, echo = FALSE}
-crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
+
+```{r exp_tidy_crime_data, echo = FALSE}
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
@@ -39,22 +66,20 @@ crime_data = crime_df %>%
   mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
-head(crime_data)
 ```
 
 <br>
 We can look at the data in a table to examine general trends and get a feel of my data.
-```{r crime_data_table, echo = FALSE}
+```{r exp_crime_data_table, echo = FALSE}
 crime_table = 
   crime_data %>% 
   knitr::kable(digits = 2)
 
-head(crime_table, 12)
 ```
 
 <br>
 We can also look at whether the length of time for the reported event/crime differs by borough visually.
-```{r length_of_time_of_reported_event, echo = FALSE}
+```{r exp_length_of_time_of_reported_event, echo = FALSE}
 crime_data2 <- crime_data[complete.cases(crime_data),]
 
 crime_graph2 = 
@@ -86,110 +111,9 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 ## Exploratory Analysis 2 - Offense Rates by Borough
 
 For our second exploratory analysis, we chose to examine offense rates by borough. Doing so gives us an understanding as to what NYPD can prioritize their efforts to when stemming crime.
-```{r,  include = FALSE}
-library(tidyverse)
-library(rvest)
-library(plotly)
-library(sqldf)
-```
 
 
 First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
-```{r, include = FALSE}
-crime_df = readRDS(file = "datasets/nyc_felony_crimes.rds")
-
-url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
-boro_pop = read_html(url)
-
-boro_pop %>%
-  html_nodes(css = "table")
-
-pop_df = (boro_pop %>% html_nodes(css = "table")) %>% 
-  .[[1]] %>%
-  html_table() %>% 
-  as_tibble() %>% 
- janitor::clean_names()
-
-names(pop_df)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
-
-pop_df = pop_df %>% 
-  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
-  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
-         population = as.numeric(gsub("," , "", population)))
-
-```
-
-We created a data frame containing our final data.
-```{r}
-nycc_df = crime_df %>% 
-  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm))
- 
-crime_df %>% 
-  distinct(pd_cd) %>% 
-  count()
-
-combined_df = nycc_df %>% group_by(boro_nm, pd_cd, year) %>% 
-  summarise(count = n())
-
-
-full = left_join(combined_df, pop_df, by = "boro_nm") %>% 
-mutate(off_rate = ((count/population)*100)) 
-
-full[,'off_rate'] = round(full[,'off_rate'],2)
-```
-
-Lastly, we visually look at the individual offenses by borough over the four years.
-```{r, echo = FALSE}
-test <- sqldf("SELECT boro_nm, year, off_rate
-              FROM full
-              WHERE off_rate IS NOT NULL and year = '2017'
-              ORDER BY boro_nm, off_rate DESC")
-
-test_2017 <- test[!duplicated(test$boro_nm), ]
-
-
-test2 <- sqldf("SELECT boro_nm, year, off_rate
-              FROM full
-              WHERE off_rate IS NOT NULL and year = '2016'
-              ORDER BY boro_nm, off_rate DESC")
-
-test_2016 <- test2[!duplicated(test2$boro_nm), ]
-
-
-test3 <- sqldf("SELECT boro_nm, year, off_rate
-              FROM full
-              WHERE off_rate IS NOT NULL and year = '2015'
-              ORDER BY boro_nm, off_rate DESC")
-
-test_2015 <- test3[!duplicated(test3$boro_nm), ]
-
-
-test4 <- sqldf("SELECT boro_nm, year, off_rate
-              FROM full
-              WHERE off_rate IS NOT NULL and year = '2014'
-              ORDER BY boro_nm, off_rate DESC")
-
-test_2014 <- test4[!duplicated(test4$boro_nm), ]
-
-test_new = rbind(test_2017, test_2016, test_2015, test_2014)
- 
-
-trend = ggplot(test_new, aes(x = boro_nm, y = off_rate, color = year)) +
-geom_point() + 
-theme(legend.position = "bottom") +
-  labs(
-  x = "Borough",
-  y = "Offense rate",
-  caption = "NYC_Crime"
-  ) +
-geom_smooth(se = FALSE) +
-theme(legend.position = "bottom")
-
-ggplotly(trend)
-
-```
-
-From this exploratory subanalysis, we can see that the rates of individual offenses are highest in the boroughs of Bronx and Brooklyn, followed by Manhattan and Queens. Staten Island reported the lowest rates of individual offenses throughout the four years. Individual offense rates increased in the Bronx from 2014 through 2017. On the contrary, Brooklyn witnessed a significant plummeting in offense rates through the years 2014 to 2017.
 
 <br>
 <br>
@@ -201,7 +125,252 @@ Include Yaa's
 <br>
 
 ## Exploratory Analysis 4 - Geographical Distribution of Crimes
-Include Amin's
+Reading in the datasets
+
+```{r, exploratory_data}
+###Dataset for 2017 with addresses
+crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
+
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+### Selecting zipcodes from address
+crimes_df = crimes_df %>% 
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+
+```
+
+```{r, exp_leaflet}
+year_2014 = filter(crimes_14_17, year == 2014) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2015 = filter(crimes_14_17, year == 2015) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2016 = filter(crimes_14_17, year == 2016) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2017 = filter(crimes_14_17, year == 2017) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+pal <- colorFactor(palette = c("blue", "red", "green"), 
+               levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
+
+leaflet()  %>% 
+  addTiles() %>% 
+#Setting view on NYC. The values are the coordinates of NYC
+    setView(lat = 40.7, lng = -74.0, zoom = 11) %>%
+  addCircleMarkers(data = year_2014,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2014") %>% 
+  addCircleMarkers(data = year_2015,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2015") %>% 
+  addCircleMarkers(data = year_2016,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2016") %>% 
+  addCircleMarkers(data = year_2017,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2017") %>%
+  addLayersControl(overlayGroups = c("2014", "2015", "2016", "2017")) %>% 
+   addLegend(pal = pal, 
+            values = c("Sex-Related", "Weapon-Related", "Drug-Related"),
+            opacity = .5,
+            title = "Crime Group",
+            position = "topleft")
+```
+
+```{r, eval = FALSE}
+
+map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
+
+download.file(map_url, "./datasets/nyc_zip_map.geojson")
+```
+
+#### Crime distribution by zipcode for 2017
+
+```{r, exp_zips}
+
+group_zip = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
+
+map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_data@data <-  
+  map_w_data@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+total = tm_shape(map_w_data) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "Total Crime",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+```
+
+```{r, exp_drug}
+drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_drug <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_drug = sp::merge(map_json_drug, drug_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_drug@data <-  
+  map_w_drug@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+drug = tm_shape(map_w_drug) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "2017 Drug-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+
+```
+
+
+```{r, exp_weapon}
+weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_weapon <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_weapon = sp::merge(map_json_drug, weapon_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_weapon@data <-  
+  map_w_weapon@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+
+weapon = tm_shape(map_w_weapon) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Weapon-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+  # Add tm_credits()
+```
+
+
+```{r, exp_sex}
+sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_sex <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_sex = sp::merge(map_json_sex, sex_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_sex@data <-  
+  map_w_sex@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+sex = tm_shape(map_w_sex) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Sex-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+current.mode <- tmap_mode("plot")
+tmap_arrange(total, sex, drug, weapon)
+tmap_mode(current.mode)
+```
+
+#### Trend
+
+```{r exp_analysis_pop}
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+
+```
+
+```{r exp_trend_analysis_stratify}
+stratify_df = crimes_14_17 %>% group_by(boro_nm, crime_group, year) %>% 
+  summarise(number = n())
+
+population_df = left_join(stratify_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100)
+```
+
+```{r trend_analysis_graph}
+population_df %>% filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) + facet_grid(~crime_group) +
+  labs(x = "Year",
+       y = "Crime rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    )
+```
+
+Bronx has consistently had the highest crime rate over the last 4 years for all the 3 types of crimes. We see a steep reduction, however in the crime rate for bronx between the years of 2016 and 2017. Crime rates for all crimes in all boroughs decreased from 2016 to 2016. Surprisingly, brooklyn has seen a consitent rise in the crime rate of drug related felonies from 2015 to 2017. 
+
+#### Timing
+
+```{r}
+season_df = crimes_14_17 %>% 
+  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
+         month = months(cmplnt_fr_dt),
+         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December")),
+         day = weekdays(cmplnt_fr_dt),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
+         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
+         hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
+
+season_df %>% 
+  group_by(day, hour, crime_group) %>% 
+  summarize(number = n()) %>% 
+  ggplot(aes(x = as.factor(hour), y = day)) + 
+  geom_tile(aes(fill = number), colour = "white") +
+  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") + facet_wrap(~crime_group) +
+  labs(
+    title = "Day of the Week on Sex-Related crime activity",
+    x = "Hour of day",
+    y = "Day of the Week"
+  ) + theme_classic() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+```
 
 
 

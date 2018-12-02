@@ -189,7 +189,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="exploratory.html">Exploratory Analyses</a>
+  <a href="Exploratory.html">Exploratory Analyses</a>
+</li>
+<li>
+  <a href="flex_dashboard.html">Flex Dashobard</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="acquiringdata.html">The Data</a>
 </li>
 <li>
   <a href="mailto:&lt;jmc2392@cumc.columbia.edu&gt;">
@@ -220,11 +229,455 @@ $(document).ready(function () {
 
 
 <pre class="r"><code>library(tidyverse)
+
 crime_nyc = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
 
 crime_nyc %&gt;% filter(law_cat_cd == &quot;felony&quot;) %&gt;% distinct(pd_cd, pd_desc) %&gt;% 
-  mutate(x = str_detect(pd_desc, &quot;rape&quot;)) %&gt;% 
-  View</code></pre>
+  mutate(x = str_detect(pd_desc, &quot;rape&quot;)) </code></pre>
+<pre><code>##     pd_cd                                                      pd_desc
+## 1     793                                         weapons possession 3
+## 2     725                                    forgery,m.v. registration
+## 3     105                                            strangulation 1st
+## 4     510                               controlled substance, intent t
+## 5     269                               mischief,criminal,    uncl 2nd
+## 6     438       larceny,grand from building (non-residence) unattended
+## 7     198                                          criminal contempt 1
+## 8     397                               robbery,open area unclassified
+## 9     441                                        larceny,grand of auto
+## 10    422                 larceny,grand by open credit card (new acct)
+## 11    405                        larceny,grand by theft of credit card
+## 12    109                                     assault 2,1,unclassified
+## 13    430           larceny,grand by bank acct compromise-unclassified
+## 14    415                               larceny,grand from person,pick
+## 15    221                                       burglary,residence,day
+## 16    386                           robbery,personal electronic device
+## 17    411                        larceny,grand from eatery, unattended
+## 18    117                                      reckless endangerment 1
+## 19    106                                 assault police/peace officer
+## 20    273                                         tampering 1,criminal
+## 21    439                    larceny,grand from open areas, unattended
+## 22    461                                   unauthorized use vehicle 2
+## 23    223                                     burglary,residence,night
+## 24    410                  larceny,grand from retail store, unattended
+## 25    384                               robbery,pocketbook/carried bag
+## 26    433                               larceny,grand from store-shopl
+## 27    760                                bribery,public administration
+## 28    501                                controlled substance,possess.
+## 29    409                                   larceny,grand by extortion
+## 30    792                                     weapons possession 1 &amp; 2
+## 31    404 larceny,grand from person,personal electronic device(snatch)
+## 32    503                               controlled substance,intent to
+## 33    267                               mischief, criminal 3 &amp; 2, of m
+## 34    443                                     larceny,grand of bicycle
+## 35    224                               burglary,residence,unknown tim
+## 36    416                    larceny,grand from night club, unattended
+## 37    421                        larceny,grand from vehicle/motorcycle
+## 38    390                                        robbery,home invasion
+## 39    407                               larceny,grand by dishonest emp
+## 40    455                                       larceny,grand of truck
+## 41    494                               stolen property 2,1,possession
+## 42    402         larceny,grand by false promise-not in person contact
+## 43    729                               forgery,etc.,unclassified-felo
+## 44    153                                                       rape 3
+## 45    640                                      aggravated harassment 1
+## 46    213                                    burglary,commercial,night
+## 47    408 larceny,grand from person,lush worker(sleeping/uncon victim)
+## 48    739                                    fraud,unclassified-felony
+## 49    420             larceny,grand by open/compromise cell phone acct
+## 50    417                               larceny,grand from person,purs
+## 51    500                                controlled substance,possess.
+## 52    412                     larceny,grand from residence, unattended
+## 53    493                               stolen property-motor veh 2nd,
+## 54    388                              robbery,residential common area
+## 55    425        larceny,grand by bank acct compromise-atm transaction
+## 56    401                               larceny,grand by acquiring los
+## 57    403       larceny,grand by bank acct compromise-reproduced check
+## 58    437             larceny,grand by false promise-in person contact
+## 59    377                             robbery,bodega/convenience store
+## 60    366                                              robbery,bicycle
+## 61    708                               impersonation 1, police office
+## 62    231                                           burglary,truck day
+## 63    214                               burglary,commercial,unknown ti
+## 64    457            larceny,grand of vehicular/motorcycle accessories
+## 65    450                                      larceny, grand of moped
+## 66    398                                  robbery,public place inside
+## 67    424   larceny,grand by credit card acct compromise-existing acct
+## 68    419                               larceny,grand from person,uncl
+## 69    451                                  larceny,grand of motorcycle
+## 70    396                                 robbery,begin as shoplifting
+## 71    157                                                       rape 1
+## 72    204                                          trespass 1,criminal
+## 73    382                                    robbery,neckchain/jewelry
+## 74    264                               arson, motor vehicle 1 2 3 &amp; 4
+## 75    268                                           criminal mis 2 &amp; 3
+## 76    779                               public administration,unclassi
+## 77    392                          robbery,unlicensed for hire vehicle
+## 78    399                              robbery,commercial unclassified
+## 79    426                 larceny,grand by bank acct compromise-teller
+## 80    406                      larceny,grand from person, bag open/dip
+## 81    781                                criminal disposal firearm 1 &amp;
+## 82    418                  larceny,grand by acquiring lost credit card
+## 83    442                               larceny, grand of auto - attem
+## 84    505                               controlled substance, possessi
+## 85    177                                                 sexual abuse
+## 86    380                                          robbery,car jacking
+## 87    568                               marijuana, possession 1, 2 &amp; 3
+## 88    847                               ny state laws,unclassified fel
+## 89    389                                             robbery,dwelling
+## 90    168                                                     sodomy 1
+## 91    199                                 aggravated criminal contempt
+## 92    644                                          false report 1,fire
+## 93    489                               theft,related offenses,unclass
+## 94    515                                  controlled substance,sale 3
+## 95    521                                 controlled substance, sale 5
+## 96    519                                        sale school grounds 4
+## 97    435                         larceny,grand from truck, unattended
+## 98    234                                        burglary,unknown time
+## 99   &lt;NA&gt;                                                         &lt;NA&gt;
+## 100   211                                      burglary,commercial,day
+## 101   110                               menacing 1st degree (vict peac
+## 102   263                                                  arson 2,3,4
+## 103   432                 larceny,grand by identity theft-unclassified
+## 104   197                                                   coercion 1
+## 105   502                                controlled substance,possess.
+## 106   361                                                 robbery,bank
+## 107   434                              larceny,grand by open bank acct
+## 108   387                                             robbery,clothing
+## 109   183                                      imprisonment 1,unlawful
+## 110   159                                               rape 1,attempt
+## 111   507                               controlled substance, possessi
+## 112   391                               robbery,licensed medallion cab
+## 113   383                                      robbery,delivery person
+## 114   764                                           bail jumping 1 &amp; 2
+## 115   166                                                     sodomy 2
+## 116   244                                burglary,unclassified,unknown
+## 117   514                                  controlled substance,sale 2
+## 118   428  larceny,grand by bank acct compromise-unauthorized purchase
+## 119   367                                         robbery, chain store
+## 120   723                                      forgery,drivers license
+## 121   241                                    burglary,unclassified,day
+## 122   193                                     custodial interference 1
+## 123   233                                         burglary,truck night
+## 124   761                                      bribery, police officer
+## 125   243                                  burglary,unclassified,night
+## 126   695                                            child abandonment
+## 127   394                            robbery,licensed for hire vehicle
+## 128   663                                           supp. act terr 2nd
+## 129   360                                         robbery,atm location
+## 130   698                     incompetent person,knowingly endangering
+## 131   112                                menacing 1st degree (vict not
+## 132   164                                                     sodomy 3
+## 133   375                                             robbery,pharmacy
+## 134   596                               obscene material - under 17 ye
+## 135   179                                     aggravated sexual asbuse
+## 136   594                                                  obscenity 1
+## 137   266                               mischief, criminal 3&amp;2, by fir
+## 138   586                                              sex trafficking
+## 139   762                                                   escape 2,1
+## 140   512                                  controlled substance,sale 1
+## 141   395                                robbery,on bus/ or bus driver
+## 142   520                                 controlled substance, sale 4
+## 143   414                               larceny,grand person,neck chai
+## 144   772                                    computer tamper/tresspass
+## 145   570                                     marijuana, sale 1, 2 &amp; 3
+## 146   293                                              conspiracy 2, 1
+## 147   665                                    making terroristic threat
+## 148   365                                         robbery,liquor store
+## 149   155                                                       rape 2
+## 150   393                                      robbery,of truck driver
+## 151   125                               homicide,negligent,unclassifie
+## 152   696                               promoting a sexual performance
+## 153   730                               manufacture unauthorized recor
+## 154   431                          larceny,grand from pier, unattended
+## 155   808                                                      tax law
+## 156   107                        end welfare vulnerable elderly person
+## 157   727                                         forgery,prescription
+## 158   904                                  intoxicated driving,alcohol
+## 159   108                        assault other public service employee
+## 160   185                                                 kidnapping 2
+## 161   724                               forgery-illegal possession,veh
+## 162   291                                              conspiracy 4, 3
+## 163   186                                               luring a child
+## 164   379                                          robbery,gas station
+## 165   385                                             robbery, payroll
+## 166   844                                        cause spi/kill animal
+## 167   423                          larceny,grand from boat, unattended
+## 168   371                               robbery,check cashing business
+## 169   711                                     tampering with a witness
+## 170   531                               drug paraphernalia,   possesse
+## 171   672                                                       riot 1
+## 172   363                                       robbery,bar/restaurant
+## 173   445                                        larceny,grand of boat
+## 174   524                               controlled substance,possess.-
+## 175   775                                       money laundering 1 &amp; 2
+## 176   104                               vehicular assault (intox drive
+## 177   261                                                      arson 1
+## 178   187                                                 kidnapping 1
+## 179   532                                controlled substance,possess.
+## 180   180                               course of sexual conduct again
+## 181   498                               stolen property 2,possession b
+## 182   285                                 solicitation 3,2,1, criminal
+## 183   796                                       weapons,prohibited use
+## 184   121                                   homicide,negligent,vehicle
+## 185   766                                              perjury 2,1,etc
+## 186   143                                                   abortion 1
+## 187   664                                    terrorism provide support
+## 188   122                                homicide, negligent, vehicle,
+## 189   176                                                   sex crimes
+## 190   373                                robbery,doctor/dentist office
+## 191   523                                          sale school grounds
+## 192   674                                                eavesdropping
+## 193   529                                        sales of prescription
+## 194   557                                  gambling 1,promoting,policy
+## 195   845                             breed/train/host animal fighting
+## 196   780                                           nuisance, criminal
+## 197   299                                 facilitation 3,2,1, criminal
+## 198   102                                  assault school safety agent
+## 199   697                               use of a child in a sexual per
+## 200   584                               prostitution 3, promoting unde
+## 201   265                                mischief 1,criminal,explosive
+## 202   103                                        assault traffic agent
+## 203   553                               gambling 1,promoting,bookmakin
+## 204   381                                            robbery,hijacking
+## 205   691                                                       bigamy
+## 206   648                                             place false bomb
+## 207   585                               prostitution 3,promoting busin
+## 208   783                                  fireworks prev conv 5 years
+## 209   667                                          hind prosec. terr 2
+## 210   694                                                       incest
+## 211   119                                    promoting suicide attempt
+## 212   587                                   prostitution 2, compulsory
+## 213   588                                     prostitution 2, under 16
+## 214   721                                                bribery,fraud
+## 215   178                               fac. sexual offense w/controll
+## 216   641                                         healthcare/rent.reg.
+## 217   530                                           drug, injection of
+## 218   733                                        enterprise corruption
+## 219   184                                            labor trafficking
+## 220   737                                               usury,criminal
+## 221   561                               prostitution, patronizing 2, 1
+##         x
+## 1   FALSE
+## 2   FALSE
+## 3   FALSE
+## 4   FALSE
+## 5   FALSE
+## 6   FALSE
+## 7   FALSE
+## 8   FALSE
+## 9   FALSE
+## 10  FALSE
+## 11  FALSE
+## 12  FALSE
+## 13  FALSE
+## 14  FALSE
+## 15  FALSE
+## 16  FALSE
+## 17  FALSE
+## 18  FALSE
+## 19  FALSE
+## 20  FALSE
+## 21  FALSE
+## 22  FALSE
+## 23  FALSE
+## 24  FALSE
+## 25  FALSE
+## 26  FALSE
+## 27  FALSE
+## 28  FALSE
+## 29  FALSE
+## 30  FALSE
+## 31  FALSE
+## 32  FALSE
+## 33  FALSE
+## 34  FALSE
+## 35  FALSE
+## 36  FALSE
+## 37  FALSE
+## 38  FALSE
+## 39  FALSE
+## 40  FALSE
+## 41  FALSE
+## 42  FALSE
+## 43  FALSE
+## 44   TRUE
+## 45  FALSE
+## 46  FALSE
+## 47  FALSE
+## 48  FALSE
+## 49  FALSE
+## 50  FALSE
+## 51  FALSE
+## 52  FALSE
+## 53  FALSE
+## 54  FALSE
+## 55  FALSE
+## 56  FALSE
+## 57  FALSE
+## 58  FALSE
+## 59  FALSE
+## 60  FALSE
+## 61  FALSE
+## 62  FALSE
+## 63  FALSE
+## 64  FALSE
+## 65  FALSE
+## 66  FALSE
+## 67  FALSE
+## 68  FALSE
+## 69  FALSE
+## 70  FALSE
+## 71   TRUE
+## 72  FALSE
+## 73  FALSE
+## 74  FALSE
+## 75  FALSE
+## 76  FALSE
+## 77  FALSE
+## 78  FALSE
+## 79  FALSE
+## 80  FALSE
+## 81  FALSE
+## 82  FALSE
+## 83  FALSE
+## 84  FALSE
+## 85  FALSE
+## 86  FALSE
+## 87  FALSE
+## 88  FALSE
+## 89  FALSE
+## 90  FALSE
+## 91  FALSE
+## 92  FALSE
+## 93  FALSE
+## 94  FALSE
+## 95  FALSE
+## 96  FALSE
+## 97  FALSE
+## 98  FALSE
+## 99     NA
+## 100 FALSE
+## 101 FALSE
+## 102 FALSE
+## 103 FALSE
+## 104 FALSE
+## 105 FALSE
+## 106 FALSE
+## 107 FALSE
+## 108 FALSE
+## 109 FALSE
+## 110  TRUE
+## 111 FALSE
+## 112 FALSE
+## 113 FALSE
+## 114 FALSE
+## 115 FALSE
+## 116 FALSE
+## 117 FALSE
+## 118 FALSE
+## 119 FALSE
+## 120 FALSE
+## 121 FALSE
+## 122 FALSE
+## 123 FALSE
+## 124 FALSE
+## 125 FALSE
+## 126 FALSE
+## 127 FALSE
+## 128 FALSE
+## 129 FALSE
+## 130 FALSE
+## 131 FALSE
+## 132 FALSE
+## 133 FALSE
+## 134 FALSE
+## 135 FALSE
+## 136 FALSE
+## 137 FALSE
+## 138 FALSE
+## 139 FALSE
+## 140 FALSE
+## 141 FALSE
+## 142 FALSE
+## 143 FALSE
+## 144 FALSE
+## 145 FALSE
+## 146 FALSE
+## 147 FALSE
+## 148 FALSE
+## 149  TRUE
+## 150 FALSE
+## 151 FALSE
+## 152 FALSE
+## 153 FALSE
+## 154 FALSE
+## 155 FALSE
+## 156 FALSE
+## 157 FALSE
+## 158 FALSE
+## 159 FALSE
+## 160 FALSE
+## 161 FALSE
+## 162 FALSE
+## 163 FALSE
+## 164 FALSE
+## 165 FALSE
+## 166 FALSE
+## 167 FALSE
+## 168 FALSE
+## 169 FALSE
+## 170 FALSE
+## 171 FALSE
+## 172 FALSE
+## 173 FALSE
+## 174 FALSE
+## 175 FALSE
+## 176 FALSE
+## 177 FALSE
+## 178 FALSE
+## 179 FALSE
+## 180 FALSE
+## 181 FALSE
+## 182 FALSE
+## 183 FALSE
+## 184 FALSE
+## 185 FALSE
+## 186 FALSE
+## 187 FALSE
+## 188 FALSE
+## 189 FALSE
+## 190 FALSE
+## 191 FALSE
+## 192 FALSE
+## 193 FALSE
+## 194 FALSE
+## 195 FALSE
+## 196 FALSE
+## 197 FALSE
+## 198 FALSE
+## 199 FALSE
+## 200 FALSE
+## 201 FALSE
+## 202 FALSE
+## 203 FALSE
+## 204 FALSE
+## 205 FALSE
+## 206 FALSE
+## 207 FALSE
+## 208 FALSE
+## 209 FALSE
+## 210 FALSE
+## 211 FALSE
+## 212 FALSE
+## 213 FALSE
+## 214 FALSE
+## 215 FALSE
+## 216 FALSE
+## 217 FALSE
+## 218 FALSE
+## 219 FALSE
+## 220 FALSE
+## 221 FALSE</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <p><strong>Crime category by race/ethnicity, age, sex and other sociodemographics</strong> ** top ten offense, general chracteristics<strong> </strong> top 5, general characteristics<strong> </strong>filter out unknown and analyze top 5 crimes for unknowns**</p>
 <p>Removing missing variables</p>
@@ -1448,7 +1901,7 @@ labs(
   y = &quot;Freq&quot;
 ) +
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))</code></pre>
-<p><img src="Final_project_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="Final_project_files/figure-html/final_project_yaa-1.png" width="672" /></p>
 <p>consider suspects demographics by the top ten crimes. suspect race</p>
 <pre class="r"><code> table(mydataextract4$susp_race)</code></pre>
 <pre><code>## 
@@ -1486,7 +1939,7 @@ labs(
   y = &quot;Freq&quot;
 ) +
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))</code></pre>
-<p><img src="Final_project_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="Final_project_files/figure-html/final_project_sustable-1.png" width="672" /></p>
 <p>sex</p>
 <pre class="r"><code>table(mydataextract4$susp_sex)</code></pre>
 <pre><code>## 
@@ -1525,7 +1978,7 @@ labs(
   y = &quot;Freq&quot;
 ) +
   theme(axis.text.x = element_text(angle = 45, size = 7, hjust = 1))</code></pre>
-<p><img src="Final_project_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="Final_project_files/figure-html/final_project_graphs-1.png" width="672" /></p>
 
 
 

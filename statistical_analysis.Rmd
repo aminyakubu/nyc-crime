@@ -1,14 +1,14 @@
 ---
 title: "Statistical Analysis"
-author: "Amin Yakubu"
-date: "11/29/2018"
+
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(warning = TRUE)
-knitr::opts_chunk$set(message = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(message = FALSE)
 ```
 
 ```{r}
@@ -19,21 +19,7 @@ library(tidyverse)
 
 ```{r}
 
-crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds") 
-
-sex_drug_weapons = crime_df %>% 
-  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
-                      ## Drug related felony crimes
-                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
-                      ### Weapon related felony crimes
-                      781, 792, 793, 796)) %>% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude)) %>% 
-  select(boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
-  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
-         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), "Sex-Related", 
-                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), "Drug-Related", 
-                                       if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd))))
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
 
 Association between borough and crime, adjusting for average income
@@ -46,7 +32,7 @@ Association between borough and crime, adjusting for average income
 
 
 ```{r}
-### Making manhattan the and sex-related crime the reference groups 
+### Making manhattan the and drug-related crime the reference groups and Manhattan the reference
 sex_drug_weapons = sex_drug_weapons %>%
   mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
          boro_nm = forcats::fct_relevel(boro_nm, "manhattan"))
@@ -60,10 +46,12 @@ with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
   knitr::kable()
 ```
 
-```{r}
+```{r, results = "hide"}
 fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
   mutate( OR = exp(estimate))
+```
 
+```{r}
 fit %>% knitr::kable()
 
 ```
@@ -72,18 +60,20 @@ fit %>% knitr::kable()
 
 ggplot(fit, aes(x = term, y = OR)) +
   geom_segment( aes(x = term, xend = term, y = 0, yend = OR), color = "grey") +
-  geom_point(color = "orange", size = 3) + facet_grid(~ y.level)
+  geom_point(color = "orange", size = 3) + facet_grid(~ y.level) +
   theme_light() +
-  theme(
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8),
     panel.grid.major.x = element_blank(),
     panel.border = element_blank(),
-    axis.ticks.x = element_blank())
+    axis.ticks.x = element_blank()) +
+  labs(x = "Borough",
+       y = "Odds Ratio")
 
 ```
 
 ### Interpretation
 
-The odds of sex-related crimes in manhattan is 1.79.
+The odds of sex-related crimes in manhattan is 1.79. 
 The odds  of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. 
 The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn.
 The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens.

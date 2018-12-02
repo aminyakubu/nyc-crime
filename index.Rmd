@@ -1,12 +1,9 @@
 ---
 title: "Factors Associated With New York City Crime From 2014 to 2017"
 ---
-<br>
 
+Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 
 
-### Group Members: Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 
-
-<br>
 
 <head>
 <link rel="stylesheet" href="styles.css" type="text/css">
