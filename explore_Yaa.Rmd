@@ -26,5 +26,19 @@ complete_data = merge(overall_felony, felony_crime, by = "cmplnt_num")
 ```
 
 
+Removing NAs
+
+Removing missing variables
+```{r}
+clean_data = complete_data %>% 
+  janitor::clean_names(dat = .) %>% 
+  filter(!is.na(susp_race)) %>%
+  filter(!is.na(susp_sex)) %>%
+  filter(!is.na(susp_age_group)) %>%
+  filter(!is.na(vic_sex.y)) %>%
+  filter(!is.na(vic_age_group)) %>%
+  filter(!is.na(crime_group)) %>%
+  filter(!is.na(vic_race))
+```
 
 
