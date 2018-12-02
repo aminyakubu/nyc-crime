@@ -156,6 +156,7 @@ year_2017 = filter(crimes_14_17, year == 2017) %>%
 pal <- colorFactor(palette = c("blue", "red", "green"), 
                levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
 
+
 leaflet()  %>% 
   addTiles() %>% 
 #Setting view on NYC. The values are the coordinates of NYC
@@ -165,25 +166,29 @@ leaflet()  %>%
                    lat = ~ latitude, 
                    radius = 1,
                    color = ~pal(crime_group),
-                   group = "2014") %>% 
+                   group = "2014",
+                   clusterOptions = markerClusterOptions()) %>% 
   addCircleMarkers(data = year_2015,
                    lng = ~ longitude,
                    lat = ~ latitude, 
                    radius = 1,
                    color = ~pal(crime_group),
-                   group = "2015") %>% 
+                   group = "2015",
+                   clusterOptions = markerClusterOptions()) %>% 
   addCircleMarkers(data = year_2016,
                    lng = ~ longitude,
                    lat = ~ latitude, 
                    radius = 1,
                    color = ~pal(crime_group),
-                   group = "2016") %>% 
+                   group = "2016",
+                   clusterOptions = markerClusterOptions()) %>% 
   addCircleMarkers(data = year_2017,
                    lng = ~ longitude,
                    lat = ~ latitude, 
                    radius = 1,
                    color = ~pal(crime_group),
-                   group = "2017") %>%
+                   group = "2017",
+                   clusterOptions = markerClusterOptions()) %>%
   addLayersControl(overlayGroups = c("2014", "2015", "2016", "2017")) %>% 
    addLegend(pal = pal, 
             values = c("Sex-Related", "Weapon-Related", "Drug-Related"),
