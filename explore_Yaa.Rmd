@@ -43,4 +43,19 @@ clean_complete = complete_data %>%
 ```
 
 
+top 5 crimes in all 3 crime groups 
+
+```{r final_project_highest}
+clean_complete %>%
+  distinct(pd_desc) %>%
+  count()
+
+clean_complete %>%
+  group_by(pd_desc_x, pd_cd_x) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
 
