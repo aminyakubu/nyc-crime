@@ -229,11 +229,960 @@ $(document).ready(function () {
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
+## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>felony_crime = readRDS(file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)
 
 overall_felony = readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
 
 complete_data = merge(overall_felony, felony_crime, by = &quot;cmplnt_num&quot;)</code></pre>
+<p>Removing NAs</p>
+<p>Removing missing variables</p>
+<pre class="r"><code>clean_data = complete_data %&gt;% 
+  janitor::clean_names(dat = .) %&gt;% 
+  filter(!is.na(susp_race)) %&gt;%
+  filter(!is.na(susp_sex)) %&gt;%
+  filter(!is.na(susp_age_group))</code></pre>
+<p>More NAs removed. clean data</p>
+<pre class="r"><code>clean_complete = clean_data %&gt;%
+  janitor::clean_names(dat = .) %&gt;%
+  filter(!is.na(vic_sex_x)) %&gt;%
+  filter(!is.na(vic_race_x)) %&gt;%
+  filter(!is.na(vic_age_group))</code></pre>
+<p>top 10 crimes in all 3 crime groups under felony</p>
+<pre class="r"><code>clean_complete %&gt;%
+  distinct(pd_desc_x) %&gt;%
+  count()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1    32</code></pre>
+<pre class="r"><code>clean_complete %&gt;%
+  group_by(pd_desc_x, pd_cd_x, crime_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(10, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">pd_cd_x</th>
+<th align="left">crime_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">793</td>
+<td align="left">Weapon-Related</td>
+<td align="right">2437</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,intent to</td>
+<td align="left">503</td>
+<td align="left">Drug-Related</td>
+<td align="right">1319</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">157</td>
+<td align="left">Sex-Related</td>
+<td align="right">729</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">792</td>
+<td align="left">Weapon-Related</td>
+<td align="right">692</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance,possess.</td>
+<td align="left">500</td>
+<td align="left">Drug-Related</td>
+<td align="right">651</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">177</td>
+<td align="left">Sex-Related</td>
+<td align="right">323</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, sale 5</td>
+<td align="left">521</td>
+<td align="left">Drug-Related</td>
+<td align="right">270</td>
+</tr>
+<tr class="even">
+<td align="left">sodomy 1</td>
+<td align="left">168</td>
+<td align="left">Sex-Related</td>
+<td align="right">270</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, intent t</td>
+<td align="left">510</td>
+<td align="left">Drug-Related</td>
+<td align="right">234</td>
+</tr>
+<tr class="even">
+<td align="left">marijuana, possession 1, 2 &amp; 3</td>
+<td align="left">568</td>
+<td align="left">Drug-Related</td>
+<td align="right">228</td>
+</tr>
+</tbody>
+</table>
+<p>Break down data tables – Top 3 or 5 for each category (sex, weapons, drugs) and cross-tab with suspect’s age/race/gender or victim’s age/race/gender</p>
+<p>number of crimes in 3 crime groups</p>
+<pre class="r"><code>clean_complete %&gt;%
+  group_by(crime_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  #top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">crime_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Drug-Related</td>
+<td align="right">3577</td>
+</tr>
+<tr class="even">
+<td align="left">Weapon-Related</td>
+<td align="right">3133</td>
+</tr>
+<tr class="odd">
+<td align="left">Sex-Related</td>
+<td align="right">1782</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug related crimes by suspect race</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_race) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_race</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">black</td>
+<td align="right">526</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,intent to</td>
+<td align="left">white hispanic</td>
+<td align="right">400</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance,possess.</td>
+<td align="left">black</td>
+<td align="right">334</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">white hispanic</td>
+<td align="right">276</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">white</td>
+<td align="right">195</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug related crimes by suspect’s age</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">25-44</td>
+<td align="right">778</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">25-44</td>
+<td align="right">558</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">18-24</td>
+<td align="right">294</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,intent to</td>
+<td align="left">45-64</td>
+<td align="right">206</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance,possess.</td>
+<td align="left">18-24</td>
+<td align="right">187</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug related crimes by suspect’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_sex) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_sex</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">m</td>
+<td align="right">1228</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">m</td>
+<td align="right">849</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, sale 5</td>
+<td align="left">m</td>
+<td align="right">243</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance, intent t</td>
+<td align="left">m</td>
+<td align="right">227</td>
+</tr>
+<tr class="odd">
+<td align="left">marijuana, possession 1, 2 &amp; 3</td>
+<td align="left">m</td>
+<td align="right">222</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by suspect’s race</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_race) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_race</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">black</td>
+<td align="right">1437</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 3</td>
+<td align="left">white hispanic</td>
+<td align="right">545</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">black</td>
+<td align="right">434</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 3</td>
+<td align="left">black hispanic</td>
+<td align="right">203</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">white</td>
+<td align="right">178</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by suspect’s age</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">25-44</td>
+<td align="right">1324</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 3</td>
+<td align="left">18-24</td>
+<td align="right">651</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">45-64</td>
+<td align="right">327</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">25-44</td>
+<td align="right">311</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">18-24</td>
+<td align="right">209</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by suspect’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_sex) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_sex</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">m</td>
+<td align="right">2327</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">m</td>
+<td align="right">627</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">f</td>
+<td align="right">98</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">f</td>
+<td align="right">59</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">u</td>
+<td align="right">12</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by suspects’s race</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_race) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_race</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">black</td>
+<td align="right">299</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1</td>
+<td align="left">white hispanic</td>
+<td align="right">154</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">unknown</td>
+<td align="right">120</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">black</td>
+<td align="right">107</td>
+</tr>
+<tr class="odd">
+<td align="left">sodomy 1</td>
+<td align="left">black</td>
+<td align="right">106</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by suspects’s age</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">25-44</td>
+<td align="right">269</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1</td>
+<td align="left">unknown</td>
+<td align="right">211</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">18-24</td>
+<td align="right">121</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">25-44</td>
+<td align="right">115</td>
+</tr>
+<tr class="odd">
+<td align="left">sodomy 1</td>
+<td align="left">unknown</td>
+<td align="right">86</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by suspects’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, susp_sex) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">susp_sex</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">m</td>
+<td align="right">648</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">m</td>
+<td align="right">303</td>
+</tr>
+<tr class="odd">
+<td align="left">sodomy 1</td>
+<td align="left">m</td>
+<td align="right">246</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1,attempt</td>
+<td align="left">m</td>
+<td align="right">149</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 3</td>
+<td align="left">m</td>
+<td align="right">145</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by victim’s race</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_race_x) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_race_x</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">black</td>
+<td align="right">271</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1</td>
+<td align="left">white hispanic</td>
+<td align="right">215</td>
+</tr>
+<tr class="odd">
+<td align="left">sexual abuse</td>
+<td align="left">white hispanic</td>
+<td align="right">122</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1</td>
+<td align="left">white</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">sodomy 1</td>
+<td align="left">black</td>
+<td align="right">101</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by victim’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_sex_x) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_sex_x</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">f</td>
+<td align="right">725</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">f</td>
+<td align="right">291</td>
+</tr>
+<tr class="odd">
+<td align="left">sodomy 1</td>
+<td align="left">f</td>
+<td align="right">198</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1,attempt</td>
+<td align="left">f</td>
+<td align="right">159</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 3</td>
+<td align="left">f</td>
+<td align="right">150</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 sex-related crimes by victim’s age</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">25-44</td>
+<td align="right">274</td>
+</tr>
+<tr class="even">
+<td align="left">rape 1</td>
+<td align="left">18-24</td>
+<td align="right">227</td>
+</tr>
+<tr class="odd">
+<td align="left">rape 1</td>
+<td align="left">&lt;18</td>
+<td align="right">176</td>
+</tr>
+<tr class="even">
+<td align="left">sexual abuse</td>
+<td align="left">&lt;18</td>
+<td align="right">149</td>
+</tr>
+<tr class="odd">
+<td align="left">sexual abuse</td>
+<td align="left">25-44</td>
+<td align="right">97</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug-related crimes by victim’s age</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">unknown</td>
+<td align="right">1287</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">unknown</td>
+<td align="right">896</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, sale 5</td>
+<td align="left">unknown</td>
+<td align="right">266</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance, intent t</td>
+<td align="left">unknown</td>
+<td align="right">230</td>
+</tr>
+<tr class="odd">
+<td align="left">marijuana, possession 1, 2 &amp; 3</td>
+<td align="left">unknown</td>
+<td align="right">224</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug-related crimes by victim’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_sex_x) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_sex_x</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">e</td>
+<td align="right">1273</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">e</td>
+<td align="right">872</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, sale 5</td>
+<td align="left">e</td>
+<td align="right">265</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance, intent t</td>
+<td align="left">e</td>
+<td align="right">227</td>
+</tr>
+<tr class="odd">
+<td align="left">marijuana, possession 1, 2 &amp; 3</td>
+<td align="left">e</td>
+<td align="right">224</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 drug-related crimes by victim’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">controlled substance,intent to</td>
+<td align="left">unknown</td>
+<td align="right">1287</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance,possess.</td>
+<td align="left">unknown</td>
+<td align="right">896</td>
+</tr>
+<tr class="odd">
+<td align="left">controlled substance, sale 5</td>
+<td align="left">unknown</td>
+<td align="right">266</td>
+</tr>
+<tr class="even">
+<td align="left">controlled substance, intent t</td>
+<td align="left">unknown</td>
+<td align="right">230</td>
+</tr>
+<tr class="odd">
+<td align="left">marijuana, possession 1, 2 &amp; 3</td>
+<td align="left">unknown</td>
+<td align="right">224</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by victim’s age group</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_age_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_age_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">unknown</td>
+<td align="right">2134</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">unknown</td>
+<td align="right">591</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">25-44</td>
+<td align="right">149</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 3</td>
+<td align="left">45-64</td>
+<td align="right">86</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">25-44</td>
+<td align="right">49</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by victim’s sex</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_sex_x) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_sex_x</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">e</td>
+<td align="right">2091</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">e</td>
+<td align="right">579</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">m</td>
+<td align="right">200</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 3</td>
+<td align="left">f</td>
+<td align="right">119</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">m</td>
+<td align="right">59</td>
+</tr>
+</tbody>
+</table>
+<p>top 5 weapon-related crimes by victim’s race</p>
+<pre class="r"><code>clean_complete %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  group_by(pd_desc_x, vic_race_x) %&gt;%
+  summarise(number = n()) %&gt;%
+  ungroup() %&gt;%
+  top_n(5, number) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pd_desc_x</th>
+<th align="left">vic_race_x</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">unknown</td>
+<td align="right">2136</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">unknown</td>
+<td align="right">591</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">black</td>
+<td align="right">155</td>
+</tr>
+<tr class="even">
+<td align="left">weapons possession 1 &amp; 2</td>
+<td align="left">black</td>
+<td align="right">62</td>
+</tr>
+<tr class="odd">
+<td align="left">weapons possession 3</td>
+<td align="left">white hispanic</td>
+<td align="right">62</td>
+</tr>
+</tbody>
+</table>
 
 
 
