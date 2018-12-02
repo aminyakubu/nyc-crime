@@ -27,11 +27,20 @@ clean_data = complete_data %>%
   janitor::clean_names(dat = .) %>% 
   filter(!is.na(susp_race)) %>%
   filter(!is.na(susp_sex)) %>%
-  filter(!is.na(susp_age_group)) %>%
-  filter(!is.na(vic_sex.y)) %>%
   filter(!is.na(vic_age_group)) %>%
-  filter(!is.na(crime_group)) %>%
-  filter(!is.na(vic_race))
+  filter(!is.na(vic_age_group))
 ```
+
+
+More NAs removed
+
+```{r}
+complete_data_two = complete_data %>%
+  janitor::clean_names(dat = .) %>%
+  filter(!is.na(vic_sex_x)) %>%
+  filter(!is.na(vic_race_x)) %>%
+  filter(!is.na(vic_age_group))
+```
+
 
 
