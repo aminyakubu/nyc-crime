@@ -47,7 +47,7 @@ top 5 crimes in all 3 crime groups
 
 ```{r final_project_highest}
 clean_complete %>%
-  distinct(pd_desc) %>%
+  distinct(pd_desc_x) %>%
   count()
 
 clean_complete %>%
@@ -58,4 +58,7 @@ clean_complete %>%
   arrange(desc(number)) %>%
   knitr::kable() 
 ```
+
+
+
 
