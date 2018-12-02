@@ -243,10 +243,11 @@ clean_complete %>%
 ```
 
 
-top 5 sex-related crimes by victim's age
+
+top 5 drug-related crimes by victim's age
 ```{r}
 clean_complete %>%
-  filter(crime_group == "Sex-Related") %>%
+  filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, vic_age_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
@@ -254,6 +255,7 @@ clean_complete %>%
   arrange(desc(number)) %>%
   knitr::kable() 
 ```
+
 
 
 
