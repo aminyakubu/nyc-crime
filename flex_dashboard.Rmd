@@ -39,7 +39,7 @@ crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 Column {data-width=600}
 -----------------------------------------------------------------------
 
-### Chart A: Geographic distribution
+### Chart A: Distribution for sex-related, drug-related and weapon-related felonies for 2017 by Zipcode
 
 ```{r flex_chatA}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
@@ -118,7 +118,7 @@ x = full %>% filter(!is.na(boro_nm)) %>%
 ggplotly(x)
 ```
 
-### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity
+### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity from 2014 - 2017
 
 ```{r flex_chartC}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
@@ -133,7 +133,7 @@ season_df = sex_drug_weapons %>%
          cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
          hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
 
-
+#### Filtering out unknown victim race
 p = season_df %>% filter(vic_race != "unknown") %>% 
   group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
   ggplot(aes(x = reorder(vic_race, number), y = number, fill = vic_race)) + geom_col()  + 
