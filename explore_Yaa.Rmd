@@ -216,3 +216,31 @@ clean_complete %>%
 
 
 
+top 5 sex-related crimes by victim's sex
+
+```{r}
+clean_complete %>%
+  filter(crime_group == "Sex-Related") %>%
+  group_by(pd_desc_x, vic_sex_x) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+top 5 sex-related crimes by victim's sex
+```{r}
+clean_complete %>%
+  filter(crime_group == "Sex-Related") %>%
+  group_by(pd_desc_x, vic_sex_x) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+
