@@ -136,7 +136,7 @@ season_df = sex_drug_weapons %>%
 
 p = season_df %>% filter(vic_race != "unknown") %>% 
   group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
-  ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col()  + 
+  ggplot(aes(x = reorder(vic_race, number), y = number, fill = vic_race)) + geom_col()  + 
   theme(legend.position = "left", axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +

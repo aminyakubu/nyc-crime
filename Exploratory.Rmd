@@ -370,6 +370,7 @@ season_df %>%
     y = "Day of the Week"
   ) + theme_classic() +
   theme(plot.subtitle = element_text(hjust = 0.5))
+
 ```
 
 
