@@ -7,7 +7,11 @@ output:
 runtime: shiny
 ---
 
-```{r global, include=FALSE}
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r shiny_global, include=FALSE}
 # load data in 'global' chunk so it can be shared by all users of the dashboard
 library(flexdashboard)
 library(tidyverse)
@@ -17,10 +21,11 @@ library(plotly)
 library(chron)
 library(lubridate)
 library(rsconnect)
+library(shiny)
 
 ```
 
-```{r}
+```{r shiny_data}
 ### Dataset for 4 years without addresses
 crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
@@ -52,7 +57,7 @@ heaty <- list(
 Inputs {.sidebar}
 -----------------------------------------------------------------------
 
-```{r}
+```{r shiny_buttons}
 
 crimegroups = season_df %>% distinct(crime_group) %>% pull()
 # selectInput widget
@@ -75,7 +80,7 @@ Row
 
 ### Heatmap
     
-```{r}
+```{r shiny_heatmap}
 renderPlotly({
 season_df %>% filter(crime_group == input$crime_types,
                      year == input$year_choice) %>% 
@@ -95,7 +100,7 @@ Row
 
 ### Trend
     
-```{r}
+```{r shinytrend}
 renderPlotly({
 season_df %>% filter(!is.na(boro_nm)) %>% 
   group_by(crime_group, boro_nm, year, month) %>% 
