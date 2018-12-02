@@ -32,10 +32,10 @@ clean_data = complete_data %>%
 ```
 
 
-More NAs removed
+More NAs removed. clean data
 
 ```{r}
-complete_data_two = complete_data %>%
+clean_complete = complete_data %>%
   janitor::clean_names(dat = .) %>%
   filter(!is.na(vic_sex_x)) %>%
   filter(!is.na(vic_race_x)) %>%
