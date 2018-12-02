@@ -31,10 +31,16 @@ clean_data = complete_data %>%
 ```
 
 
+```{r}
+
+
+```
+
+
 More NAs removed. clean data
 
 ```{r}
-clean_complete = complete_data %>%
+clean_complete = clean_data %>%
   janitor::clean_names(dat = .) %>%
   filter(!is.na(vic_sex_x)) %>%
   filter(!is.na(vic_race_x)) %>%
