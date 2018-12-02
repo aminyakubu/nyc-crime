@@ -67,10 +67,11 @@ clean_complete %>%
 
 Break down data tables – Top 3 or 5 for each category (sex, weapons, drugs) and cross-tab with suspect’s age/race/gender or victim’s age/race/gender
  
+highest crimes in 3 crime groups
 
 ```{r}
 clean_complete %>%
-  group_by(crime_group, susp_race) %>%
+  group_by(crime_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
@@ -78,6 +79,30 @@ clean_complete %>%
   knitr::kable()
 ```
 
+
+Crime group by suspect age group 
+```{r}
+clean_complete %>%
+  group_by(crime_group, susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+
+```
+
+
+Crime group by suspect's gender
+```{r}
+clean_complete %>%
+  group_by(crime_group, susp_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
 
 
 
