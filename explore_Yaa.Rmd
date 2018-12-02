@@ -88,6 +88,7 @@ clean_complete %>%
   knitr::kable() 
 ```
 
+
 top 5 drug related crimes by suspect's age
 ```{r}
 clean_complete %>%
@@ -163,8 +164,6 @@ top 5 sex-related crimes by suspects's race
 clean_complete %>%
   filter(crime_group == "Sex-Related") %>%
   group_by(pd_desc_x, susp_race) %>%
-  group_by(pd_desc_x, susp_age_group) %>%
-  group_by(pd_desc_x, susp_sex) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
@@ -172,6 +171,34 @@ clean_complete %>%
   knitr::kable() 
 ```
 
+
+top 5 sex-related crimes by suspects's age
+
+```{r}
+clean_complete %>%
+  filter(crime_group == "Sex-Related") %>%
+  group_by(pd_desc_x, susp_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+
+top 5 sex-related crimes by suspects's sex
+
+```{r}
+clean_complete %>%
+  filter(crime_group == "Sex-Related") %>%
+  group_by(pd_desc_x, susp_sex) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
 
 
 
