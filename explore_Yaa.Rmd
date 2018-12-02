@@ -31,11 +31,6 @@ clean_data = complete_data %>%
 ```
 
 
-```{r}
-
-
-```
-
 
 More NAs removed. clean data
 
@@ -93,33 +88,45 @@ clean_complete %>%
   knitr::kable() 
 ```
 
-
-
-
-
-Top 5 crimes in drug-related crimes
+top 5 drug related crimes by suspect's age
 ```{r}
 clean_complete %>%
-  group_by(crime_group, susp_age_group) %>%
+  filter(crime_group == "Drug-Related") %>%
+  group_by(pd_desc_x, susp_age_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
   arrange(desc(number)) %>%
-  knitr::kable()
-
+  knitr::kable() 
 ```
 
 
-Crime group by suspect's gender
+
+top 5 drug related crimes by suspect's sex
 ```{r}
 clean_complete %>%
-  group_by(crime_group, susp_sex) %>%
+  filter(crime_group == "Drug-Related") %>%
+  group_by(pd_desc_x, susp_sex) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
   arrange(desc(number)) %>%
-  knitr::kable()
+  knitr::kable() 
 ```
+
+
+top 5 weapon-related crimes by suspect's race
+
+```{r}
+
+
+
+
+```
+
+
+
+
 
 
 
