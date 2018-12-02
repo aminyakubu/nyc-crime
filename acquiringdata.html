@@ -326,15 +326,20 @@ div.tocify {
 <pre class="r"><code>library(tidyverse)
 library(RSocrata)
 library(lubridate)
-library(photon)</code></pre>
+library(photon)
+
+if(!requireNamespace(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
+devtools::install_github(&quot;dkahle/ggmap&quot;, ref = &quot;tidyup&quot;)
+ggmap(get_googlemap())
+register_google(key = &quot;insert your google api key here&quot;)</code></pre>
 <pre class="r"><code>## Install the required package with:
 ## install.packages(&quot;RSocrata) if not already installed
 
 nyc_crime = read.socrata(
   &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
-  app_token = &quot;jK8jo5IhF6gBPFqZ1va8ITny0&quot;,
-  email     = &quot;yakubuamin@ymail.com&quot;,
-  password  = &quot;daTA@12345&quot; )</code></pre>
+  app_token = &quot;xxxx&quot;,
+  email     = &quot;xxxx&quot;,
+  password  = &quot;xxxx&quot; )</code></pre>
 <p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
 </div>
 <div id="subsetting" class="section level3">

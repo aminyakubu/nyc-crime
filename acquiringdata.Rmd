@@ -24,6 +24,12 @@ library(tidyverse)
 library(RSocrata)
 library(lubridate)
 library(photon)
+
+if(!requireNamespace("devtools")) install.packages("devtools")
+devtools::install_github("dkahle/ggmap", ref = "tidyup")
+ggmap(get_googlemap())
+register_google(key = "insert your google api key here")
+
 ```
 
 ```{r acquiringdata_api, eval = FALSE}
@@ -32,9 +38,9 @@ library(photon)
 
 nyc_crime = read.socrata(
   "https://data.cityofnewyork.us/resource/9s4h-37hy.json",
-  app_token = "jK8jo5IhF6gBPFqZ1va8ITny0",
-  email     = "yakubuamin@ymail.com",
-  password  = "daTA@12345" )
+  app_token = "xxxx",
+  email     = "xxxx",
+  password  = "xxxx" )
 
 ```
 
