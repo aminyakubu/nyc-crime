@@ -157,7 +157,18 @@ clean_complete %>%
 ```
 
 
+top 5 sex-related crimes by suspects's race
 
+```{r}
+clean_complete %>%
+  filter(crime_group == "Sex-Related") %>%
+  group_by(pd_desc_x, susp_race) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
 
 
 
