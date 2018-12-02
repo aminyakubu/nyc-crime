@@ -81,21 +81,16 @@ clean_complete %>%
 ```
 
 
-
+ top 5 drug related crimes by suspect race
 ```{r}
 clean_complete %>%
-  distinct(crime_group = "Drug-related") %>%
-  count()
-
-clean_complete %>%
-  group_by(crime_group = "Drug-related", pd_desc_x, susp_race) %>%
+  filter(crime_group == "Drug-Related") %>%
+  group_by(pd_desc_x, susp_race) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
   arrange(desc(number)) %>%
   knitr::kable() 
-
-
 ```
 
 
