@@ -284,3 +284,21 @@ clean_complete %>%
 
 
 
+
+top 5 weapon-related crimes by victim's age group
+```{r}
+clean_complete %>%
+  filter(crime_group == "Weapon-Related") %>%
+  group_by(pd_desc_x, vic_age_group) %>%
+  summarise(number = n()) %>%
+  ungroup() %>%
+  top_n(5, number) %>%
+  arrange(desc(number)) %>%
+  knitr::kable() 
+```
+
+
+
+
+
+
