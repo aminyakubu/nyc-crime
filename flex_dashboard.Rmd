@@ -26,6 +26,7 @@ library(maptools)
 library(chron)
 library(lubridate)
 library(rvest)
+library(tools)
 ```
 
 ```{r flex_data}
@@ -43,26 +44,27 @@ Column {data-width=600}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 
 crimes_df = crimes_df %>% 
-  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"),
+         boro_nm = toTitleCase(boro_nm))
 
 crime_group_sum = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 
 map_json@data <-  
   map_json@data %>% left_join(crime_group_sum, by = c("postalCode" = "zipcode")) %>% 
   mutate(number = as.numeric(number)) %>% 
-  mutate(number = if_else(is.na(number), 0, number))
+  mutate(number = if_else(is.na(number), 0, number),
+         )
 
 # create color palette with colorNumeric()
 nyc_pal <- colorNumeric("Greens", domain = map_json@data$number)
 
 map_json %>% 
   leaflet() %>% 
-  #addTiles() %>% 
-  addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(opacity = 0.1))%>% 
+  addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(opacity = 0.4)) %>% 
   setView(lat = 40.7, lng = -73.9, zoom = 11) %>% 
   addPolygons(weight = 1, fillColor = ~ nyc_pal(number),
               color = "gray",
-              fillOpacity = 0.5, opacity = 1, 
+              fillOpacity = 3, opacity = 1, 
               smoothFactor = 0.2, 
   # add labels that display mumber
               label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
@@ -72,7 +74,7 @@ map_json %>%
    addLegend(pal = nyc_pal,
                    values = c(0:305),
                    opacity = 0.75,
-                   title = "Total crimes by Zipcode",
+                   title = "Number of incident crimes ",
                    position = "topleft")
 ```
 
