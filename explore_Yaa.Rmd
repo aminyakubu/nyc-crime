@@ -11,46 +11,23 @@ library(tidyverse)
 
 
 ```{r exp_yaa_data}
-felony_crime = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 overall_felony = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
-complete_data = merge(overall_felony, felony_crime, by = "cmplnt_num")
+complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num")
 ```
 
-
-Removing NAs
-
-Removing missing variables
-```{r}
-clean_data = complete_data %>% 
-  janitor::clean_names(dat = .) %>% 
-  filter(!is.na(susp_race)) %>%
-  filter(!is.na(susp_sex)) %>%
-  filter(!is.na(susp_age_group))
-```
-
-
-
-More NAs removed. clean data
-
-```{r}
-clean_complete = clean_data %>%
-  janitor::clean_names(dat = .) %>%
-  filter(!is.na(vic_sex_x)) %>%
-  filter(!is.na(vic_race_x)) %>%
-  filter(!is.na(vic_age_group))
-```
 
 
 top 10 crimes in all 3 crime groups under felony 
 
 ```{r final_project_highest}
-clean_complete %>%
+complete_data %>%
   distinct(pd_desc_x) %>%
   count()
 
-clean_complete %>%
+complete_data %>%
   group_by(pd_desc_x, pd_cd_x, crime_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
@@ -66,11 +43,9 @@ Break down data tables – Top 3 or 5 for each category (sex, weapons, drugs) an
 number of crimes in 3 crime groups
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   group_by(crime_group) %>%
   summarise(number = n()) %>%
-  ungroup() %>%
-  #top_n(5, number) %>%
   arrange(desc(number)) %>%
   knitr::kable()
 ```
@@ -78,7 +53,7 @@ clean_complete %>%
 
  top 5 drug related crimes by suspect race
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, susp_race) %>%
   summarise(number = n()) %>%
@@ -91,7 +66,7 @@ clean_complete %>%
 
 top 5 drug related crimes by suspect's age
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, susp_age_group) %>%
   summarise(number = n()) %>%
@@ -105,7 +80,7 @@ clean_complete %>%
 
 top 5 drug related crimes by suspect's sex
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, susp_sex) %>%
   summarise(number = n()) %>%
@@ -119,7 +94,7 @@ clean_complete %>%
 top 5 weapon-related crimes by suspect's race
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, susp_race) %>%
   summarise(number = n()) %>%
@@ -133,7 +108,7 @@ clean_complete %>%
 top 5 weapon-related crimes by suspect's age
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, susp_age_group) %>%
   summarise(number = n()) %>%
@@ -147,7 +122,7 @@ clean_complete %>%
 top 5 weapon-related crimes by suspect's sex
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, susp_sex) %>%
   summarise(number = n()) %>%
@@ -158,24 +133,31 @@ clean_complete %>%
 ```
 
 
-top 5 sex-related crimes by suspects's race
+**top 5 sex-related crimes by suspects's race**
+** For sex related and weapon related crimes what are the dempgraphics of the victims?**
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, susp_race) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  top_n(5, number) %>% View
   arrange(desc(number)) %>%
   knitr::kable() 
 ```
 
 
+
+```{r}
+complete_data %>%
+  filter(crime_group == "Sex-Related", "Weapon-Related") %>%
+  
+```
+
 top 5 sex-related crimes by suspects's age
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
   group_by(pd_desc_x, susp_age_group) %>%
   summarise(number = n()) %>%
@@ -190,7 +172,7 @@ clean_complete %>%
 top 5 sex-related crimes by suspects's sex
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
   group_by(pd_desc_x, susp_sex) %>%
   summarise(number = n()) %>%
@@ -204,7 +186,7 @@ clean_complete %>%
 top 5 sex-related crimes by victim's race
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
   group_by(pd_desc_x, vic_race_x) %>%
   summarise(number = n()) %>%
@@ -219,11 +201,10 @@ clean_complete %>%
 top 5 sex-related crimes by victim's sex
 
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
   group_by(pd_desc_x, vic_sex_x) %>%
   summarise(number = n()) %>%
-  ungroup() %>%
   top_n(5, number) %>%
   arrange(desc(number)) %>%
   knitr::kable() 
@@ -232,9 +213,9 @@ clean_complete %>%
 
 top 5 sex-related crimes by victim's age
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, vic_age_group) %>%
+  group_by(pd_desc.x, vic_age_group) %>%
   summarise(number = n()) %>%
   ungroup() %>%
   top_n(5, number) %>%
@@ -246,7 +227,7 @@ clean_complete %>%
 
 top 5 drug-related crimes by victim's age
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, vic_age_group) %>%
   summarise(number = n()) %>%
@@ -259,7 +240,7 @@ clean_complete %>%
 
 top 5 drug-related crimes by victim's sex
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, vic_sex_x) %>%
   summarise(number = n()) %>%
@@ -272,7 +253,7 @@ clean_complete %>%
 
 top 5 drug-related crimes by victim's sex
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Drug-Related") %>%
   group_by(pd_desc_x, vic_age_group) %>%
   summarise(number = n()) %>%
@@ -287,7 +268,7 @@ clean_complete %>%
 
 top 5 weapon-related crimes by victim's age group
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, vic_age_group) %>%
   summarise(number = n()) %>%
@@ -301,7 +282,7 @@ clean_complete %>%
 
 top 5 weapon-related crimes by victim's sex
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, vic_sex_x) %>%
   summarise(number = n()) %>%
@@ -314,7 +295,7 @@ clean_complete %>%
 
 top 5 weapon-related crimes by victim's race
 ```{r}
-clean_complete %>%
+complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
   group_by(pd_desc_x, vic_race_x) %>%
   summarise(number = n()) %>%
