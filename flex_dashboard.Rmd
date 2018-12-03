@@ -10,19 +10,19 @@ output:
 library(flexdashboard)
 library(plotly)
 library(tidyverse)
-library(htmltools)
-library(htmlwidgets)
+#library(htmltools)
+#library(htmlwidgets)
 library(leaflet)
 library(leaflet.extras)
-library(rgdal)
-if (!require(geojsonio)) {
-    install.packages("geojsonio")
-    library(geojsonio)
-}
+#library(rgdal)
+#if (!require(geojsonio)) {
+#    install.packages("geojsonio")
+#    library(geojsonio)
+#}
 library(sp)
 library(maps)
-library(ggmap)
-library(maptools)
+#library(ggmap)
+#library(maptools)
 library(chron)
 library(lubridate)
 library(rvest)
@@ -52,11 +52,10 @@ crime_group_sum = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 map_json@data <-  
   map_json@data %>% left_join(crime_group_sum, by = c("postalCode" = "zipcode")) %>% 
   mutate(number = as.numeric(number)) %>% 
-  mutate(number = if_else(is.na(number), 0, number),
-         )
+  mutate(number = if_else(is.na(number), 0, number))
 
 # create color palette with colorNumeric()
-nyc_pal <- colorNumeric("Greens", domain = map_json@data$number)
+nyc_pal <- colorNumeric("Blues", domain = map_json@data$number)
 
 map_json %>% 
   leaflet() %>% 
