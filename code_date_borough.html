@@ -254,13 +254,13 @@ crime_data = crime_df %&gt;%
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2  boro_nm
-## 1   2015-07-10   2015-07-11     felony 86400 secs          1 brooklyn
-## 2   2017-04-21   2017-04-21     felony     0 secs          0 brooklyn
-## 3   2014-04-22   2014-04-22     felony     0 secs          0    bronx
-## 4   2014-10-31   2014-10-31     felony     0 secs          0 brooklyn
-## 5   2016-06-02   2016-06-02     felony     0 secs          0   queens
-## 6   2017-04-21   2017-04-21     felony     0 secs          0 brooklyn</code></pre>
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd    time_diff time_diff2   boro_nm
+## 1   2014-05-22   2014-07-23     felony 5356800 secs         62 manhattan
+## 2   2014-03-26   2014-03-26     felony       0 secs          0  brooklyn
+## 3   2015-08-04   2015-08-23     felony 1641600 secs         19  brooklyn
+## 4   2014-02-17   2014-02-17     felony       0 secs          0 manhattan
+## 5   2017-05-09   2017-05-09     felony       0 secs          0 manhattan
+## 6   2017-03-17   2017-03-17     felony       0 secs          0 manhattan</code></pre>
 <p><br></p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -269,16 +269,16 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2015-07-10     2015-07-11     felony       86400 secs             1.00  brooklyn      &quot;
-##  [4] &quot;2017-04-21     2017-04-21     felony       0 secs                 0.00  brooklyn      &quot;
-##  [5] &quot;2014-04-22     2014-04-22     felony       0 secs                 0.00  bronx         &quot;
-##  [6] &quot;2014-10-31     2014-10-31     felony       0 secs                 0.00  brooklyn      &quot;
-##  [7] &quot;2016-06-02     2016-06-02     felony       0 secs                 0.00  queens        &quot;
-##  [8] &quot;2017-04-21     2017-04-21     felony       0 secs                 0.00  brooklyn      &quot;
-##  [9] &quot;2017-12-13     2017-12-13     felony       0 secs                 0.00  brooklyn      &quot;
-## [10] &quot;2015-07-13     2015-07-13     felony       0 secs                 0.00  bronx         &quot;
-## [11] &quot;2017-03-20     2017-03-20     felony       0 secs                 0.00  brooklyn      &quot;
-## [12] &quot;2017-05-25     2017-05-25     felony       0 secs                 0.00  brooklyn      &quot;</code></pre>
+##  [3] &quot;2014-05-22     2014-07-23     felony       5356800 secs          62.00  manhattan     &quot;
+##  [4] &quot;2014-03-26     2014-03-26     felony       0 secs                 0.00  brooklyn      &quot;
+##  [5] &quot;2015-08-04     2015-08-23     felony       1641600 secs          19.00  brooklyn      &quot;
+##  [6] &quot;2014-02-17     2014-02-17     felony       0 secs                 0.00  manhattan     &quot;
+##  [7] &quot;2017-05-09     2017-05-09     felony       0 secs                 0.00  manhattan     &quot;
+##  [8] &quot;2017-03-17     2017-03-17     felony       0 secs                 0.00  manhattan     &quot;
+##  [9] &quot;2016-09-21     2016-09-28     felony       604800 secs            7.00  manhattan     &quot;
+## [10] &quot;2015-12-28     2016-01-17     felony       1728000 secs          20.00  brooklyn      &quot;
+## [11] &quot;2016-07-03     2016-09-08     felony       5788800 secs          67.00  bronx         &quot;
+## [12] &quot;2016-12-21     NA             felony       NA                       NA  bronx         &quot;</code></pre>
 <p><br></p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 

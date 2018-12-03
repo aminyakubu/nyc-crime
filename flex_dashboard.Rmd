@@ -61,7 +61,7 @@ map_json %>%
   leaflet() %>% 
   #addTiles() %>% 
   addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(opacity = 0.1))%>% 
-  setView(lat = 40.7, lng = -73.9, zoom = 10) %>% 
+  setView(lat = 40.7, lng = -73.9, zoom = 11) %>% 
   addPolygons(weight = 1, fillColor = ~ nyc_pal(number),
               color = "gray",
               fillOpacity = 0.5, opacity = 1, 
