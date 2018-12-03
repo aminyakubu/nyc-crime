@@ -23,8 +23,6 @@ library(sp)
 library(maps)
 library(ggmap)
 library(maptools)
-library(sp)
-library(tmap)
 library(chron)
 library(lubridate)
 library(rvest)
@@ -75,7 +73,7 @@ map_json %>%
                    values = c(0:305),
                    opacity = 0.75,
                    title = "Total crimes by Zipcode",
-                   position = "bottomright") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
+                   position = "topleft")
 ```
 
 Column {data-width=400}
