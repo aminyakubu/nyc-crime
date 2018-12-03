@@ -352,31 +352,6 @@ Bronx has consistently had the highest crime rate over the last 4 years for all 
 
 #### Timing
 
-```{r}
-season_df = crimes_14_17 %>% 
-  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
-         month = months(cmplnt_fr_dt),
-         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
-                                               "August", "September", "October", "November", "December")),
-         day = weekdays(cmplnt_fr_dt),
-         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
-         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
-         hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
-
-season_df %>% 
-  group_by(day, hour, crime_group) %>% 
-  summarize(number = n()) %>% 
-  ggplot(aes(x = as.factor(hour), y = day)) + 
-  geom_tile(aes(fill = number), colour = "white") +
-  scale_fill_gradient(low = "#fde0dd", high = "#c51b8a") + facet_wrap(~crime_group) +
-  labs(
-    title = "Day of the Week on Sex-Related crime activity",
-    x = "Hour of day",
-    y = "Day of the Week"
-  ) + theme_classic() +
-  theme(plot.subtitle = element_text(hjust = 0.5))
-
-```
 
 
 
