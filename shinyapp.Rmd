@@ -1,0 +1,120 @@
+---
+title: "Time Analysis of crime"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+runtime: shiny
+---
+
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r shiny_global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(flexdashboard)
+library(tidyverse)
+library(viridis)
+library(p8105.datasets)
+library(plotly)
+library(chron)
+library(lubridate)
+library(rsconnect)
+library(shiny)
+
+```
+
+```{r shiny_data}
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+season_df = crimes_14_17 %>% 
+  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
+         month = months(cmplnt_fr_dt),
+         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December")),
+         day = weekdays(cmplnt_fr_dt),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
+         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
+         hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
+
+####Labels for axes
+trendx <- list(
+  title = "Month")
+
+trendy <- list(
+  title = "Number of Crimes")
+
+heatx <- list(
+  title = "Hour of the day")
+
+heaty <- list(
+  title = "Day of the week")
+```
+
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r shiny_buttons}
+
+crimegroups = season_df %>% distinct(crime_group) %>% pull()
+# selectInput widget
+selectInput("crime_types", label = h3("Select Crime Type"),
+            choices = crimegroups, selected = "Sex-Related")
+
+years = season_df %>% distinct(year) %>% pull()
+
+radioButtons("year_choice", label = h3("Choose Year"),
+    choices = years, 
+    selected = "2017")
+```
+
+NYPD Crime data for Sex-related, Weapon-Related and Drug-related felonies 
+from 2014 to 2015. 
+
+
+Row
+-----------------------------------------------------------------------
+
+### Heatmap
+    
+```{r shiny_heatmap}
+renderPlotly({
+season_df %>% filter(crime_group == input$crime_types,
+                     year == input$year_choice) %>% 
+  group_by(year, day, hour, crime_group) %>% 
+  summarize(number = n()) %>% 
+  mutate(text_label = str_c('Hour: ', hour, '\nDay: ', day, '\nNumber: ', number)) %>% 
+  plot_ly( x = ~ as.factor(hour), y = ~ day, 
+         type = "heatmap", text = ~ text_label,
+         colors = colorRamp(c("yellow", "red")),
+         z = ~ number) %>% layout(xaxis = heatx, yaxis = heaty)
+})
+```
+
+
+Row 
+-----------------------------------------------------------------------
+
+### Trend
+    
+```{r shinytrend}
+renderPlotly({
+season_df %>% filter(!is.na(boro_nm)) %>% 
+  group_by(crime_group, boro_nm, year, month) %>% 
+  summarize(number = n()) %>% 
+  filter(crime_group == input$crime_types,
+                     year == input$year_choice) %>% 
+  mutate(text_label = str_c('Borough: ', boro_nm, '\nYear: ', year, '\nNumber: ', number)) %>% 
+  plot_ly(x = ~ month, 
+          y = ~ number, 
+          color = ~ boro_nm, 
+          type = 'scatter', 
+          mode = 'lines', 
+          text = ~ text_label) %>% 
+    layout(xaxis = trendx, yaxis = trendy)
+})
+```
+   

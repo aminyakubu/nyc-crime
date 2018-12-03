@@ -23,11 +23,10 @@ library(sp)
 library(maps)
 library(ggmap)
 library(maptools)
-library(sp)
-library(tmap)
 library(chron)
 library(lubridate)
 library(rvest)
+library(tools)
 ```
 
 ```{r flex_data}
@@ -39,32 +38,33 @@ crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 Column {data-width=600}
 -----------------------------------------------------------------------
 
-### Chart A: Geographic distribution
+### Chart A: Distribution for sex-related, drug-related and weapon-related felonies for 2017 by Zipcode
 
 ```{r flex_chatA}
 map_json = geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
 
 crimes_df = crimes_df %>% 
-  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"),
+         boro_nm = toTitleCase(boro_nm))
 
 crime_group_sum = crimes_df %>% group_by(zipcode) %>% summarize(number = n())
 
 map_json@data <-  
   map_json@data %>% left_join(crime_group_sum, by = c("postalCode" = "zipcode")) %>% 
   mutate(number = as.numeric(number)) %>% 
-  mutate(number = if_else(is.na(number), 0, number))
+  mutate(number = if_else(is.na(number), 0, number),
+         )
 
 # create color palette with colorNumeric()
-nyc_pal <- colorNumeric("Reds", domain = map_json@data$number)
+nyc_pal <- colorNumeric("Greens", domain = map_json@data$number)
 
 map_json %>% 
   leaflet() %>% 
-  #addTiles() %>% 
-  addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
-  setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addPolygons(weight = 1, 
-              color = nyc_pal(map_json@data$number), 
-              fillOpacity = 0.5, opacity = 5, 
+  addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(opacity = 0.4)) %>% 
+  setView(lat = 40.7, lng = -73.9, zoom = 11) %>% 
+  addPolygons(weight = 1, fillColor = ~ nyc_pal(number),
+              color = "gray",
+              fillOpacity = 3, opacity = 1, 
               smoothFactor = 0.2, 
   # add labels that display mumber
               label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
@@ -74,8 +74,8 @@ map_json %>%
    addLegend(pal = nyc_pal,
                    values = c(0:305),
                    opacity = 0.75,
-                   title = "Total crimes by Zipcode",
-                   position = "topleft") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
+                   title = "Number of incident crimes ",
+                   position = "topleft")
 ```
 
 Column {data-width=400}
@@ -118,7 +118,7 @@ x = full %>% filter(!is.na(boro_nm)) %>%
 ggplotly(x)
 ```
 
-### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity
+### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity from 2014 - 2017
 
 ```{r flex_chartC}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
@@ -133,10 +133,10 @@ season_df = sex_drug_weapons %>%
          cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
          hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
 
-
+#### Filtering out unknown victim race
 p = season_df %>% filter(vic_race != "unknown") %>% 
   group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
-  ggplot(aes(x = vic_race, y = number, fill = vic_race)) + geom_col()  + 
+  ggplot(aes(x = reorder(vic_race, number), y = number, fill = vic_race)) + geom_col()  + 
   theme(legend.position = "left", axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +

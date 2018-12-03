@@ -6,7 +6,9 @@ navbar:
     - text: "Exploratory Analyses"
       href: Exploratory.html 
     - text: "Flex Dashobard"
-      href: flex_dashboard.html 
+      href: flex_dashboard.html
+    - text: "Shiny App"
+      href: https://aminyakubu.shinyapps.io/NYC_crime_trend/
     - text: "Statistical Analysis"
       href: statistical_analysis.html
     - text: The Data
@@ -17,3 +19,6 @@ navbar:
       href: http://github.com/aminyakubu/nyc-crime/
 output:
   html_document
+  
+  
+  
