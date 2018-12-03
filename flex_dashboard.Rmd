@@ -55,16 +55,16 @@ map_json@data <-
   mutate(number = if_else(is.na(number), 0, number))
 
 # create color palette with colorNumeric()
-nyc_pal <- colorNumeric("Reds", domain = map_json@data$number)
+nyc_pal <- colorNumeric("Greens", domain = map_json@data$number)
 
 map_json %>% 
   leaflet() %>% 
   #addTiles() %>% 
-  addProviderTiles("OpenStreetMap.BlackAndWhite")%>% 
-  setView(lat = 40.7, lng = -74.0, zoom = 11) %>% 
-  addPolygons(weight = 1, 
-              color = nyc_pal(map_json@data$number), 
-              fillOpacity = 0.5, opacity = 5, 
+  addProviderTiles("OpenStreetMap.BlackAndWhite", options = providerTileOptions(opacity = 0.1))%>% 
+  setView(lat = 40.7, lng = -73.9, zoom = 10) %>% 
+  addPolygons(weight = 1, fillColor = ~ nyc_pal(number),
+              color = "gray",
+              fillOpacity = 0.5, opacity = 1, 
               smoothFactor = 0.2, 
   # add labels that display mumber
               label = ~ paste(postalCode, borough, ':', number, sep = '\n'),
@@ -75,7 +75,7 @@ map_json %>%
                    values = c(0:305),
                    opacity = 0.75,
                    title = "Total crimes by Zipcode",
-                   position = "topleft") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
+                   position = "bottomright") %>% addControl("Weapon-Related, Sex-Related and Drug-Related Felony offenses 2017", position = "topright")
 ```
 
 Column {data-width=400}
