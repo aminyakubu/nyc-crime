@@ -20,6 +20,7 @@ library(tidyverse)
 ```{r}
 
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
 ```
 
 Association between borough and crime, adjusting for average income
