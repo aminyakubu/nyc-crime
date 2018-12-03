@@ -37,5 +37,5 @@ For the analyses, we used both graphical elements and functions (e.g., ggplot, p
 
 
 ## Other
-Email any one of us if you have any questions: [Amin Yakubu](mailto:<ay2416@cumc.columbia.edu>) | [Jacky Choi](mailto:<jmc2392@cumc.columbia.edu>) | [Yaa Klu](mailto:<ykk2116@cumc.columbia.edu>) | [Jyoti Ankam](mailto:<jva2106@cumc.columbia.edu>) 
+Email any one of us if you have any questions: [Amin Yakubu](mailto:<ay2416@cumc.columbia.edu>) | [Jacky Choi](mailto:<jmc2392@cumc.columbia.edu>) | [Yaa Asantewaa Klu](mailto:<ykk2116@cumc.columbia.edu>) | [Jyoti Ankam](mailto:<jva2106@cumc.columbia.edu>) 
 
