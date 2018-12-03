@@ -178,7 +178,7 @@ readRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds"
 
 ### Weapons, sex, drug for 2017 with zipcodes
 
-df = readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
+readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
 ### Data dictionary
