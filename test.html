@@ -9,11 +9,9 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Jacky Choi" />
 
-<meta name="date" content="2018-11-18" />
 
-<title>date_and_borough</title>
+<title>Exploratory Analyses</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,6 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -171,6 +172,101 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -218,76 +314,51 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">date_and_borough</h1>
-<h4 class="author"><em>Jacky Choi</em></h4>
-<h4 class="date"><em>November 18, 2018</em></h4>
+<h1 class="title toc-ignore">Exploratory Analyses</h1>
 
 </div>
 
 
-<p>This is one of the exploratory analyses for our P8105 - Data Science group project. In this exploratory analysis, we attempt to look at whether the length of time of the reported event differs by borough.</p>
-<p>First, I load the tidyverse and patchwork package.</p>
-<pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
-<p>Next, I read in the CSV file and tidy it up. I limit the data by randomly sampling 1,000 observations from the data frame.</p>
-<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
+<p><br></p>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #337ab7;
+}
 
-crime_data = crime_df %&gt;% 
-  janitor::clean_names() %&gt;%
-  sample_n(1000) %&gt;% 
-  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %&gt;% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = &quot;days&quot;, na.rm = TRUE))) %&gt;% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #337ab7; ffff
 
-head(crime_data)</code></pre>
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-## 1   2014-08-07   2014-08-07     felony    0 secs          0     bronx
-## 2   2014-08-24   2014-08-24     felony    0 secs          0     bronx
-## 3   2017-07-31         &lt;NA&gt;     felony   NA secs         NA manhattan
-## 4   2015-01-31   2015-01-31     felony    0 secs          0    queens
-## 5   2015-10-25   2015-10-25     felony    0 secs          0  brooklyn
-## 6   2014-04-14   2014-04-14     felony    0 secs          0  brooklyn</code></pre>
-<p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
-<pre class="r"><code>crime_table = 
-  crime_data %&gt;% 
-  knitr::kable(digits = 2)
-
-head(crime_table, 12)</code></pre>
-<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
-##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-##  [3] &quot;2014-08-07     2014-08-07     felony       0 secs                 0.00  bronx         &quot;
-##  [4] &quot;2014-08-24     2014-08-24     felony       0 secs                 0.00  bronx         &quot;
-##  [5] &quot;2017-07-31     NA             felony       NA                       NA  manhattan     &quot;
-##  [6] &quot;2015-01-31     2015-01-31     felony       0 secs                 0.00  queens        &quot;
-##  [7] &quot;2015-10-25     2015-10-25     felony       0 secs                 0.00  brooklyn      &quot;
-##  [8] &quot;2014-04-14     2014-04-14     felony       0 secs                 0.00  brooklyn      &quot;
-##  [9] &quot;2015-11-28     2015-11-28     felony       0 secs                 0.00  brooklyn      &quot;
-## [10] &quot;2017-03-18     2017-03-18     felony       0 secs                 0.00  queens        &quot;
-## [11] &quot;2017-01-01     2017-01-01     felony       0 secs                 0.00  manhattan     &quot;
-## [12] &quot;2015-05-13     NA             felony       NA                       NA  NA            &quot;</code></pre>
-<p>I can also look at whether the length of time for the reported event/crime differs by borough visually.</p>
-<pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
-
-crime_graph2 = 
-  crime_data2 %&gt;% 
-  group_by(boro_nm, law_cat_cd) %&gt;% 
-  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
-  geom_point() +
-    labs(
-    title = &quot;Spread of Times of Reported Event, By Borough&quot;,
-    x = &quot;Borough&quot;,
-    y = &quot;Length of Reported Event&quot;,
-    caption = &quot;Data from the crime_data file&quot;
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = &quot;bottom&quot;)
-
-crime_graph2</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="date_borough_files/figure-html/date_borough_length_of_time_of_reported_event-1.png" width="672" /> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
+</style>
+<div id="exploratory-analysis-1---length-of-reported-eventcrime-by-borough" class="section level2">
+<h2>Exploratory Analysis 1 - Length of Reported Event/Crime by Borough</h2>
+<p><br> As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.</p>
+<p><br> First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.</p>
+<p><br> We can look at the data in a table to examine general trends and get a feel of my data.</p>
+<p><br> We can also look at whether the length of time for the reported event/crime differs by borough visually. <img src="test_files/figure-html/exp_length_of_time_of_reported_event-1.png" width="672" /></p>
+<p><br> From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.</p>
+<p><br> You can find the code for this exploratory analysis <a href="code_date_borough.html">here</a>.</p>
+<p><br> <br></p>
+</div>
+<div id="exploratory-analysis-2---offense-rates-by-borough" class="section level2">
+<h2>Exploratory Analysis 2 - Offense Rates by Borough</h2>
+<p>For our second exploratory analysis, we chose to examine offense rates by borough. Doing so gives us an understanding as to what NYPD can prioritize their efforts to when stemming crime.</p>
+<p>First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.</p>
+<p><br> <br></p>
+</div>
+<div id="exploratory-analysis-3---top-crimes-and-associated-demographics-by-borough" class="section level2">
+<h2>Exploratory Analysis 3 - Top Crimes and Associated Demographics by Borough</h2>
+<p>Include Yaa’s</p>
+<p><br> <br></p>
+</div>
+<div id="exploratory-analysis-4---geographical-distribution-of-crimes" class="section level2">
+<h2>Exploratory Analysis 4 - Geographical Distribution of Crimes</h2>
+<p>Reading in the datasets</p>
+</div>
 
 
 
+</div>
+</div>
 
 </div>
 

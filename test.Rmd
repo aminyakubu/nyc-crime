@@ -1,0 +1,120 @@
+---
+title: "Exploratory Analyses"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<br>
+
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #337ab7;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #337ab7; ffff
+
+</style>
+
+
+## Exploratory Analysis 1 - Length of Reported Event/Crime by Borough
+
+<br>
+As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy inicatory of the severity of the crime by each borough, assuming that longer crimes tend to be more severe and less resolved.
+
+```{r exp_setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
+```
+
+```{r exp_libraries}
+library(patchwork)
+library(tidyverse)
+library(rvest)
+library(plotly)
+library(sqldf)
+
+```
+
+<br>
+First, we load the required R packages. Next, we read in the CSV file and tidy it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame.
+
+```{r exp_tidy_crime_data, echo = FALSE}
+crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds")
+
+crime_data = crime_df %>% 
+  janitor::clean_names() %>%
+  sample_n(1000) %>% 
+  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
+
+```
+
+<br>
+We can look at the data in a table to examine general trends and get a feel of my data.
+```{r exp_crime_data_table, echo = FALSE}
+crime_table = 
+  crime_data %>% 
+  knitr::kable(digits = 2)
+
+```
+
+<br>
+We can also look at whether the length of time for the reported event/crime differs by borough visually.
+```{r exp_length_of_time_of_reported_event, echo = FALSE}
+crime_data2 <- crime_data[complete.cases(crime_data),]
+
+crime_graph2 = 
+  crime_data2 %>% 
+  group_by(boro_nm, law_cat_cd) %>% 
+  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
+  geom_point() +
+    labs(
+    title = "Spread of Times of Reported Event, By Borough",
+    x = "Borough",
+    y = "Length of Reported Event",
+    caption = "Data from the crime_data file"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+crime_graph2
+```
+
+<br>
+From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in the Bronx than in other boroughs. Lastly, although the spread among Brooklyn, Manhattan, and Queens is approximately the same, Queens has more outliers.
+
+<br>
+You can find the code for this exploratory analysis [here](code_date_borough.html).
+
+<br>
+<br>
+
+## Exploratory Analysis 2 - Offense Rates by Borough
+
+For our second exploratory analysis, we chose to examine offense rates by borough. Doing so gives us an understanding as to what NYPD can prioritize their efforts to when stemming crime.
+
+
+First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
+
+<br>
+<br>
+
+## Exploratory Analysis 3 - Top Crimes and Associated Demographics by Borough
+Include Yaa's
+
+<br>
+<br>
+
+## Exploratory Analysis 4 - Geographical Distribution of Crimes
+Reading in the datasets
+
+
+
+
+
