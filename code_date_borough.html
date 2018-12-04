@@ -225,6 +225,25 @@ $(document).ready(function () {
 <p><br> This is the code for the first exploratory analysis in which we examined the length of the reported event/crime by borough.</p>
 <p><br></p>
 <pre class="r"><code>library(tidyverse)</code></pre>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<pre><code>## -- Attaching packages -------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.0.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.6
+## v tidyr   0.8.1     v stringr 1.3.1
+## v readr   1.1.1     v forcats 0.3.0</code></pre>
+<pre><code>## -- Conflicts ----------------- tidyverse_conflicts() --
+=======
+<pre><code>## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.1.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.8
+## v tidyr   0.8.2     v stringr 1.3.1
+## v readr   1.2.1     v forcats 0.3.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
+>>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+=======
 <pre><code>## ── Attaching packages ────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
 ## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
@@ -233,6 +252,7 @@ $(document).ready(function () {
 <pre><code>## ── Conflicts ───────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+>>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
 <pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
 <pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
@@ -248,6 +268,7 @@ crime_data = crime_df %&gt;%
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)</code></pre>
+<<<<<<< HEAD
 <pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd   time_diff time_diff2   boro_nm
 ## 1   2014-09-29   2014-09-29     felony      0 secs          0 manhattan
 ## 2   2016-07-11   2016-07-11     felony      0 secs          0  brooklyn
@@ -255,6 +276,34 @@ head(crime_data)</code></pre>
 ## 4   2015-10-13   2015-10-21     felony 691200 secs          8  brooklyn
 ## 5   2016-09-29   2016-09-30     felony  86400 secs          1    queens
 ## 6   2015-09-05   2015-09-05     felony      0 secs          0     bronx</code></pre>
+=======
+<<<<<<< HEAD
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
+<<<<<<< HEAD
+## 1   2016-01-30   2016-01-30     felony    0 secs          0    queens
+## 2   2017-07-29   2017-07-29     felony    0 secs          0    queens
+## 3   2017-11-10         &lt;NA&gt;     felony   NA secs         NA     bronx
+## 4   2017-04-06   2017-04-06     felony    0 secs          0 manhattan
+## 5   2014-03-19   2014-03-19     felony    0 secs          0 manhattan
+## 6   2016-05-07   2016-05-07     felony    0 secs          0  brooklyn</code></pre>
+=======
+## 1   2017-12-09   2017-12-09     felony    0 secs          0 manhattan
+## 2   2014-07-29         &lt;NA&gt;     felony   NA secs         NA     bronx
+## 3   2016-02-17   2016-02-17     felony    0 secs          0    queens
+## 4   2015-05-05         &lt;NA&gt;     felony   NA secs         NA     bronx
+## 5   2016-04-20   2016-04-20     felony    0 secs          0     bronx
+## 6   2015-03-22   2015-03-22     felony    0 secs          0    queens</code></pre>
+>>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
+=======
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd    time_diff time_diff2   boro_nm
+## 1   2015-12-31         &lt;NA&gt;     felony      NA secs         NA manhattan
+## 2   2014-10-19   2014-11-07     felony 1645200 secs   19.04167  brooklyn
+## 3   2014-07-07   2014-07-07     felony       0 secs    0.00000  brooklyn
+## 4   2014-07-22   2014-07-22     felony       0 secs    0.00000 manhattan
+## 5   2014-09-09   2014-09-09     felony       0 secs    0.00000  brooklyn
+## 6   2015-06-24   2015-06-24     felony       0 secs    0.00000  brooklyn</code></pre>
+>>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
+>>>>>>> d032caf4aaa37c3f6eb3d2d5255b2f18af532dc4
 <p><br></p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -263,6 +312,7 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
+<<<<<<< HEAD
 ##  [3] &quot;2014-09-29     2014-09-29     felony       0 secs                 0.00  manhattan     &quot;
 ##  [4] &quot;2016-07-11     2016-07-11     felony       0 secs                 0.00  brooklyn      &quot;
 ##  [5] &quot;2017-12-23     2017-12-24     felony       86400 secs             1.00  brooklyn      &quot;
@@ -273,6 +323,44 @@ head(crime_table, 12)</code></pre>
 ## [10] &quot;2016-02-15     2016-02-15     felony       0 secs                 0.00  queens        &quot;
 ## [11] &quot;2016-09-22     2016-10-01     felony       777600 secs            9.00  brooklyn      &quot;
 ## [12] &quot;2015-05-30     2015-05-31     felony       86400 secs             1.00  manhattan     &quot;</code></pre>
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+##  [3] &quot;2016-01-30     2016-01-30     felony       0 secs                 0.00  queens        &quot;
+##  [4] &quot;2017-07-29     2017-07-29     felony       0 secs                 0.00  queens        &quot;
+##  [5] &quot;2017-11-10     NA             felony       NA                       NA  bronx         &quot;
+##  [6] &quot;2017-04-06     2017-04-06     felony       0 secs                 0.00  manhattan     &quot;
+##  [7] &quot;2014-03-19     2014-03-19     felony       0 secs                 0.00  manhattan     &quot;
+##  [8] &quot;2016-05-07     2016-05-07     felony       0 secs                 0.00  brooklyn      &quot;
+##  [9] &quot;2016-04-08     2016-04-08     felony       0 secs                 0.00  manhattan     &quot;
+## [10] &quot;2016-04-17     2016-04-17     felony       0 secs                 0.00  brooklyn      &quot;
+## [11] &quot;2017-12-07     2017-12-07     felony       0 secs                 0.00  bronx         &quot;
+## [12] &quot;2015-04-11     NA             felony       NA                       NA  queens        &quot;</code></pre>
+=======
+##  [3] &quot;2017-12-09     2017-12-09     felony       0 secs                 0.00  manhattan     &quot;
+##  [4] &quot;2014-07-29     NA             felony       NA                       NA  bronx         &quot;
+##  [5] &quot;2016-02-17     2016-02-17     felony       0 secs                 0.00  queens        &quot;
+##  [6] &quot;2015-05-05     NA             felony       NA                       NA  bronx         &quot;
+##  [7] &quot;2016-04-20     2016-04-20     felony       0 secs                 0.00  bronx         &quot;
+##  [8] &quot;2015-03-22     2015-03-22     felony       0 secs                 0.00  queens        &quot;
+##  [9] &quot;2015-05-31     2015-07-11     felony       3542400 secs          41.00  brooklyn      &quot;
+## [10] &quot;2015-07-31     2015-07-31     felony       0 secs                 0.00  brooklyn      &quot;
+## [11] &quot;2017-11-11     NA             felony       NA                       NA  manhattan     &quot;
+## [12] &quot;2015-02-21     2015-02-21     felony       0 secs                 0.00  brooklyn      &quot;</code></pre>
+>>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
+=======
+##  [3] &quot;2015-12-31     NA             felony       NA                       NA  manhattan     &quot;
+##  [4] &quot;2014-10-19     2014-11-07     felony       1645200 secs          19.04  brooklyn      &quot;
+##  [5] &quot;2014-07-07     2014-07-07     felony       0 secs                 0.00  brooklyn      &quot;
+##  [6] &quot;2014-07-22     2014-07-22     felony       0 secs                 0.00  manhattan     &quot;
+##  [7] &quot;2014-09-09     2014-09-09     felony       0 secs                 0.00  brooklyn      &quot;
+##  [8] &quot;2015-06-24     2015-06-24     felony       0 secs                 0.00  brooklyn      &quot;
+##  [9] &quot;2014-08-03     2014-08-03     felony       0 secs                 0.00  brooklyn      &quot;
+## [10] &quot;2014-01-21     2014-02-05     felony       1296000 secs          15.00  bronx         &quot;
+## [11] &quot;2014-01-10     2014-01-10     felony       0 secs                 0.00  brooklyn      &quot;
+## [12] &quot;2016-08-10     2016-08-10     felony       0 secs                 0.00  manhattan     &quot;</code></pre>
+>>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
+>>>>>>> d032caf4aaa37c3f6eb3d2d5255b2f18af532dc4
 <p><br></p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 
