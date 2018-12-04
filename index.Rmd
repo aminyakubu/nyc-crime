@@ -1,8 +1,8 @@
 ---
-title: "Factors Associated With New York City Crime From 2014 to 2017"
+title: "Statistics of Felonies That Occured in New York City From 2014 to 2017"
 ---
 
-Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106 
+Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Asantewaa Klu, ykk2116; Jyoti Ankam, jva2106 
 
 
 <head>
