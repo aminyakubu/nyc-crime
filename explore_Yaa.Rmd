@@ -96,22 +96,22 @@ Victim's race
 ```{r}
 complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
+  group_by(vic_race.y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
+  group_by(vic_race.y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Drug-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
+  group_by(vic_race.y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 ```
