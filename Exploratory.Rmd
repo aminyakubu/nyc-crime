@@ -12,7 +12,12 @@ output:
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
     background-color: red;
 }
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #red;
+
 </style>
+
 
 ## Exploratory Analysis 1 - Length of Reported Event/Crime by Borough
 
@@ -27,30 +32,7 @@ knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ```{r exp_libraries}
-library(patchwork)
-library(tidyverse)
-library(rvest)
-library(plotly)
-library(sqldf)
-library(tidyverse)
-library(htmltools)
-library(htmlwidgets)
-library(leaflet)
-library(leaflet.extras)
-library(chron)
-library(lubridate)
 
-library(rgdal)
-if (!require(geojsonio)) {
-    install.packages("geojsonio")
-    library(geojsonio)
-}
-library(sp)
-library(maps)
-library(ggmap)
-library(maptools)
-library(sp)
-library(tmap)
 ```
 
 <br>

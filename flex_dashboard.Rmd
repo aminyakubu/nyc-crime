@@ -16,8 +16,8 @@ library(leaflet)
 library(leaflet.extras)
 #library(rgdal)
 #if (!require(geojsonio)) {
-#    install.packages("geojsonio")
-#    library(geojsonio)
+#install.packages("geojsonio")
+library(geojsonio)
 #}
 library(sp)
 library(maps)
