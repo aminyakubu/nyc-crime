@@ -52,11 +52,9 @@ knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ```{r exp_libraries}
-#library(patchwork)
 library(tidyverse)
 library(rvest)
 library(plotly)
-#library(sqldf)
 library(tidyverse)
 library(htmltools)
 library(htmlwidgets)
@@ -65,14 +63,9 @@ library(leaflet.extras)
 library(chron)
 library(lubridate)
 library(rgdal)
-#if (!require(geojsonio)) {
-#    install.packages("geojsonio")
-    library(geojsonio)
-#}
+library(geojsonio)
 library(sp)
 library(maps)
-#library(ggmap)
-#library(maptools)
 library(tmap)
 ```
 
