@@ -34,13 +34,13 @@ font-weight: bold;
 </style>
 
 
-## Exploratory Analysis 1 - Top Crimes and Associated Demographics by Borough
+## Top Crimes and Associated Demographics by Borough
 Include Yaa's
 
 <br>
 <br>
 
-## Exploratory Analysis 2 - Length of Reported Event/Crime by Borough
+## Length of Reported Event/Crime by Borough
 
 <br>
 As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough, assuming that longer crimes tend to be more severe, harder to resolve, and requiring more resources to deal with.
@@ -52,11 +52,11 @@ knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ```{r exp_libraries}
-library(patchwork)
+#library(patchwork)
 library(tidyverse)
 library(rvest)
 library(plotly)
-library(sqldf)
+#library(sqldf)
 library(tidyverse)
 library(htmltools)
 library(htmlwidgets)
@@ -65,15 +65,14 @@ library(leaflet.extras)
 library(chron)
 library(lubridate)
 library(rgdal)
-if (!require(geojsonio)) {
-    install.packages("geojsonio")
+#if (!require(geojsonio)) {
+#    install.packages("geojsonio")
     library(geojsonio)
-}
+#}
 library(sp)
 library(maps)
-library(ggmap)
-library(maptools)
-library(sp)
+#library(ggmap)
+#library(maptools)
 library(tmap)
 ```
 
@@ -134,7 +133,7 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 <br>
 <br>
 
-## Exploratory Analysis 3 - Overall Felony Rates by Borough
+## Overall Felony Rates by Borough
 
 For our third exploratory analysis, we chose to examine crime (i.e., felony) rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
 
@@ -159,6 +158,7 @@ nyc_population = nyc_population %>%
 ```
 
 Next, we plotted the overall felony rates over 2014-2017 for each borough.
+
 ```{r, overall_felony_rates}
 grouped_df = sex_drug_weapons %>% 
   group_by(boro_nm, year) %>% 
@@ -180,14 +180,16 @@ x = full %>%
 
 ggplotly(x)
 ```
+
 From the graph above, we notice some interesting findings. First, Bronx, by far, has had the highest overall felony rate from 2014-2017. Secondly, the felony rates for Brooklyn and Manhattan are very similar; this applies to Queens and Staten Island as well, which comprise the two boroughs with the lowest overall crime rates from 2014-2017. Third, we can see that felony rates decreased from 2016-2017 for all boroughs except for Brooklyn. Lastly, overall felony rates across the years for all boroughs have tended to be stable, generally speaking. Note that these are strictly sex-related, weapons-related, and drug-related felonies.
 
 <br>
 <br>
 
-## Exploratory Analysis 4 - Geographical Distribution of Felonies
+## Geographical Distribution of Felonies
 
 Our final exploratory analysis examined the geographical distribution of felonies. Examining this gives us information regarding the absolute numbers of felonies in each borough, and again, helps law enforcement officials determine where to prioritize efforts.
+
 ```{r, exploratory_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
@@ -215,7 +217,6 @@ year_2017 = filter(crimes_14_17, year == 2017) %>%
 
 pal <- colorFactor(palette = c("blue", "red", "green"), 
                levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
-
 
 leaflet()  %>% 
   addTiles() %>% 
@@ -259,9 +260,9 @@ leaflet()  %>%
 
 ```{r, eval = FALSE}
 
-map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
+# map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
 
-download.file(map_url, "./datasets/nyc_zip_map.geojson")
+# download.file(map_url, "./datasets/nyc_zip_map.geojson")
 ```
 
 #### 2017 Crime Distribution by Zip Code
