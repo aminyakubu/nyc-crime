@@ -70,44 +70,88 @@ library(tmap)
 ```
 
 <br>
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame to simply the analysis a bit. We also chose to include only observations with non-missing values to the following studied variables: cmplnt_to_dt (start date of reported crime/event), cmplnt_fr_dt (end date of reported crime/event), and boro_nm (borough). The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 861 observations.
+First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on the variable time_diff2 (length of reported crime/event in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0." We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0. The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 2,682 observations.
 ```{r exp_tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
-  sample_n(1000) %>% 
   mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
   mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm)
+  select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm) 
+  
 
-crime_data2 <- crime_data[complete.cases(crime_data),]
+summary(crime_data$time_diff2)
+ggplot(data = crime_data, aes(x = time_diff2)) +
+  geom_density() +
+    labs(
+    title = "Density Plot of Length of Reported Felony",
+    x = "Length of Reported Felony",
+    y = "Density",
+    caption = "Data from the crime_data dataset"
+    ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                     labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")) +
+  xlim(0, 5)
 
+crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
+    filter(time_diff2 > 0) 
 ```
 
 <br>
-We looked at the data in a data table to examine general trends and get a feel of the data. Our data cleaning seemed to work.
+
+We looked at the data in a data table to examine general trends and get a feel of the data. Our data cleaning seemed to work. We also decided to find the average length of reported event for each borough.
 ```{r exp_crime_data_table, echo = FALSE}
 crime_table = 
   crime_data2 %>%
   rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
           time_diff, 'Time Difference (Days)' = time_diff2, 'Borough' = boro_nm) %>% 
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2) 
 
-head(crime_table)
+
+crime_table2 = 
+  crime_data2 %>%
+  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
+          time_diff, 'Borough' = boro_nm) %>% 
+  group_by(Borough) %>%
+  summarise(mean_time = mean(time_diff2)) %>% 
+  knitr::kable(digits = 2) 
+
+crime_table2
+
+
+crime_table3 = 
+  crime_data2 %>%
+  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
+          time_diff, 'Borough' = boro_nm) %>% 
+  group_by(Borough) %>%
+  summarise(mean_time = mean(time_diff2))
 ```
 
 <br>
-Next, we looked at whether the length of time for the reported event/crime differed by borough visually. I examine length of reported events lasting no longer than a year.
+Next, we looked at whether the length of time for the reported event/crime differed by borough visually. I examine both the average length of time of reported events across boroughs; I also view each individual reported event's length of time across borough.
 ```{r exp_length_of_time_of_reported_event, echo = FALSE}
-crime_data2 <- crime_data[complete.cases(crime_data),]
+crime_graph = 
+  crime_table3 %>% 
+  ggplot(aes(x = Borough, y = mean_time)) + 
+  geom_point(color = 'darkblue') +
+    labs(
+    title = "Average Length of Reported Events, By Borough",
+    x = "Borough",
+    y = "Average Length of Reported Event",
+    caption = "Data from the crime_data file"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+crime_graph
+
 
 crime_graph2 = 
   crime_data2 %>% 
-  filter(time_diff2 < 365) %>% 
   group_by(boro_nm) %>% 
   ggplot(aes(x = boro_nm, y = time_diff2)) + 
-  geom_point(color = 'darkblue') +
+  geom_boxplot(color = 'darkblue') +
     labs(
     title = "Spread of Times of Reported Event, By Borough",
     x = "Borough",
@@ -121,7 +165,7 @@ crime_graph2
 ```
 
 <br>
-From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Queens than in other boroughs. Lastly, although the spread among Brooklyn and Manhattan is approximately the same, Queens has more outliers.
+From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Manhattan than in other boroughs. Lastly, the spread among Brooklyn and Queens is approximately the same.
 
 <br>
 You can find the code for this exploratory analysis [here](code_date_borough.html).
