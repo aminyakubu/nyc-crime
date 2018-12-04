@@ -48,7 +48,7 @@ For the analyses, we used both graphical elements and functions (e.g., ggplot, p
 
 ## Some Interesting Findings
 
-Overall, there were 19,753 reported weapon-related crimes, 18,293 drug-related crimes and 8,646 sex-related crimes
+Overall, there were 19,753 victims for reported weapon-related crimes, 18,293 for drug-related crimes and 8,646 for sex-related crimes within the time period. 
 
 
 
