@@ -44,7 +44,7 @@ complete_data %>%
 
 
 ****
-
+By victim's age group
 ```{r}
 complete_data %>%
   filter(crime_group == "Sex-Related") %>%
@@ -54,6 +54,7 @@ complete_data %>%
   knitr::kable() 
 
 complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
   filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
   group_by(vic_age_group) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
@@ -61,6 +62,7 @@ complete_data %>%
 
 complete_data %>%
   filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
   group_by(vic_age_group) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
@@ -69,160 +71,13 @@ complete_data %>%
 ```
 
 
+By victim's sex
 
 
 
 
-top 5 sex-related crimes by suspects's age
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, susp_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
 
 
-
-top 5 sex-related crimes by suspects's sex
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, susp_sex) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 sex-related crimes by victim's race
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, vic_race_x) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-
-top 5 sex-related crimes by victim's sex
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc_x, vic_sex_x) %>%
-  summarise(number = n()) %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 sex-related crimes by victim's age
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(pd_desc.x, vic_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-
-top 5 drug-related crimes by victim's age
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, vic_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 drug-related crimes by victim's sex
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, vic_sex_x) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 drug-related crimes by victim's sex
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, vic_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-
-
-top 5 weapon-related crimes by victim's age group
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, vic_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-
-top 5 weapon-related crimes by victim's sex
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, vic_sex_x) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 weapon-related crimes by victim's race
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, vic_race_x) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
 
 
 
