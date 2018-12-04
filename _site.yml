@@ -5,7 +5,7 @@ navbar:
   right:
     - text: "Exploratory Analyses"
       href: Exploratory.html 
-    - text: "Flex Dashobard"
+    - text: "Flex Dashboard"
       href: flex_dashboard.html
     - text: "Shiny App"
       href: https://aminyakubu.shinyapps.io/NYC_crime_trend/
