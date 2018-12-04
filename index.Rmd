@@ -48,7 +48,7 @@ For the analyses, we used both graphical elements and functions (e.g., ggplot, p
 
 ## Some Interesting Findings
 
-Overall, there were 19,753 victims for weapon-related crimes, 18,293 for drug-related crimes and 8,646 for sex-related crimes within the time period. Victims for weapon-related crimes mostly within the 25-44 age-group (38%) and were more likely to be black (53%).  
+Overall, there were 19,753 victims for weapon-related crimes, 18,293 for drug-related crimes and 8,646 for sex-related crimes within the time period. Victims for weapon-related crimes mostly within the 25-44 age-group (38%) and were more likely to be black (53%). Most victims for drug-related crimes were unknown or unidentified. Majority of victims of sex-related crimes were below 18 years (42%), were females (90%), and were blacks (38%)    
 
 
 
