@@ -70,7 +70,6 @@ saveRDS(nyc_felony_crimes, file = "./datasets/nyc_felony_crimes.rds")
 
 #Selecting crimes of interest
 sex_drug_weapons = nyc_felony_crimes %>% 
-  
   filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155,
                       586, 696, # Sex related felony crimes
                       
