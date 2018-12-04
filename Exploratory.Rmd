@@ -54,7 +54,7 @@ library(maps)
 library(ggmap)
 library(maptools)
 library(sp)
-library(tmaps)
+library(tmap)
 ```
 
 <br>
