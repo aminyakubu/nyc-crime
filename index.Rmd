@@ -1,5 +1,5 @@
 ---
-title: "Statistics of Felonies That Occured in New York City From 2014 to 2017"
+title: "Statistics on Felonies That Occured in New York City From 2014 to 2017"
 ---
 
 Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Asantewaa Klu, ykk2116; Jyoti Ankam, jva2106 
@@ -14,7 +14,14 @@ Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Asantewaa Klu, ykk2116; Jyoti Anka
 
 <br>
 
-##Background
+## Our Drive For The Project
+
+In times past, mental health seemed to have lots of myths associated with it. However recently, a lot of conversations are going on around it to create much awareness. According to [MentalHealth.gov](https://www.mentalhealth.gov/basics), mental health includes our emotional, psychological, and social well-being. Mental healthy largely affects the quality for an individual and the factors that contribute to mental health issues include biological factors, family history and LIFE EXPERIENCES SUCH AS TRAUMA OR ABUSE. 
+
+
+
+
+
 
 The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to the Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city. 
 
