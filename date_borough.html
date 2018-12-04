@@ -241,6 +241,7 @@ crime_data = crime_df %&gt;%
 
 head(crime_data)</code></pre>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2   boro_nm
 ## 1   2015-06-12   2015-06-12     felony     0 secs          0    queens
 ## 2   2017-08-18   2017-08-19     felony 86400 secs          1  brooklyn
@@ -257,6 +258,15 @@ head(crime_data)</code></pre>
 ## 5   2016-03-09   2016-03-09     felony       0 secs          0    queens
 ## 6   2014-08-11   2014-08-11     felony       0 secs          0    queens</code></pre>
 >>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
+=======
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
+## 1   2016-09-25   2016-09-25     felony    0 secs          0 manhattan
+## 2   2014-06-20         &lt;NA&gt;     felony   NA secs         NA manhattan
+## 3   2015-08-15   2015-08-15     felony    0 secs          0    queens
+## 4   2017-04-06   2017-04-06     felony    0 secs          0 manhattan
+## 5   2017-07-11         &lt;NA&gt;     felony   NA secs         NA  brooklyn
+## 6   2017-08-15         &lt;NA&gt;     felony   NA secs         NA  brooklyn</code></pre>
+>>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
 <p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -265,6 +275,7 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
+<<<<<<< HEAD
 <<<<<<< HEAD
 ##  [3] &quot;2015-06-12     2015-06-12     felony       0 secs                 0.00  queens        &quot;
 ##  [4] &quot;2017-08-18     2017-08-19     felony       86400 secs             1.00  brooklyn      &quot;
@@ -288,6 +299,18 @@ head(crime_table, 12)</code></pre>
 ## [11] &quot;2014-10-22     2014-10-22     felony       0 secs                 0.00  queens        &quot;
 ## [12] &quot;2015-01-16     NA             felony       NA                       NA  queens        &quot;</code></pre>
 >>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
+=======
+##  [3] &quot;2016-09-25     2016-09-25     felony       0 secs                 0.00  manhattan     &quot;
+##  [4] &quot;2014-06-20     NA             felony       NA                       NA  manhattan     &quot;
+##  [5] &quot;2015-08-15     2015-08-15     felony       0 secs                 0.00  queens        &quot;
+##  [6] &quot;2017-04-06     2017-04-06     felony       0 secs                 0.00  manhattan     &quot;
+##  [7] &quot;2017-07-11     NA             felony       NA                       NA  brooklyn      &quot;
+##  [8] &quot;2017-08-15     NA             felony       NA                       NA  brooklyn      &quot;
+##  [9] &quot;2014-03-18     NA             felony       NA                       NA  bronx         &quot;
+## [10] &quot;2017-03-22     2017-03-22     felony       0 secs                 0.00  brooklyn      &quot;
+## [11] &quot;2014-11-22     2014-11-23     felony       86400 secs             1.00  brooklyn      &quot;
+## [12] &quot;2015-06-18     2015-06-18     felony       0 secs                 0.00  bronx         &quot;</code></pre>
+>>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
 <p>I can also look at whether the length of time for the reported event/crime differs by borough visually.</p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 
