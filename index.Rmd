@@ -34,7 +34,11 @@ We used the dataset collected by the New York City Police Department (NYPD); spe
 
 ##Project Description
 
-We conducted various exploratory and formal analyses of different variables associated with reported crimes and events across New York City (e.g., sociodemographics, day/seasonality, and other trends). We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.
+We conducted various exploratory and formal analyses of different variables associated with reported felonies across the boroughs in New York City from 2014 to 2017. The variables of interest included: sociodemographics, day/seasonality, and other trends). 
+
+We were interested in looking at a dataset containing information on NYPD crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and crime category (sex-related, weapon-related and drug-related). 
+
+Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either crime category, the crime location, or to each other. Lastly, the dataset provided ample opportunities to visualize interesting patterns associated with crime category, crime location (boroughs, distinct zipcodes and places), time of crime, and the demographics of victims.
 
 
 
