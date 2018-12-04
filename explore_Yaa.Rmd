@@ -14,13 +14,23 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
+
+
+```{r}
+library(tidyverse)
+```
+
+
+
 ```{r exp_yaa_data}
 felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 overall_felony = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
-complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num")
+complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num") %>%
+  janitor::clean_names(dat = .)
 ```
+
 
 
 Number of crimes in 3 crime groups
@@ -42,22 +52,22 @@ By victim's age group
 ```{r}
 complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
-  group_by(vic_age_group) %>%
+  filter(!is.na(vic_age_group_y_y), vic_age_group_y_y != "unknown") %>% 
+  group_by(vic_age_group_y_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
-  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
-  group_by(vic_age_group) %>%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != "unknown") %>% 
+  group_by(vic_age_group_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Drug-Related") %>%
-  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
-  group_by(vic_age_group) %>%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != "unknown") %>% 
+  group_by(vic_age_group_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
@@ -70,22 +80,22 @@ By victim's sex
 ```{r}
 complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Drug-Related") %>%
-  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
-  group_by(vic_sex.y) %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 ```
@@ -96,22 +106,22 @@ Victim's race
 ```{r}
 complete_data %>%
   filter(crime_group == "Sex-Related") %>%
-  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
-  group_by(vic_race.y) %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Weapon-Related") %>%
-  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
-  group_by(vic_race.y) %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
   filter(crime_group == "Drug-Related") %>%
-  filter(!is.na(vic_race.y), vic_race.y != "unknown") %>% 
-  group_by(vic_race.y) %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 ```
