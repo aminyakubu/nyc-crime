@@ -1,17 +1,6 @@
 ---
 title: "Statistics on Felonies That Occurred in New York City From 2014 to 2017"
 ---
-<style>
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: red;
-}
-
-.navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #red;
-
-</style>
-
-
 <br>
 
 ###Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106) 
