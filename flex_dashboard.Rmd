@@ -12,14 +12,6 @@ library(plotly)
 library(tidyverse)
 library(leaflet)
 library(leaflet.extras)
-<<<<<<< HEAD
-=======
-#library(rgdal)
-#if (!require(geojsonio)) {
-#install.packages("geojsonio")
-library(geojsonio)
-#}
->>>>>>> 3de87e212f900205e9eb2b4a92caf78916a21fee
 library(sp)
 library(maps)
 library(chron)
