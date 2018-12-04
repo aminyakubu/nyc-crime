@@ -34,12 +34,6 @@ complete_data %>%
 ```
 
 
- 
-
-
-
-
-**top 5 sex-related crimes by suspects's race**
 ** For sex related and weapon related crimes what are the dempgraphics of the victims?**
 
 
@@ -71,7 +65,56 @@ complete_data %>%
 ```
 
 
+
 By victim's sex
+```{r}
+complete_data %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+
+Victim's race
+
+```{r}
+complete_data %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_sex.y), vic_sex.y != "unknown") %>% 
+  group_by(vic_sex.y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
 
 
 
