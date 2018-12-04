@@ -10,19 +10,40 @@ output:
 
 <style>
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: red;
+    background-color: #337ab7;
 }
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: red;
+background-color: #337ab7;
+}
+
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
 
 </style>
 
 
-## Exploratory Analysis 1 - Length of Reported Event/Crime by Borough
+## Exploratory Analysis 1 - Top Crimes and Associated Demographics by Borough
+Include Yaa's
 
 <br>
-As one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough, assuming that longer crimes tend to be more severe, harder to resolve, and requiring more resources to deal with.
+<br>
+
+## Exploratory Analysis 2 - Length of Reported Event/Crime by Borough
+
+<br>
+As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough, assuming that longer crimes tend to be more severe, harder to resolve, and requiring more resources to deal with.
 ```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -113,12 +134,14 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 <br>
 <br>
 
-## Exploratory Analysis 2 - Overall Crime Rates by Borough
+## Exploratory Analysis 3 - Overall Felony Rates by Borough
 
-For our second exploratory analysis, we chose to examine crime rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
+For our third exploratory analysis, we chose to examine crime (i.e., felony) rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
 
-First, we loaded information from the U.S. Census on total population in the individual NYC boroughs to calculate crime rates in each borough.
+First, we loaded information from the U.S. Census on total population in the individual NYC boroughs to calculate felony rates in each borough.
 ```{r}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
 
 nyc_population = read_html(url) %>%  
@@ -135,8 +158,8 @@ nyc_population = nyc_population %>%
          population = as.numeric(gsub("," , "", population)))
 ```
 
-Next, we plotted the overall crime rates over 2014-2017 for each borough.
-```{r}
+Next, we plotted the overall felony rates over 2014-2017 for each borough.
+```{r, overall_felony_rates}
 grouped_df = sex_drug_weapons %>% 
   group_by(boro_nm, year) %>% 
   summarise(number = n())
@@ -149,7 +172,7 @@ x = full %>%
   ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
   geom_point() + geom_line(size = 1) +
   labs(x = "Year",
-       y = "Crime rate",
+       y = "Felony Rate",
        legend) + viridis::scale_color_viridis(
       name = "Borough", 
       discrete = TRUE
@@ -157,20 +180,14 @@ x = full %>%
 
 ggplotly(x)
 ```
-
-
-<br>
-<br>
-
-## Exploratory Analysis 3 - Top Crimes and Associated Demographics by Borough
-Include Yaa's
+From the graph above, we notice some interesting findings. First, Bronx, by far, has had the highest overall felony rate from 2014-2017. Secondly, the felony rates for Brooklyn and Manhattan are very similar; this applies to Queens and Staten Island as well, which comprise the two boroughs with the lowest overall crime rates from 2014-2017. Third, we can see that felony rates decreased from 2016-2017 for all boroughs except for Brooklyn. Lastly, overall felony rates across the years for all boroughs have tended to be stable, generally speaking. Note that these are strictly sex-related, weapons-related, and drug-related felonies.
 
 <br>
 <br>
 
-## Exploratory Analysis 4 - Geographical Distribution of Crimes
-Reading in the datasets
+## Exploratory Analysis 4 - Geographical Distribution of Felonies
 
+Our final exploratory analysis examined the geographical distribution of felonies. Examining this gives us information regarding the absolute numbers of felonies in each borough, and again, helps law enforcement officials determine where to prioritize efforts.
 ```{r, exploratory_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
@@ -181,7 +198,6 @@ crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ### Selecting zipcodes from address
 crimes_df = crimes_df %>% 
   mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
-
 ```
 
 ```{r, exp_leaflet}
@@ -248,7 +264,7 @@ map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/re
 download.file(map_url, "./datasets/nyc_zip_map.geojson")
 ```
 
-#### Crime distribution by zipcode for 2017
+#### 2017 Crime Distribution by Zip Code
 
 ```{r, exp_zips}
 
@@ -392,9 +408,7 @@ population_df %>% filter(!is.na(boro_nm)) %>%
     )
 ```
 
-Bronx has consistently had the highest crime rate over the last 4 years for all the 3 types of crimes. We see a steep reduction, however in the crime rate for bronx between the years of 2016 and 2017. Crime rates for all crimes in all boroughs decreased from 2016 to 2016. Surprisingly, brooklyn has seen a consitent rise in the crime rate of drug related felonies from 2015 to 2017. 
-
-#### Timing
+Bronx has consistently had the highest crime rate over the last 4 years for all 3 types of crimes. We see a steep reduction, however, in the crime rate for the Bronx between the years of 2016 and 2017. Crime rates for all crimes in all boroughs decreased from 2016 to 2016. Surprisingly, Brooklyn has seen a consistent rise in the crime rate of drug related felonies from 2015 to 2017. 
 
 
 

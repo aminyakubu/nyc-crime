@@ -169,7 +169,7 @@ saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds"
 ```
 <br>
 
-### Complete 2017 Dataset With Zip Codes
+### 2017 Dataset With Zip Codes
 ```{r acquiringdata_zip, eval = FALSE}
 #Dataset with the 3 crimes together with their zipcodes
 
