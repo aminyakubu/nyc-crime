@@ -77,19 +77,17 @@ library(tmap)
 ```
 
 <br>
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame to simply the analysis a bit. We also chose to include only observations with non-missing values to the following studied variables: cmplnt_to_dt (start date of reported crime/event), cmplnt_fr_dt (end date of reported crime/event), and boro_nm (borough). The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 861 observations.
+First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. We chose to include only observations with non-missing values to the following studied variables: cmplnt_to_dt (start date of reported crime/event), cmplnt_fr_dt (end date of reported crime/event), and boro_nm (borough). The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 861 observations.
 ```{r exp_tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 crime_data = crime_df %>% 
   janitor::clean_names() %>%
-  sample_n(1000) %>% 
   mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
   mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
   select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm)
 
 crime_data2 <- crime_data[complete.cases(crime_data),]
-
 ```
 
 <br>
@@ -99,6 +97,7 @@ crime_table =
   crime_data2 %>%
   rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
           time_diff, 'Time Difference (Days)' = time_diff2, 'Borough' = boro_nm) %>% 
+  group_by('Borough') %>% 
   knitr::kable(digits = 2)
 
 head(crime_table)
@@ -111,10 +110,10 @@ crime_data2 <- crime_data[complete.cases(crime_data),]
 
 crime_graph2 = 
   crime_data2 %>% 
-  filter(time_diff2 < 365) %>% 
+  filter(time_diff2 > 0) %>% 
   group_by(boro_nm) %>% 
   ggplot(aes(x = boro_nm, y = time_diff2)) + 
-  geom_point(color = 'darkblue') +
+  geom_boxplot(color = 'darkblue') +
     labs(
     title = "Spread of Times of Reported Event, By Borough",
     x = "Borough",
@@ -128,7 +127,7 @@ crime_graph2
 ```
 
 <br>
-From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Queens than in other boroughs. Lastly, although the spread among Brooklyn and Manhattan is approximately the same, Queens has more outliers.
+From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Manhattan than in other boroughs. Lastly, the spread among Brooklyn and Queens is approximately the same.
 
 <br>
 You can find the code for this exploratory analysis [here](code_date_borough.html).

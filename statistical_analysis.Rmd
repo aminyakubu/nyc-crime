@@ -36,25 +36,24 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 ```
 
-```{r}
+```{r, loading_packages}
 library(nnet)
 library(tidyverse)
-
 ```
 
-```{r}
-
+```{r, data_import}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
-
 ```
 
-Association between borough and crime, adjusting for average income
+For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough. Although we could not adjust for the different standard of living by borough, we adjusted for income.
 
-### Model statement for the multinomial logistic regression is below 
+<br>
 
-`In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island`
+### Model Statement for the Multinomial Logistic Regression Model
 
-`In(P(crimegroup=weapon related)/P(crime group=sex related) )=β_20 + β_21 Bronx+β_22 Brooklyn+β_23 Queens+ β_24 Staten_island`
+`ln(P(crimegroup = drug related)/P(crime group=sex related)) = β_10 + β_11(Bronx) + β_12(Brooklyn) + β_13(Queens) + β_14(Staten_Island)`
+
+`ln(P(crimegroup = weapon related)/P(crime group = sex related)) = β_20 + β_21(Bronx) + β_22(Brooklyn) + β_23(Queens) + β_24(Staten_Island)`
 
 
 ```{r}
