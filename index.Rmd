@@ -41,15 +41,14 @@ We were interested in looking at a dataset containing information on NYPD crime 
 Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either crime category, the crime location, or to each other. Lastly, the dataset provided ample opportunities to visualize interesting patterns associated with crime category, crime location (boroughs, distinct zipcodes and places), time of crime, and the demographics of victims.
 
 
-
-
-
 ## Analyses
 
 For the analyses, we used both graphical elements and functions (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also included a Flex Dashboard and Shiny app controls to provide stratification by different variables. 
 
 
-## Our Interesting Findings
+## Some Interesting Findings
+
+Overall, there were 19,753 reported weapon-related crimes, 18,293 drug-related crimes and 8,646 sex-related crimes
 
 
 
