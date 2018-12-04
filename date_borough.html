@@ -240,42 +240,20 @@ crime_data = crime_df %&gt;%
   select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
 head(crime_data)</code></pre>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2   boro_nm
-## 1   2015-06-12   2015-06-12     felony     0 secs          0    queens
-## 2   2017-08-18   2017-08-19     felony 86400 secs          1  brooklyn
-## 3   2014-03-01         &lt;NA&gt;     felony    NA secs         NA     bronx
-## 4   2015-05-15   2015-05-15     felony     0 secs          0 manhattan
-## 5   2016-09-06   2016-09-06     felony     0 secs          0  brooklyn
-## 6   2015-08-11         &lt;NA&gt;     felony    NA secs         NA manhattan</code></pre>
-=======
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd    time_diff time_diff2   boro_nm
-## 1   2016-05-26   2016-05-26     felony       0 secs          0  brooklyn
-## 2   2014-05-16   2014-05-16     felony       0 secs          0  brooklyn
-## 3   2017-05-06   2017-07-11     felony 5702400 secs         66    queens
-## 4   2016-09-12   2016-09-12     felony       0 secs          0 manhattan
-## 5   2016-03-09   2016-03-09     felony       0 secs          0    queens
-## 6   2014-08-11   2014-08-11     felony       0 secs          0    queens</code></pre>
->>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
-=======
-<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd time_diff time_diff2   boro_nm
-<<<<<<< HEAD
-## 1   2014-07-06   2014-07-06     felony    0 secs          0    queens
-## 2   2016-11-03   2016-11-03     felony    0 secs          0 manhattan
-## 3   2016-09-20   2016-09-20     felony    0 secs          0     bronx
-## 4   2016-07-27   2016-07-27     felony    0 secs          0    queens
-## 5   2015-07-29         &lt;NA&gt;     felony   NA secs         NA manhattan
-## 6   2015-06-05   2015-06-05     felony    0 secs          0     bronx</code></pre>
-=======
-## 1   2016-09-25   2016-09-25     felony    0 secs          0 manhattan
-## 2   2014-06-20         &lt;NA&gt;     felony   NA secs         NA manhattan
-## 3   2015-08-15   2015-08-15     felony    0 secs          0    queens
-## 4   2017-04-06   2017-04-06     felony    0 secs          0 manhattan
-## 5   2017-07-11         &lt;NA&gt;     felony   NA secs         NA  brooklyn
-## 6   2017-08-15         &lt;NA&gt;     felony   NA secs         NA  brooklyn</code></pre>
->>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
->>>>>>> d032caf4aaa37c3f6eb3d2d5255b2f18af532dc4
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd    time_diff time_diff2
+## 1   2017-08-12   2017-08-12     felony       0 secs          0
+## 2   2017-12-27   2017-12-27     felony       0 secs          0
+## 3   2015-06-10   2015-08-17     felony 5875200 secs         68
+## 4   2014-06-01   2014-06-01     felony       0 secs          0
+## 5   2015-06-23   2015-06-23     felony       0 secs          0
+## 6   2017-12-08         &lt;NA&gt;     felony      NA secs         NA
+##         boro_nm
+## 1        queens
+## 2     manhattan
+## 3      brooklyn
+## 4      brooklyn
+## 5 staten island
+## 6     manhattan</code></pre>
 <p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
 <pre class="r"><code>crime_table = 
   crime_data %&gt;% 
@@ -284,55 +262,16 @@ head(crime_data)</code></pre>
 head(crime_table, 12)</code></pre>
 <pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
 ##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
-<<<<<<< HEAD
-##  [3] &quot;2014-07-06     2014-07-06     felony       0 secs                 0.00  queens        &quot;
-##  [4] &quot;2016-11-03     2016-11-03     felony       0 secs                 0.00  manhattan     &quot;
-##  [5] &quot;2016-09-20     2016-09-20     felony       0 secs                 0.00  bronx         &quot;
-##  [6] &quot;2016-07-27     2016-07-27     felony       0 secs                 0.00  queens        &quot;
-##  [7] &quot;2015-07-29     NA             felony       NA                       NA  manhattan     &quot;
-##  [8] &quot;2015-06-05     2015-06-05     felony       0 secs                 0.00  bronx         &quot;
-##  [9] &quot;2014-06-05     NA             felony       NA                       NA  staten island &quot;
-## [10] &quot;2015-08-22     2015-08-22     felony       0 secs                 0.00  brooklyn      &quot;
-## [11] &quot;2014-08-19     2014-08-28     felony       777600 secs            9.00  brooklyn      &quot;
-## [12] &quot;2016-04-29     2016-04-29     felony       0 secs                 0.00  bronx         &quot;</code></pre>
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-##  [3] &quot;2015-06-12     2015-06-12     felony       0 secs                 0.00  queens        &quot;
-##  [4] &quot;2017-08-18     2017-08-19     felony       86400 secs             1.00  brooklyn      &quot;
-##  [5] &quot;2014-03-01     NA             felony       NA                       NA  bronx         &quot;
-##  [6] &quot;2015-05-15     2015-05-15     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2016-09-06     2016-09-06     felony       0 secs                 0.00  brooklyn      &quot;
-##  [8] &quot;2015-08-11     NA             felony       NA                       NA  manhattan     &quot;
-##  [9] &quot;2016-03-29     2016-03-29     felony       0 secs                 0.00  brooklyn      &quot;
-## [10] &quot;2017-10-27     2017-10-27     felony       0 secs                 0.00  bronx         &quot;
-## [11] &quot;2016-12-10     2016-12-10     felony       0 secs                 0.00  queens        &quot;
-## [12] &quot;2014-02-06     2014-02-06     felony       0 secs                 0.00  staten island &quot;</code></pre>
-=======
-##  [3] &quot;2016-05-26     2016-05-26     felony       0 secs                 0.00  brooklyn      &quot;
-##  [4] &quot;2014-05-16     2014-05-16     felony       0 secs                 0.00  brooklyn      &quot;
-##  [5] &quot;2017-05-06     2017-07-11     felony       5702400 secs          66.00  queens        &quot;
-##  [6] &quot;2016-09-12     2016-09-12     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2016-03-09     2016-03-09     felony       0 secs                 0.00  queens        &quot;
-##  [8] &quot;2014-08-11     2014-08-11     felony       0 secs                 0.00  queens        &quot;
-##  [9] &quot;2015-03-12     2015-03-12     felony       0 secs                 0.00  brooklyn      &quot;
-## [10] &quot;2017-02-06     2017-02-06     felony       0 secs                 0.00  queens        &quot;
-## [11] &quot;2014-10-22     2014-10-22     felony       0 secs                 0.00  queens        &quot;
-## [12] &quot;2015-01-16     NA             felony       NA                       NA  queens        &quot;</code></pre>
->>>>>>> 5726eb010ad0375237b0e7adda2dba9a01a7923d
-=======
-##  [3] &quot;2016-09-25     2016-09-25     felony       0 secs                 0.00  manhattan     &quot;
-##  [4] &quot;2014-06-20     NA             felony       NA                       NA  manhattan     &quot;
-##  [5] &quot;2015-08-15     2015-08-15     felony       0 secs                 0.00  queens        &quot;
-##  [6] &quot;2017-04-06     2017-04-06     felony       0 secs                 0.00  manhattan     &quot;
-##  [7] &quot;2017-07-11     NA             felony       NA                       NA  brooklyn      &quot;
-##  [8] &quot;2017-08-15     NA             felony       NA                       NA  brooklyn      &quot;
-##  [9] &quot;2014-03-18     NA             felony       NA                       NA  bronx         &quot;
-## [10] &quot;2017-03-22     2017-03-22     felony       0 secs                 0.00  brooklyn      &quot;
-## [11] &quot;2014-11-22     2014-11-23     felony       86400 secs             1.00  brooklyn      &quot;
-## [12] &quot;2015-06-18     2015-06-18     felony       0 secs                 0.00  bronx         &quot;</code></pre>
->>>>>>> 15d82df5b5e147c6bfaae37c32d4a97f405be332
->>>>>>> d032caf4aaa37c3f6eb3d2d5255b2f18af532dc4
+##  [3] &quot;2017-08-12     2017-08-12     felony       0 secs                 0.00  queens        &quot;
+##  [4] &quot;2017-12-27     2017-12-27     felony       0 secs                 0.00  manhattan     &quot;
+##  [5] &quot;2015-06-10     2015-08-17     felony       5875200 secs          68.00  brooklyn      &quot;
+##  [6] &quot;2014-06-01     2014-06-01     felony       0 secs                 0.00  brooklyn      &quot;
+##  [7] &quot;2015-06-23     2015-06-23     felony       0 secs                 0.00  staten island &quot;
+##  [8] &quot;2017-12-08     NA             felony       NA                       NA  manhattan     &quot;
+##  [9] &quot;2017-11-14     NA             felony       NA                       NA  bronx         &quot;
+## [10] &quot;2017-07-25     2017-07-25     felony       0 secs                 0.00  manhattan     &quot;
+## [11] &quot;2017-04-03     2017-04-03     felony       0 secs                 0.00  bronx         &quot;
+## [12] &quot;2015-06-26     2015-06-29     felony       259200 secs            3.00  bronx         &quot;</code></pre>
 <p>I can also look at whether the length of time for the reported event/crime differs by borough visually.</p>
 <pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
 
