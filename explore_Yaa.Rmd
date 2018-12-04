@@ -7,6 +7,10 @@ output: html_document
 
 ```{r exp_yaa_lib}
 library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
