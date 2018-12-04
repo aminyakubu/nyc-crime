@@ -23,8 +23,7 @@ complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num")
 ```
 
 
-
-number of crimes in 3 crime groups
+Number of crimes in 3 crime groups
 
 ```{r}
 complete_data %>%
@@ -35,114 +34,27 @@ complete_data %>%
 ```
 
 
- top 5 drug related crimes by suspect race
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, susp_race) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
+ 
 
 
-top 5 drug related crimes by suspect's age
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, susp_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-
-top 5 drug related crimes by suspect's sex
-```{r}
-complete_data %>%
-  filter(crime_group == "Drug-Related") %>%
-  group_by(pd_desc_x, susp_sex) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 weapon-related crimes by suspect's race
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, susp_race) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 weapon-related crimes by suspect's age
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, susp_age_group) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
-
-
-top 5 weapon-related crimes by suspect's sex
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
-  group_by(pd_desc_x, susp_sex) %>%
-  summarise(number = n()) %>%
-  ungroup() %>%
-  top_n(5, number) %>%
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
 
 
 **top 5 sex-related crimes by suspects's race**
 ** For sex related and weapon related crimes what are the dempgraphics of the victims?**
-
-```{r}
-complete_data %>%
-  filter(crime_group == "Sex-Related") %>%
-  group_by(vic_age_group) %>%
-  summarise(number = n()) %>% arrange(desc(number)) %>% 
-  top_n(5, number) %>% View
-  arrange(desc(number)) %>%
-  knitr::kable() 
-```
 
 
 ****
 
 ```{r}
 complete_data %>%
-  filter(crime_group == "Sex-Related" | crime_group == "Weapon-Related") %>%
+  filter(crime_group == "Sex-Related") %>%
   filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
   group_by(vic_age_group) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
 
 complete_data %>%
-  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
   group_by(vic_age_group) %>%
   summarise(number = n()) %>% arrange(desc(number)) %>% 
   knitr::kable() 
