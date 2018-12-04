@@ -151,12 +151,35 @@ complete_data %>%
 ```
 
 
+****
 
 ```{r}
 complete_data %>%
-  filter(crime_group == "Sex-Related", "Weapon-Related") %>%
-  
+  filter(crime_group == "Sex-Related" | crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+
+
 ```
+
+
+
+
+
 
 top 5 sex-related crimes by suspects's age
 
