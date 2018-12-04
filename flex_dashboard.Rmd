@@ -18,6 +18,10 @@ library(chron)
 library(lubridate)
 library(rvest)
 library(tools)
+if (!require(geojsonio)) {
+    install.packages("geojsonio")
+    library(geojsonio)
+}
 ```
 
 ```{r flex_data}
