@@ -14,7 +14,7 @@ output:
 }
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7;
+background-color: #337ab7; ffff
 
 </style>
 
