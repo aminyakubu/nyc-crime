@@ -66,6 +66,8 @@ nyc_felony_crimes = nyc_crime %>%
   filter(law_cat_cd == "felony") %>% 
   select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
 
+saveRDS(nyc_felony_crimes, file = "./datasets/nyc_felony_crimes.rds")
+
 #### selecting crimes of interest
 sex_drug_weapons = nyc_felony_crimes %>% 
   filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
@@ -75,13 +77,12 @@ sex_drug_weapons = nyc_felony_crimes %>%
                       781, 792, 793, 796)) %>% 
   mutate(longitude = as.numeric(longitude),
          latitude = as.numeric(latitude)) %>% 
-  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %>% 
+  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, vic_age_group, year, prem_typ_desc) %>% 
   mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
          crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), "Sex-Related", 
                                if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), "Drug-Related", 
                                        if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd))))
 
-saveRDS(nyc_felony_crimes, file = "./datasets/nyc_felony_crimes.rds")
 saveRDS(sex_drug_weapons, file = "./datasets/sex_drug_weapons.rds")
 ```
 

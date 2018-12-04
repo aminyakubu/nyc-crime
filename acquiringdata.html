@@ -360,6 +360,8 @@ nyc_felony_crimes = nyc_crime %&gt;%
   filter(law_cat_cd == &quot;felony&quot;) %&gt;% 
   select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
 
+saveRDS(nyc_felony_crimes, file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
+
 #### selecting crimes of interest
 sex_drug_weapons = nyc_felony_crimes %&gt;% 
   filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
@@ -369,13 +371,12 @@ sex_drug_weapons = nyc_felony_crimes %&gt;%
                       781, 792, 793, 796)) %&gt;% 
   mutate(longitude = as.numeric(longitude),
          latitude = as.numeric(latitude)) %&gt;% 
-  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, year, prem_typ_desc) %&gt;% 
+  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, vic_age_group, year, prem_typ_desc) %&gt;% 
   mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
          crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
                                if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), &quot;Drug-Related&quot;, 
                                        if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))
 
-saveRDS(nyc_felony_crimes, file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
 saveRDS(sex_drug_weapons, file = &quot;./datasets/sex_drug_weapons.rds&quot;)</code></pre>
 <p>Our dataset for analysis has 588,704 observations and 31 variables for nyc_felony_crimes and it’s subset sex_drug_weapons has 46,692 observations and 14 variables.</p>
 </div>

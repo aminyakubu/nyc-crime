@@ -30,12 +30,14 @@ library(tools)
 ```
 
 ```{r flex_data}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
 ```
 
-Column {data-width=600}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
 ### Chart A: Distribution for sex-related, drug-related and weapon-related felonies for 2017 by Zipcode
@@ -77,50 +79,27 @@ map_json %>%
                    position = "topleft")
 ```
 
-Column {data-width=400}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Chart B: Trend of Crime rate
+### Chart B: Distribution of victims of sex and weapon-related felonies by age group 2014 - 2017
 
 ```{r flex_chartB}
-sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
-url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+sex_drug_weapons %>% filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
+  mutate(vic_age_group = str_c(vic_age_group, " years")) %>% 
+  filter(crime_group == "Sex-Related" | crime_group == "Weapon-Related") %>% 
+  group_by(crime_group, vic_age_group) %>% 
+  summarize(number = n()) %>% 
+  mutate(text_label = paste("Age group = ", vic_age_group, "\nCrime Group = ", crime_group, "\nCount = ", number)) %>% 
+  plot_ly(x = ~ crime_group, y = ~ number, color = ~ vic_age_group, type = "bar", text = ~ text_label) %>% 
+   layout(yaxis = list(title = 'Count'), xaxis = list(title = 'Crime Group'))
 
-nyc_population = read_html(url) %>%  html_nodes(css = "table") %>% .[[1]] %>% 
-  html_table(header = TRUE) %>% as.tibble() %>% 
-  janitor::clean_names()
-
-names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
-
-nyc_population = nyc_population %>% 
-  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
-  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
-         population = as.numeric(gsub("," , "", population)))
-
-grouped_df = sex_drug_weapons %>% group_by(boro_nm, year) %>% 
-  summarise(number = n())
-
-full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
-  mutate(crime_rate = (number/population)*100)
-
-x = full %>% filter(!is.na(boro_nm)) %>% 
-  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
-  geom_point() + geom_line(size = 1) +
-  labs(x = "Year",
-       y = "Crime rate",
-       legend) + viridis::scale_color_viridis(
-      name = "Borough", 
-      discrete = TRUE
-    ) + theme_classic()
-
-ggplotly(x)
 ```
 
-### Chart C: Distribution of victims of sex, drug and weapon-related crimes by race/ethnicity from 2014 - 2017
+### Chart C: Distribution of victims of sex, drug and weapon-related felonies by race/ethnicity from 2014 - 2017
 
 ```{r flex_chartC}
-sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 season_df = sex_drug_weapons %>% 
   mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
@@ -133,6 +112,7 @@ season_df = sex_drug_weapons %>%
          hour = hour(cmplnt_fr_tm)) %>% select(-cmplnt_fr_tm)
 
 #### Filtering out unknown victim race
+
 p = season_df %>% filter(vic_race != "unknown") %>% 
   group_by(vic_race, boro_nm) %>% summarize(number = n()) %>% 
   ggplot(aes(x = reorder(vic_race, number), y = number, fill = vic_race)) + geom_col()  + 
