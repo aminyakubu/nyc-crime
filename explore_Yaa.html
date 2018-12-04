@@ -226,24 +226,373 @@ $(document).ready(function () {
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ──────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
 ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
 ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
 ## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ─────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(eval = FALSE)</code></pre>
+<pre class="r"><code>felony_crime = readRDS(file = &quot;./datasets/sex_drug_weapons.rds&quot;)
+
+overall_felony = readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
+
+complete_data = inner_join(overall_felony, felony_crime, by = &quot;cmplnt_num&quot;) %&gt;%
+  janitor::clean_names(dat = .)</code></pre>
 <p>Number of crimes in 3 crime groups</p>
+<pre class="r"><code>complete_data %&gt;%
+  group_by(crime_group) %&gt;%
+  summarise(number = n()) %&gt;%
+  arrange(desc(number)) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">crime_group</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Weapon-Related</td>
+<td align="right">19753</td>
+</tr>
+<tr class="even">
+<td align="left">Drug-Related</td>
+<td align="right">18293</td>
+</tr>
+<tr class="odd">
+<td align="left">Sex-Related</td>
+<td align="right">8646</td>
+</tr>
+</tbody>
+</table>
 <p>** For sex related and weapon related crimes what are the dempgraphics of the victims?**</p>
 <hr />
 <p>By victim’s age group</p>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_age_group_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_age_group_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">&lt;18</td>
+<td align="right">3452</td>
+</tr>
+<tr class="even">
+<td align="left">25-44</td>
+<td align="right">2466</td>
+</tr>
+<tr class="odd">
+<td align="left">18-24</td>
+<td align="right">1823</td>
+</tr>
+<tr class="even">
+<td align="left">45-64</td>
+<td align="right">488</td>
+</tr>
+<tr class="odd">
+<td align="left">65+</td>
+<td align="right">54</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_age_group_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_age_group_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">25-44</td>
+<td align="right">1115</td>
+</tr>
+<tr class="even">
+<td align="left">45-64</td>
+<td align="right">499</td>
+</tr>
+<tr class="odd">
+<td align="left">18-24</td>
+<td align="right">365</td>
+</tr>
+<tr class="even">
+<td align="left">&lt;18</td>
+<td align="right">107</td>
+</tr>
+<tr class="odd">
+<td align="left">65+</td>
+<td align="right">43</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_age_group_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_age_group_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">25-44</td>
+<td align="right">150</td>
+</tr>
+<tr class="even">
+<td align="left">45-64</td>
+<td align="right">69</td>
+</tr>
+<tr class="odd">
+<td align="left">18-24</td>
+<td align="right">58</td>
+</tr>
+<tr class="even">
+<td align="left">&lt;18</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="left">65+</td>
+<td align="right">14</td>
+</tr>
+</tbody>
+</table>
 <p>By victim’s sex</p>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  filter(!is.na(vic_sex_y), vic_sex_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_sex_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_sex_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">f</td>
+<td align="right">7763</td>
+</tr>
+<tr class="even">
+<td align="left">m</td>
+<td align="right">763</td>
+</tr>
+<tr class="odd">
+<td align="left">e</td>
+<td align="right">120</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  filter(!is.na(vic_sex_y), vic_sex_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_sex_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_sex_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">e</td>
+<td align="right">17319</td>
+</tr>
+<tr class="even">
+<td align="left">m</td>
+<td align="right">1387</td>
+</tr>
+<tr class="odd">
+<td align="left">f</td>
+<td align="right">910</td>
+</tr>
+<tr class="even">
+<td align="left">d</td>
+<td align="right">137</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  filter(!is.na(vic_sex_y), vic_sex_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_sex_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_sex_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">e</td>
+<td align="right">17787</td>
+</tr>
+<tr class="even">
+<td align="left">m</td>
+<td align="right">199</td>
+</tr>
+<tr class="odd">
+<td align="left">d</td>
+<td align="right">158</td>
+</tr>
+<tr class="even">
+<td align="left">f</td>
+<td align="right">149</td>
+</tr>
+</tbody>
+</table>
 <p>Victim’s race</p>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Sex-Related&quot;) %&gt;%
+  filter(!is.na(vic_race_y), vic_race_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_race_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_race_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">black</td>
+<td align="right">3014</td>
+</tr>
+<tr class="even">
+<td align="left">white hispanic</td>
+<td align="right">2504</td>
+</tr>
+<tr class="odd">
+<td align="left">white</td>
+<td align="right">1498</td>
+</tr>
+<tr class="even">
+<td align="left">black hispanic</td>
+<td align="right">507</td>
+</tr>
+<tr class="odd">
+<td align="left">asian / pacific islander</td>
+<td align="right">479</td>
+</tr>
+<tr class="even">
+<td align="left">american indian/alaskan native</td>
+<td align="right">17</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Weapon-Related&quot;) %&gt;%
+  filter(!is.na(vic_race_y), vic_race_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_race_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_race_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">black</td>
+<td align="right">1127</td>
+</tr>
+<tr class="even">
+<td align="left">white hispanic</td>
+<td align="right">474</td>
+</tr>
+<tr class="odd">
+<td align="left">white</td>
+<td align="right">232</td>
+</tr>
+<tr class="even">
+<td align="left">asian / pacific islander</td>
+<td align="right">139</td>
+</tr>
+<tr class="odd">
+<td align="left">black hispanic</td>
+<td align="right">126</td>
+</tr>
+<tr class="even">
+<td align="left">american indian/alaskan native</td>
+<td align="right">13</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>complete_data %&gt;%
+  filter(crime_group == &quot;Drug-Related&quot;) %&gt;%
+  filter(!is.na(vic_race_y), vic_race_y != &quot;unknown&quot;) %&gt;% 
+  group_by(vic_race_y) %&gt;%
+  summarise(number = n()) %&gt;% arrange(desc(number)) %&gt;% 
+  knitr::kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">vic_race_y</th>
+<th align="right">number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">black</td>
+<td align="right">101</td>
+</tr>
+<tr class="even">
+<td align="left">white</td>
+<td align="right">85</td>
+</tr>
+<tr class="odd">
+<td align="left">white hispanic</td>
+<td align="right">79</td>
+</tr>
+<tr class="even">
+<td align="left">asian / pacific islander</td>
+<td align="right">35</td>
+</tr>
+<tr class="odd">
+<td align="left">black hispanic</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">american indian/alaskan native</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
 
 
 
