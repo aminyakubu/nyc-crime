@@ -58,7 +58,7 @@ library(tmap)
 ```
 
 <br>
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame to simply the analysis a bit. We also chose to include only observations with non-missing values to the following studied variables: cmplnt_to_dt (start date of reported crime/event), cmplnt_fr_dt (end date of reported crime/event), and law_cat_cd (classification of crime/event; i.e., felony). The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 861 observations.
+First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. For this exploratory analysis, we chose to limit the data by randomly sampling 1,000 observations from the data frame to simply the analysis a bit. We also chose to include only observations with non-missing values to the following studied variables: cmplnt_to_dt (start date of reported crime/event), cmplnt_fr_dt (end date of reported crime/event), and boro_nm (borough). The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 861 observations.
 ```{r exp_tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
@@ -118,16 +118,35 @@ You can find the code for this exploratory analysis [here](code_date_borough.htm
 
 For our second exploratory analysis, we chose to examine crime rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
 
-First, we load the required R packages and read in the dataset. We also load information from the U.S. Census on total population in the individual NYC boroughs to calculate offense rates in each borough.
-
+First, we loaded information from the U.S. Census on total population in the individual NYC boroughs to calculate crime rates in each borough.
 ```{r}
-grouped_df = sex_drug_weapons %>% group_by(boro_nm, year) %>% 
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  
+  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% 
+  as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+```
+
+Next, we plotted the overall crime rates over 2014-2017 for each borough.
+```{r}
+grouped_df = sex_drug_weapons %>% 
+  group_by(boro_nm, year) %>% 
   summarise(number = n())
 
 full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
   mutate(crime_rate = (number/population)*100)
 
-x = full %>% filter(!is.na(boro_nm)) %>% 
+x = full %>% 
+  filter(!is.na(boro_nm)) %>% 
   ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
   geom_point() + geom_line(size = 1) +
   labs(x = "Year",

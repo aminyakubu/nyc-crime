@@ -101,7 +101,7 @@ sex_drug_weapons = nyc_felony_crimes %>%
 saveRDS(sex_drug_weapons, file = "./datasets/sex_drug_weapons.rds")
 ```
 
-The nyc_felony_crimes dataset has 588,704 observations and 31 variables. The subsetted sex_drug_weapons dataset has 46,692 observations and 14 variables. 
+The nyc_felony_crimes dataset has 588,704 observations and 31 variables. The subsetted sex_drug_weapons dataset has 46,692 observations and 15 variables. 
 
 <br>
 
