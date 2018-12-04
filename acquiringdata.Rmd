@@ -15,7 +15,7 @@ knitr::opts_chunk$set(eval = FALSE)
 
 ### Accessing the Data 
 
-The data was accessed through the SODA Consumer API on 17th November, 2018. Click [here](https://dev.socrata.com/consumers/getting-started.html) to read more about the API. 
+The data was accessed through the SODA Consumer API client on 17th November, 2018. Click [here](https://dev.socrata.com/consumers/getting-started.html) to read more about the API. 
 
 The `tidyverse`, `Rsocrata` and `lubridate` libraries were required to connect with the API and subsequently manipulate and clean the data.
 
