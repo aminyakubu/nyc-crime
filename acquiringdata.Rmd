@@ -195,8 +195,8 @@ The resulting dataset called `sex_drug_weapons` dataset has 46,692 observations 
 The dataset comes without zipcode or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore we used google maps API to reverse geocode the get the exact address of the crime occurence. We then subsequently took out the zipcodes for mapping. The full code on how we reverse geocoded the longitude and latitude information can be found in our repository on github. 
 
 
-#### Felony - Drug Offenses
 ```{r acquiringdata_drug, eval = FALSE}
+#### Felony - Drug Offenses
 #### Sampling only year 2017 and selecting all felony drug rape reports
 
 ### Drug offenses in 2017
