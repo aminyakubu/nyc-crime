@@ -44,6 +44,7 @@ Include Yaa's
 
 <br>
 As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported felony differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer felonies may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
+
 ```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -102,6 +103,7 @@ crime_data2 <- crime_data[complete.cases(crime_data),] %>%
 ```
 
 We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
+
 ```{r exp_mean_time_tables, echo = FALSE}
 crime_table = 
   crime_data2 %>%

@@ -1,6 +1,5 @@
 ---
 title: "Statistical Analysis"
-
 output: html_document
 ---
 
@@ -45,7 +44,7 @@ library(tidyverse)
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
 
-For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough. Although we could not adjust for the different standard of living by borough, we adjusted for income.
+For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.
 
 <br>
 
@@ -55,7 +54,8 @@ For our formal statistical analysis, we wanted to examine the association betwee
 
 `ln(P(crimegroup = weapon related)/P(crime group = sex related)) = β_20 + β_21(Bronx) + β_22(Brooklyn) + β_23(Queens) + β_24(Staten_Island)`
 
-In order to run an analysis, we first create our reference groups. We made drug-related felonies as the reference group among the 3 types of felonies and we made Manhattan the reference borough.
+Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime. 
+
 ```{r}
 ### Making Drug-related Felonies and Manhattan  - Reference Groups
 sex_drug_weapons = sex_drug_weapons %>%
@@ -63,6 +63,7 @@ sex_drug_weapons = sex_drug_weapons %>%
          boro_nm = forcats::fct_relevel(boro_nm, "manhattan"))
 
 ```
+
 <br>
 
 ### Tabulation
