@@ -11,7 +11,7 @@
 
 
 
-<title>Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</title>
+<title>Exploratory Analysis</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,9 +19,6 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -172,101 +169,6 @@ $(document).ready(function () {
 
 
 
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -314,33 +216,104 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</h1>
+<h1 class="title toc-ignore">Exploratory Analysis</h1>
 
 </div>
 
 
-<p><br></p>
-<style>
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: #337ab7;
-}
+<pre class="r"><code>knitr::opts_chunk$set(eval = FALSE)</code></pre>
+<p>Loading the relevant libraries</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(plotly)
+library(sqldf)</code></pre>
+<p>Reading the dataset</p>
+<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)</code></pre>
+<p>Loading information from the US census on total population in the individual NYC boroughs to calculate offense rates in each borough</p>
+<pre class="r"><code>url = &quot;https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217&quot;
+boro_pop = read_html(url)
 
-.navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7; 
+boro_pop %&gt;%
+  html_nodes(css = &quot;table&quot;)
 
-</style>
-<div id="exploratory-analysis-1---length-of-reported-eventcrime-by-borough" class="section level2">
-<h2>Exploratory Analysis 1 - Length of Reported Event/Crime by Borough</h2>
-<p>Report The written report (e.g. R Markdown and MD files) produced by your team are central to this project. This will detail how you completed your project, and should cover data collection and cleaning, exploratory analyses, alternative strategies, descriptions of approaches, and a discussion of results. We anticipate that your project will change somewhat over time; these changes and the reasons for them should be documented! You should write one report document per group, and be sure to include all group member names in the document.</p>
-<p>Your R Markdown should include the following topics. Depending on your project type the amount of discussion you devote to each of them will vary:</p>
-<p>Motivation: Provide an overview of the project goals and motivation. Related work: Anything that inspired you, such as a paper, a web site, or something we discussed in class. Initial questions: What questions are you trying to answer? How did these questions evolve over the course of the project? What new questions did you consider in the course of your analysis? Data: Source, scraping method, cleaning, etc. Exploratory analysis: Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to your ideas. Additional analysis: If you undertake formal statistical analyses, describe these in detail Discussion: What were your findings? Are they what you expect? What insights into the data can you make? As this will be your only chance to describe your project in detail, make sure that your report is a standalone document that fully describes your process and results. We also expect you to write high-quality code that is understandable to an outside reader. Coding collaboratively and actively reviewing code within the team will help with this!</p>
-<p>Your report should be developed in a dedicated GitHub repository. Data should not be included in the repo; make the data accessible somewhere online (e.g. google drive or a downloadable link) and, in the report, include instructions on where to access the data. If we cannot access your work or links because these directions are not followed correctly, we will not grade your work</p>
-</div>
+pop_df = (boro_pop %&gt;% html_nodes(css = &quot;table&quot;)) %&gt;% 
+  .[[1]] %&gt;%
+  html_table() %&gt;% 
+  as_tibble() %&gt;% 
+ janitor::clean_names()
+
+names(pop_df)[1:7] = c(&quot;estimate_date&quot;, &quot;new_york_city&quot;, &quot;bronx&quot;, &quot;brooklyn&quot;, &quot;manhattan&quot;, &quot;queens&quot;, &quot;staten_island&quot;)
+
+pop_df = pop_df %&gt;% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %&gt;% 
+  mutate(population = if_else(population == &quot;Population estimates, July 1, 2017,  (V2017)&quot;, &quot;2017&quot;, population),
+         population = as.numeric(gsub(&quot;,&quot; , &quot;&quot;, population)))</code></pre>
+<pre class="r"><code>nycc_df = crime_df %&gt;% 
+  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm))</code></pre>
+<p>Looking at the individual offenses by borough over the four years:</p>
+<pre class="r"><code>crime_df %&gt;% 
+  distinct(pd_cd) %&gt;% 
+  count()
+
+combined_df = nycc_df %&gt;% group_by(boro_nm, pd_cd, year) %&gt;% 
+  summarise(count = n())
+
+
+full = left_join(combined_df, pop_df, by = &quot;boro_nm&quot;) %&gt;% 
+mutate(off_rate = ((count/population)*100)) 
+
+full[,&#39;off_rate&#39;] = round(full[,&#39;off_rate&#39;],2)
+
+test &lt;- sqldf(&quot;SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = &#39;2017&#39;
+              ORDER BY boro_nm, off_rate DESC&quot;)
+
+test_2017 &lt;- test[!duplicated(test$boro_nm), ]
+
+
+test2 &lt;- sqldf(&quot;SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = &#39;2016&#39;
+              ORDER BY boro_nm, off_rate DESC&quot;)
+
+test_2016 &lt;- test2[!duplicated(test2$boro_nm), ]
+
+
+test3 &lt;- sqldf(&quot;SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = &#39;2015&#39;
+              ORDER BY boro_nm, off_rate DESC&quot;)
+
+test_2015 &lt;- test3[!duplicated(test3$boro_nm), ]
+
+
+test4 &lt;- sqldf(&quot;SELECT boro_nm, year, off_rate
+              FROM full
+              WHERE off_rate IS NOT NULL and year = &#39;2014&#39;
+              ORDER BY boro_nm, off_rate DESC&quot;)
+
+test_2014 &lt;- test4[!duplicated(test4$boro_nm), ]
+
+test_new = rbind(test_2017, test_2016, test_2015, test_2014)
+ 
+
+trend = ggplot(test_new, aes(x = boro_nm, y = off_rate, color = year)) +
+geom_point() + 
+theme(legend.position = &quot;bottom&quot;) +
+  labs(
+  x = &quot;Borough&quot;,
+  y = &quot;Offense rate&quot;,
+  caption = &quot;NYC_Crime&quot;
+  ) +
+geom_smooth(se = FALSE) +
+theme(legend.position = &quot;bottom&quot;)
+
+ggplotly(trend)</code></pre>
+<p>Interpretation: From this exploratory subanalysis, we can see that the rates of individual offenses are highest in the boroughs of Bronx and Brooklyn, followed by Manhattan and Queens. Staten Island reported the lowest rates of individual offenses throughout the four years. Individual offense rates increased in the Bronx from 2014 through 2017. On the contrary, Brooklyn witnessed a significant plummeting in offense rates through the years 2014 to 2017.</p>
 
 
 
-</div>
-</div>
 
 </div>
 

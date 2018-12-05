@@ -285,7 +285,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="flex_dashboard.html">Flex Dashboard</a>
@@ -375,13 +375,10 @@ font-weight: bold;
 <div id="reverse-geocoding" class="section level3">
 <h3>Reverse Geocoding</h3>
 <p>The dataset comes without zipcode or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore we used google maps API to reverse geocode the get the exact address of the crime occurence. We then subsequently took out the zipcodes for mapping. The full code on how we reverse geocoded the longitude and latitude information can be found in our repository on github.</p>
-<div id="felony---drug-offenses" class="section level4">
-<h4>Felony - Drug Offenses</h4>
-</div>
 </div>
 <div id="usage" class="section level3">
 <h3>Usage</h3>
-<p>After cleaning, subsetting and reverse geocoding, we saved the resulting dataset in <code>rds</code> format. You can download the resulting datasets <a href="https://drive.google.com/open?id=1QZB8nKClFl9qZV20Sa15Lf7ZbIlxBcis">from this google drive</a>. The code to read the datasets can also be found in our repository file called <a href="https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd"><code>acquiringdata.Rmd</code></a></p>
+<p>After cleaning, subsetting and reverse geocoding, we saved the resulting dataset in <code>rds</code> format. You can download the resulting datasets <a href="https://drive.google.com/open?id=1QZB8nKClFl9qZV20Sa15Lf7ZbIlxBcis">from this google drive</a>. The code on how to read the datasets can also be found in our repository file called <a href="https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd"><code>acquiringdata.Rmd</code></a></p>
 </div>
 <div id="data-dictionary" class="section level3">
 <h3>Data Dictionary</h3>
@@ -393,7 +390,7 @@ font-weight: bold;
 <p>
 <code>cmplnt_fr_dt</code>: exact start date of occurrence for the reported incident <br>
 <p>
-<code>cmplnt_fr_dt</code>: exact end date of occurrent for the reported incident <br>
+<code>cmplnt_to_dt</code>: exact end date of occurrent for the reported incident <br>
 <p>
 <code>cmplnt_fr_tm</code>: exact time of occurrence for the reported incident <br>
 <p>

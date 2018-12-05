@@ -11,7 +11,7 @@
 
 
 
-<title>Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</title>
+<title></title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,15 +19,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
-<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
-<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -172,101 +166,6 @@ $(document).ready(function () {
 
 
 
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -314,33 +213,89 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</h1>
 
 </div>
 
 
-<p><br></p>
-<style>
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: #337ab7;
-}
+<div id="date_and_borough" class="section level1">
+<h1>date_and_borough</h1>
+<p>Jacky Choi November 18, 2018</p>
+<p>This is one of the exploratory analyses for our P8105 - Data Science group project.</p>
+<p>First, I load the tidyverse and patchwork package.</p>
+<pre><code>## -- Attaching packages --------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
-.navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7; 
+## v ggplot2 3.0.0     v purrr   0.2.5
+## v tibble  1.4.2     v dplyr   0.7.6
+## v tidyr   0.8.1     v stringr 1.3.1
+## v readr   1.1.1     v forcats 0.3.0
 
-</style>
-<div id="exploratory-analysis-1---length-of-reported-eventcrime-by-borough" class="section level2">
-<h2>Exploratory Analysis 1 - Length of Reported Event/Crime by Borough</h2>
-<p>Report The written report (e.g. R Markdown and MD files) produced by your team are central to this project. This will detail how you completed your project, and should cover data collection and cleaning, exploratory analyses, alternative strategies, descriptions of approaches, and a discussion of results. We anticipate that your project will change somewhat over time; these changes and the reasons for them should be documented! You should write one report document per group, and be sure to include all group member names in the document.</p>
-<p>Your R Markdown should include the following topics. Depending on your project type the amount of discussion you devote to each of them will vary:</p>
-<p>Motivation: Provide an overview of the project goals and motivation. Related work: Anything that inspired you, such as a paper, a web site, or something we discussed in class. Initial questions: What questions are you trying to answer? How did these questions evolve over the course of the project? What new questions did you consider in the course of your analysis? Data: Source, scraping method, cleaning, etc. Exploratory analysis: Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to your ideas. Additional analysis: If you undertake formal statistical analyses, describe these in detail Discussion: What were your findings? Are they what you expect? What insights into the data can you make? As this will be your only chance to describe your project in detail, make sure that your report is a standalone document that fully describes your process and results. We also expect you to write high-quality code that is understandable to an outside reader. Coding collaboratively and actively reviewing code within the team will help with this!</p>
-<p>Your report should be developed in a dedicated GitHub repository. Data should not be included in the repo; make the data accessible somewhere online (e.g. google drive or a downloadable link) and, in the report, include instructions on where to access the data. If we cannot access your work or links because these directions are not followed correctly, we will not grade your work</p>
+## -- Conflicts ------------------------------------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+
+## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+<p>Next, I read in the CSV file and tidy it up. I limit the data to just individuals in the borough of Queens and randomly sample 500 observations from the data frame.</p>
+<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_misdemeanor.rds&quot;)
+
+crime_data = crime_df %&gt;% 
+  janitor::clean_names() %&gt;%
+  sample_n(500) %&gt;% 
+  filter(boro_nm == &quot;queens&quot;) %&gt;% 
+  separate(cmplnt_fr_dt, into = c(&quot;year_of_complaint&quot;, &quot;month_complaint&quot;, &quot;day_complaint&quot;), sep = &quot;-&quot;) %&gt;% 
+  select(year_of_complaint, law_cat_cd, boro_nm)
+
+head(crime_data)</code></pre>
+<pre><code>##   year_of_complaint  law_cat_cd boro_nm
+## 1              2014      felony  queens
+## 2              2014 misdemeanor  queens
+## 3              2017      felony  queens
+## 4              2014 misdemeanor  queens
+## 5              2015      felony  queens
+## 6              2017      felony  queens</code></pre>
+<p>I can look at the data in a table to examine general trends and get a feel of my data.</p>
+<pre class="r"><code>crime_table = 
+  crime_data %&gt;% 
+  knitr::kable(digits = 2)
+
+head(crime_table, 12)</code></pre>
+<pre><code>##  [1] &quot;year_of_complaint   law_cat_cd    boro_nm &quot;
+##  [2] &quot;------------------  ------------  --------&quot;
+##  [3] &quot;2014                felony        queens  &quot;
+##  [4] &quot;2014                misdemeanor   queens  &quot;
+##  [5] &quot;2017                felony        queens  &quot;
+##  [6] &quot;2014                misdemeanor   queens  &quot;
+##  [7] &quot;2015                felony        queens  &quot;
+##  [8] &quot;2017                felony        queens  &quot;
+##  [9] &quot;2015                misdemeanor   queens  &quot;
+## [10] &quot;2016                misdemeanor   queens  &quot;
+## [11] &quot;2015                misdemeanor   queens  &quot;
+## [12] &quot;2016                misdemeanor   queens  &quot;</code></pre>
+<p>It is hard to visualize any trends using solely the data table, so I now attempt to graph my data. I want to graph the year of the complaint against the category of offense in Queens. That is, I want to see if any particular year in Queens was associated with a higher category of offense.</p>
+<pre class="r"><code>crime_graph = 
+  crime_data %&gt;% 
+  ggplot(aes(x = year_of_complaint, y = law_cat_cd)) + 
+  geom_point() +
+    labs(
+    title = &quot;Categories of Offenses, By Year of Complaint, In Queens&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;Category&quot;,
+    caption = &quot;Data from the crime_data file&quot;
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = &quot;bottom&quot;)
+
+crime_graph</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<div class="figure">
+<img src="date_and_borough_files/figure-markdown_github/graph_crime_data-1.png" />
+
+</div>
+<p>I can also look at whether the length of time for the reported event/crime differs by borough.</p>
 </div>
 
 
 
-</div>
-</div>
 
 </div>
 

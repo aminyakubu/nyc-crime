@@ -187,7 +187,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="flex_dashboard.html">Flex Dashboard</a>
@@ -245,13 +245,13 @@ font-weight: bold;
 }
 
 </style>
-<p>For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough. Although we could not adjust for the different standard of living by borough, we adjusted for income.</p>
+<p>For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.</p>
 <p><br></p>
 <div id="model-statement-for-the-multinomial-logistic-regression-model" class="section level3">
 <h3>Model Statement for the Multinomial Logistic Regression Model</h3>
 <p><code>ln(P(crimegroup = drug related)/P(crime group = sex related)) = β_10 + β_11(Bronx) + β_12(Brooklyn) + β_13(Queens) + β_14(Staten_Island)</code></p>
 <p><code>ln(P(crimegroup = weapon related)/P(crime group = sex related)) = β_20 + β_21(Bronx) + β_22(Brooklyn) + β_23(Queens) + β_24(Staten_Island)</code></p>
-<p>In order to run an analysis, we first create our reference groups. We made drug-related felonies as the reference group among the 3 types of felonies and we made Manhattan the reference borough.</p>
+<p>Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
 <p><br></p>
 </div>
 <div id="tabulation" class="section level3">

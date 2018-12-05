@@ -11,7 +11,7 @@
 
 
 
-<title>Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</title>
+<title>Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,9 +19,6 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -172,101 +169,6 @@ $(document).ready(function () {
 
 
 
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -314,33 +216,86 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistics on Felonies That Occurred in New York City From 2014 to 2017 Report</h1>
+<h1 class="title toc-ignore">Code for Exploratory Analysis 1 - Reported Length of Event/Crime by Borough</h1>
 
 </div>
 
 
+<p><br> #<strong>Code</strong></p>
+<p><br> This is the code for the first exploratory analysis in which we examined the length of the reported event/crime by borough.</p>
 <p><br></p>
-<style>
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: #337ab7;
-}
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.8
+## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>devtools::install_github(&quot;thomasp85/patchwork&quot;)</code></pre>
+<pre><code>## Skipping install of &#39;patchwork&#39; from a github remote, the SHA1 (fd7958ba) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+<pre class="r"><code>library(patchwork)</code></pre>
+<p><br></p>
+<pre class="r"><code>crime_df = readRDS(file = &quot;datasets/nyc_felony_crimes.rds&quot;)
 
-.navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7; 
+crime_data = crime_df %&gt;% 
+  janitor::clean_names() %&gt;%
+  sample_n(1000) %&gt;% 
+  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %&gt;% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = &quot;days&quot;, na.rm = TRUE))) %&gt;% 
+  select(cmplnt_fr_dt, cmplnt_to_dt, law_cat_cd, time_diff, time_diff2, boro_nm)
 
-</style>
-<div id="exploratory-analysis-1---length-of-reported-eventcrime-by-borough" class="section level2">
-<h2>Exploratory Analysis 1 - Length of Reported Event/Crime by Borough</h2>
-<p>Report The written report (e.g. R Markdown and MD files) produced by your team are central to this project. This will detail how you completed your project, and should cover data collection and cleaning, exploratory analyses, alternative strategies, descriptions of approaches, and a discussion of results. We anticipate that your project will change somewhat over time; these changes and the reasons for them should be documented! You should write one report document per group, and be sure to include all group member names in the document.</p>
-<p>Your R Markdown should include the following topics. Depending on your project type the amount of discussion you devote to each of them will vary:</p>
-<p>Motivation: Provide an overview of the project goals and motivation. Related work: Anything that inspired you, such as a paper, a web site, or something we discussed in class. Initial questions: What questions are you trying to answer? How did these questions evolve over the course of the project? What new questions did you consider in the course of your analysis? Data: Source, scraping method, cleaning, etc. Exploratory analysis: Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to your ideas. Additional analysis: If you undertake formal statistical analyses, describe these in detail Discussion: What were your findings? Are they what you expect? What insights into the data can you make? As this will be your only chance to describe your project in detail, make sure that your report is a standalone document that fully describes your process and results. We also expect you to write high-quality code that is understandable to an outside reader. Coding collaboratively and actively reviewing code within the team will help with this!</p>
-<p>Your report should be developed in a dedicated GitHub repository. Data should not be included in the repo; make the data accessible somewhere online (e.g. google drive or a downloadable link) and, in the report, include instructions on where to access the data. If we cannot access your work or links because these directions are not followed correctly, we will not grade your work</p>
-</div>
+head(crime_data)</code></pre>
+<pre><code>##   cmplnt_fr_dt cmplnt_to_dt law_cat_cd  time_diff time_diff2  boro_nm
+## 1   2015-11-20   2015-11-20     felony     0 secs          0 brooklyn
+## 2   2014-11-17         &lt;NA&gt;     felony    NA secs         NA brooklyn
+## 3   2016-01-06   2016-01-06     felony     0 secs          0 brooklyn
+## 4   2014-05-21   2014-05-22     felony 86400 secs          1   queens
+## 5   2014-04-23   2014-04-23     felony     0 secs          0 brooklyn
+## 6   2017-01-15   2017-01-15     felony     0 secs          0    bronx</code></pre>
+<p><br></p>
+<pre class="r"><code>crime_table = 
+  crime_data %&gt;% 
+  knitr::kable(digits = 2)
+
+head(crime_table, 12)</code></pre>
+<pre><code>##  [1] &quot;cmplnt_fr_dt   cmplnt_to_dt   law_cat_cd   time_diff        time_diff2  boro_nm       &quot;
+##  [2] &quot;-------------  -------------  -----------  --------------  -----------  --------------&quot;
+##  [3] &quot;2015-11-20     2015-11-20     felony       0 secs                 0.00  brooklyn      &quot;
+##  [4] &quot;2014-11-17     NA             felony       NA                       NA  brooklyn      &quot;
+##  [5] &quot;2016-01-06     2016-01-06     felony       0 secs                 0.00  brooklyn      &quot;
+##  [6] &quot;2014-05-21     2014-05-22     felony       86400 secs             1.00  queens        &quot;
+##  [7] &quot;2014-04-23     2014-04-23     felony       0 secs                 0.00  brooklyn      &quot;
+##  [8] &quot;2017-01-15     2017-01-15     felony       0 secs                 0.00  bronx         &quot;
+##  [9] &quot;2017-12-10     2017-12-11     felony       86400 secs             1.00  queens        &quot;
+## [10] &quot;2014-09-29     2014-10-25     felony       2246400 secs          26.00  manhattan     &quot;
+## [11] &quot;2015-02-13     2015-02-13     felony       0 secs                 0.00  queens        &quot;
+## [12] &quot;2014-05-11     2014-06-11     felony       2678400 secs          31.00  brooklyn      &quot;</code></pre>
+<p><br></p>
+<pre class="r"><code>crime_data2 &lt;- crime_data[complete.cases(crime_data),]
+
+crime_graph2 = 
+  crime_data2 %&gt;% 
+  group_by(boro_nm, law_cat_cd) %&gt;% 
+  ggplot(aes(x = boro_nm, y = time_diff2, color = law_cat_cd)) + 
+  geom_point() +
+    labs(
+    title = &quot;Spread of Times of Reported Event, By Borough&quot;,
+    x = &quot;Borough&quot;,
+    y = &quot;Length of Reported Event&quot;,
+    caption = &quot;Data from the crime_data file&quot;
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = &quot;bottom&quot;)
+
+crime_graph2</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="code_date_borough_files/figure-html/code_date_length_of_time_of_reported_event-1.png" width="672" /></p>
 
 
 
-</div>
-</div>
 
 </div>
 
