@@ -28,7 +28,7 @@ font-weight: bold;
 
 <br>
 
-###Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106) 
+####### Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106) 
 
 
 <head>
