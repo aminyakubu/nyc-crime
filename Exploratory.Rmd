@@ -40,10 +40,10 @@ Include Yaa's
 <br>
 <br>
 
-## Length of Reported Event/Crime by Borough
+## Length of Reported Felony by Borough
 
 <br>
-As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough, assuming that longer crimes tend to be more severe, harder to resolve, and requiring more resources to deal with.
+As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported felony differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer felonies may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
 ```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -69,9 +69,8 @@ library(maps)
 library(tmap)
 ```
 
-<br>
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on the variable time_diff2 (length of reported crime/event in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0." We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0. The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 2,682 observations.
-```{r exp_tidy_crime_data, echo = FALSE}
+First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
+```{r exp_tidy_crime_data, include = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 crime_data = crime_df %>% 
@@ -82,6 +81,9 @@ crime_data = crime_df %>%
   
 
 summary(crime_data$time_diff2)
+```
+
+```{r exp_density_plot, echo = FALSE}
 ggplot(data = crime_data, aes(x = time_diff2)) +
   geom_density() +
     labs(
@@ -94,22 +96,14 @@ ggplot(data = crime_data, aes(x = time_diff2)) +
                      labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")) +
   xlim(0, 5)
 
+
 crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
     filter(time_diff2 > 0) 
 ```
 
-<br>
-
-We looked at the data in a data table to examine general trends and get a feel of the data. Our data cleaning seemed to work. We also decided to find the average length of reported event for each borough.
+We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
 ```{r exp_crime_data_table, echo = FALSE}
 crime_table = 
-  crime_data2 %>%
-  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
-          time_diff, 'Time Difference (Days)' = time_diff2, 'Borough' = boro_nm) %>% 
-  knitr::kable(digits = 2) 
-
-
-crime_table2 = 
   crime_data2 %>%
   rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
           time_diff, 'Borough' = boro_nm) %>% 
@@ -117,10 +111,10 @@ crime_table2 =
   summarise(mean_time = mean(time_diff2)) %>% 
   knitr::kable(digits = 2) 
 
-crime_table2
+crime_table
 
 
-crime_table3 = 
+crime_table2 = 
   crime_data2 %>%
   rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
           time_diff, 'Borough' = boro_nm) %>% 
@@ -129,17 +123,17 @@ crime_table3 =
 ```
 
 <br>
-Next, we looked at whether the length of time for the reported event/crime differed by borough visually. I examine both the average length of time of reported events across boroughs; I also view each individual reported event's length of time across borough.
+Next, we visually investigated at whether the length of time for the reported felony differed by borough. We examined both the average length of time of reported felonies across boroughs, as well as each _individual_ reported felony's length of time across boroughs.
 ```{r exp_length_of_time_of_reported_event, echo = FALSE}
 crime_graph = 
-  crime_table3 %>% 
+  crime_table2 %>% 
   ggplot(aes(x = Borough, y = mean_time)) + 
   geom_point(color = 'darkblue') +
     labs(
-    title = "Average Length of Reported Events, By Borough",
+    title = "Average Length of Reported Felonies, By Borough",
     x = "Borough",
     y = "Average Length of Reported Event",
-    caption = "Data from the crime_data file"
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
     ) +
   geom_smooth(se = FALSE) +
   theme(legend.position = "bottom")
@@ -153,10 +147,10 @@ crime_graph2 =
   ggplot(aes(x = boro_nm, y = time_diff2)) + 
   geom_boxplot(color = 'darkblue') +
     labs(
-    title = "Spread of Times of Reported Event, By Borough",
+    title = "Spread of Times of Each Reported Felony, By Borough",
     x = "Borough",
     y = "Length of Reported Event",
-    caption = "Data from the crime_data file"
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
     ) +
   geom_smooth(se = FALSE) +
   theme(legend.position = "bottom")
@@ -165,17 +159,18 @@ crime_graph2
 ```
 
 <br>
-From the graph above, we can see a couple of things. First, there are, numerically speaking, fewer reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Manhattan than in other boroughs. Lastly, the spread among Brooklyn and Queens is approximately the same.
+We obtain a rich amount of information from the graphs above. First, regarding the average length of reported felonies, Staten Island clearly outranks the other borough, leading at 105.42 days. Queens is next (78.63 days), followed by the Bronx (71.31 days), Brooklyn (60.91 days), and Manhattan (58.52 days). 
 
-<br>
-You can find the code for this exploratory analysis [here](code_date_borough.html).
+One reason that may account for Staten Island's rank is that the borough has fewer observations compared to the other boroughs, so any outliers in Staten Island may easily and drastically skew the average. Another potential reason is that criminals may be more comfortable committing felonies in a borough that is less populated with other residents and law enforcement officials. Manhattan, on the other hand, is a more crowded borough - perhaps criminals feel less comfortable committing a felony in such an area. This may be particularly relevant and true if felonies are more severe or violent, and criminals need time, space, and less attention when committing these crimes. Indeed, we may be right - felonies comprise a more violent category, in relation to misdemeanors; felonies tend to include homicide, rape, robbery, arson, human trafficking, and so on. 
+
+Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have significantly more outliers (and thus, perhaps more observations) compared to Staten Island, giving a bit more credence to the first hypothesis stated above. We also notice that the median values, which tend to be a more stable measure against outliers than the mean, are close to 0 for all the boroughs, suggesting that many felonies still last around a single day despite our filtering out same-day felonies. Despite this, Staten Island still shows a median value that seems slightly above the values of the other boroughs. 
 
 <br>
 <br>
 
 ## Overall Felony Rates by Borough
 
-For our third exploratory analysis, we chose to examine crime (i.e., felony) rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
+For our third exploratory analysis, we chose to examine felony rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime. Studying this also allows us to understand potential longitudinal trends for each borough 
 
 First, we loaded information from the U.S. Census on total population in the individual NYC boroughs to calculate felony rates in each borough.
 ```{r}
