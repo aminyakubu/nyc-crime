@@ -25,8 +25,6 @@ install.packages("sqldf")
 
 
 
-
-
 ```{r exp_yaa_data}
 felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
