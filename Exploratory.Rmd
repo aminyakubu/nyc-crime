@@ -43,7 +43,7 @@ Include Yaa's
 ## Length of Reported Event/Crime by Borough
 
 <br>
-As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differs by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough, assuming that longer crimes tend to be more severe, harder to resolve, and requiring more resources to deal with.
+As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported event or crime differed by borough. Examining the length of the reported event or crime can serve as a proxy indicator of the severity of the crime by each borough - longer crimes may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported events or crimes may have implications for law enforcement officials, policymakers, and urban residents.
 ```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -70,7 +70,8 @@ library(tmap)
 ```
 
 <br>
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on the variable time_diff2 (length of reported crime/event in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0." We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0. The number of observations was large and sufficient enough to observe any patterns - our final analytic sample included 2,682 observations.
+
+First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on the variable time_diff2 (length of reported crime/event in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations.
 ```{r exp_tidy_crime_data, echo = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
@@ -94,13 +95,14 @@ ggplot(data = crime_data, aes(x = time_diff2)) +
                      labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")) +
   xlim(0, 5)
 
+
 crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
     filter(time_diff2 > 0) 
 ```
 
 <br>
 
-We looked at the data in a data table to examine general trends and get a feel of the data. Our data cleaning seemed to work. We also decided to find the average length of reported event for each borough.
+We looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of reported event for each borough in a data table - based on this, there seems to be a marked difference in the average length of reported event for each borough. Average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
 ```{r exp_crime_data_table, echo = FALSE}
 crime_table = 
   crime_data2 %>%
