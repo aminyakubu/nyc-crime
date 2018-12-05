@@ -1,0 +1,71 @@
+---
+title: "Test of means - ANOVA"
+output: html_document
+---
+
+```{r acquiringdata_setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r, loading_packages}
+library(nnet)
+library(tidyverse)
+library(car)
+library(ggpubr)
+library(FSA)
+```
+
+```{r, data_import}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
+
+
+```{r}
+sex_drug_weapons = sex_drug_weapons %>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan")) %>% 
+  janitor::clean_names() %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(time_diff2, boro_nm, crime_group) %>% 
+  mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2))
+```
+
+In the exploratory analysis, we found that the length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance. 
+
+```{r}
+sex_drug_weapons %>% rename(`Crime group` = crime_group) %>% 
+group_by(`Crime group`) %>%
+  summarise(Count = n(),
+            `Average days` = mean(time_diff2),
+             `Standard deviation` = sd(time_diff2)) %>% knitr::kable()
+```
+
+To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene's Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn't met. 
+
+```{r}
+ leveneTest(time_diff2 ~ crime_group, data = sex_drug_weapons) %>% broom::tidy() %>% knitr::kable()
+
+```
+
+Non-parametric approach of Kruskal-Wallis rank sum test will be used to test the difference between the means. 
+
+```{r}
+kruskal.test(time_diff2 ~ crime_group, data = sex_drug_weapons) %>% broom::tidy() %>% knitr::kable()
+```
+
+It is evident that the p value is less that 0.05. We can conclude that at 5% level of significance, at least one of the means of the length of time between when the crime started and ended is different for the different crime groups. 
+
+Since the Kruskal–Wallis test is significant, we then conducted a post-hoc analysis to determine which crime groups differ from each other level. We used the Dunn test for the post-hoc analysis. 
+
+```{r}
+
+dunnTest(time_diff2 ~ crime_group,
+              data= sex_drug_weapons,
+              method="bh")
+```
+
+The results show that there is a statistically significant difference between the average time for sex-related crimes and the other two groups (drugs and weapons). However, there isn't a significant difference between drug-related and weapon-related. This shows that on average victims of sex crimes endure the crime over a period of time. 
+
+

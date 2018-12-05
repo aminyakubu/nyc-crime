@@ -256,7 +256,7 @@ population_df %>%
 
 The stratification of overall felony rates over the years by type of felony (i.e., sex-related, drug-related, or weapons-related) provides a lot of information amongst the three graphs:
 
-* Broadly speaking, felony rates have decreased across the board from 2016 to 2017 for nearly all boroughs - only Brooklyn has seen a rise in the rate of drug-related felonies from 2016 to 2017. 
+* Broadly speaking, felony rates have decreased across the board from 2016 to 2017 for nearly all boroughs - only Brooklyn has seen a rise in the rate of drug-related felonies from 2015 to 2017. 
 
 * Bronx has consistently had the highest crime rate over the last 4 years for all 3 types of felonies. We see a steep reduction, however, in the crime rate for the Bronx between the years of 2016 and 2017 - this change is most notable among the graph showing drug-relaed felonies. 
 
@@ -337,7 +337,7 @@ From this visual, we can easily spot areas within each borough that have relativ
 # download.file(map_url, "./datasets/nyc_zip_map.geojson")
 ```
 
-We decided to take the visual one step further by incorporating zip codes and creating heat maps to show prevalence of felonies across NYC.
+We decided to take the visual one step further by incorporating zip codes and creating heat maps to show prevalence of these 3 felony groups across NYC.
 ```{r, exp_zips}
 group_zip = crimes_df %>% 
   group_by(zipcode) %>% 
@@ -441,7 +441,7 @@ tmap_arrange(total, sex, drug, weapon)
 tmap_mode(current.mode)
 ```
 
-The heat maps provide an easy way of visually describing the absolute numbers of overall felonies, as well as felonies by each of the 3 types.
+The heat maps provide an easy way of visually describing the absolute numbers of overall felonies, as well as felonies by each of the 3 types. Overall, we see these crimes occur most in central brooklyn and bronx. This picture is very similar when we look at the picture for only sex-related crimes and weapon-related crimes. In looking at the map for drug-related crimes, we see that the crimes are distributed among most 3 areas - central and south brooklyn, and bronx. 
 
 
 
