@@ -36,8 +36,9 @@ font-weight: bold;
 <link rel="stylesheet" href="academicons/css/academicons.min.css"/>
 <link rel="apple-touch-icon" href="/images/nyc2.jpg" >
 
-<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br>
-
+<center>
+<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:1px solid"><br>
+</center>
 <br>
 
 
