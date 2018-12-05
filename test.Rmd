@@ -14,24 +14,40 @@ output:
 }
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7; 
+background-color: #337ab7;
+}
+
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
 
 </style>
 
 ## Brief Description
 This is a report summarizing everything we completed for this project, including our approach, our data cleaning and manipulation steps, our initial questions driving our analyses, our exploratory and formal statistical analyses, and our various graphs and visualizations.
 
-## Our Drive For The Project
+<br>
 
+## Our Drive For The Project
 According to [MentalHealth.gov](https://www.mentalhealth.gov/basics), mental health includes our emotional, psychological, and social well-being and it largely affects quality of life for an individual. The factors that contribute to mental health issues include biological factors, family history, and life experiences such as trauma and abuse. Trauma and/or abuse, in particular, can occur or result from being a victim of a crime, especially from felonies, where the level of violence, danger, severity, and risk of crime tends to be higher compared to other crime categories. Although New York City does not have one of the highest crime rates in the country, it is still one of the most crowded and populated cities, setting itself up as a unique location for crimes. As a result, the ripple effects of crimes can have an impact on NYC residents physically, but also have a more lasting and devastating effect on them mentally that tangibly affects others not directly affected by or involved in the crime.
 
 In addition to the unique impacts of crime in New York City, the location provides a wealth of open and transparent data for anyone to study and analyze. Gathering such data and computing statistics on crime in NYC may provide critical insights regarding steps to be taken for other similar high-density and highly populated areas, which can be helpful for law enforcement and government officials to deter crime. For these particular reasons, we focused on examining the various factors, patterns, and variables associated with crime in New York City.
 
 We decided to study sex-related, drug-related, and weapons-related felonies in particular for a couple of reasons. First, we felt that there was a significant overlap among these three types of felonies - drug-related crimes, for example, are often committed concurrently with weapons-related crimes. Secondly, we felt that it was important to know the statistics on felonies, especially as experienced by victims, since such information may provide important indicators for mental health advocacy. Third, our raw data contained over 6 million observations and we wanted to reasonably limit our scope a bit. Fourth, as mentioned above, felonies are generally ranked higher compared to misdemeanors and violations, in terms of violence, risk, severity, and danger, providing us with potentially more important insights than the other categories. These reasons led us to explore data on the three main types of felonies (sex-related, weapon-related and drug-related) that occurred in New York City from 2014 to 2017.
 
+<br>
 
 ## Initial Questions
-
 After settling on the NYC Historic Complaint data, we came up with many questions we thought would be interesting to examine:
 
 *	How can we study the distribution of crime categories (felonies, misdemeanors, or violations) across boroughs?
@@ -49,11 +65,14 @@ However, over the course of the project, we decided to settle on questions that 
 *	What was the geographic and time distribution of these felonies?
 *	Does the occurrence of each type of felony differ by borough and if so, how?
 
-## Data Source 
+<br>
 
+## Data Source 
 We used the dataset collected by the New York City Police Department (NYPD); specifically, we utilized the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables. The link to the raw dataset is [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i). 
 
-In terms of cleaning the dataset, we first utilized several R packages, including the ‘RSocrata` (needed to access web API queries), `ggmap` (needed to geocode), `tidyverse` (standard package), and `lubridate` (data manipulation) packages. The code for installing and loading the packages are below, as well as the code to access the raw dataset directly from the web.
+In terms of cleaning the dataset, we first utilized several R packages, including the `RSocrata` (needed to access web API queries), `ggmap` (needed to geocode), `tidyverse` (standard package), and `lubridate` (data manipulation) packages. The code for installing and loading the packages are below, as well as the code to access the raw dataset directly from the web.
+
+<br>
 
 ### Accessing the Data
 ```{r acquiringdata_libraries, eval = FALSE}
@@ -83,12 +102,12 @@ The raw, acquired dataset has 6,036,805 observations and 35 variables. Broadly s
 <br>
 
 ### Subsetting Data 
-
 We were interested in 2014 to 2017 data pertaining to sex-related, weapons-related and drug-related felony. Therefore, we extracted this information from the data. 
 
-Below is a list of the penal codes in the dataset that we used to select the felonies of interest. Following that is the code we use to subset our data.
+Below is a list of the penal codes in the dataset that we used to select the felonies of interest. Following that is the code we used to subset our data.
 
-##### Sexual – Related Felony Crimes <br>
+##### Sex – Related Felony Crimes <br>
+
 `178` Facilitating A Sex Offense With A Controlled Substance <br>
 `694` Incest <br>
 `697` Use Of A Child In Sexual Performance <br>
@@ -106,7 +125,7 @@ Below is a list of the penal codes in the dataset that we used to select the fel
 `586` Sextrafficking <br>
 `696` Promoting Sexual Performance – Child <br>
 
-##### Drug Related Felony Crimes <br>
+##### Drug - Related Felony Crimes <br>
 
 `500` Controlled Substance, Possession <br>
 `501` Controlled Substance, Possession <br>
@@ -130,7 +149,7 @@ Below is a list of the penal codes in the dataset that we used to select the fel
 `568` Marijuana, Possession 1, 2 & 3 <br>
 `570` Marijuana, Sale 1, 2 & 3 <br>
 
-##### Weapon Related Felony Crimes 
+##### Weapon - Related Felony Crimes <br> 
 
 `781` Criminal Disposal Firearm 1 <br>
 `792` Weapons Possession 1 & 2 <br>
@@ -138,7 +157,8 @@ Below is a list of the penal codes in the dataset that we used to select the fel
 `796` Weapons,Prohibited Use <br>
 
 ```{r acquiringdata_manip, eval = FALSE}
-#This code was used to retrieve and assess the observations with missing date of crime occurrence
+#This code was used to retrieve and assess the observations with missing date of crime 
+#occurrence
 
 crime_missing_cp = nyc_crime %>% 
   summarize_all(funs(sum(is.na(.))))
@@ -151,7 +171,8 @@ nyc_felony_crimes = nyc_crime %>%
   mutate_if(is.character, tolower) %>% 
   filter(year %in% 2014:2017) %>% 
   filter(law_cat_cd == "felony") %>% 
-  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, 
+         - juris_desc)
 
 saveRDS(nyc_felony_crimes, file = "./datasets/nyc_felony_crimes.rds")
 
@@ -174,7 +195,9 @@ sex_drug_weapons = nyc_felony_crimes %>%
          ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, vic_age_group, year, 
          prem_typ_desc) %>% 
   
-  mutate(boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
+  mutate(
+             boro_nm = if_else(boro_nm == "staten island", "staten_island", boro_nm),
+             
          crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159,
                                             166, 164, 179, 155, 586, 696), "Sex-Related", 
                                
@@ -182,7 +205,8 @@ sex_drug_weapons = nyc_felony_crimes %>%
                                             519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 
                                             570), "Drug-Related", 
                                
-                       if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd))))
+                       if_else(pd_cd %in% c(781, 792, 793, 796), "Weapon-Related", pd_cd)))
+         )
 
 saveRDS(sex_drug_weapons, file = "./datasets/sex_drug_weapons.rds")
 ```
@@ -192,19 +216,19 @@ The resulting dataset called `sex_drug_weapons` dataset has 46,692 observations 
 <br>
 
 ### Reverse Geocoding
-
-The dataset comes without zip code or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore, we used Google Maps’ API to reverse geocode and get the exact address of the crime occurrence. We then subsequently took out the zip codes for mapping. The full code on how we reverse geocoded the longitude and latitude information can be found in our repository on GitHub. 
-
-
+The dataset comes without zip code or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore, we used Google Maps’ API to reverse geocode and get the exact address of the crime occurrence. We limited ourselves to 2017 data only to reduce the burden when using Google's API. We then subsequently took out the zip codes for mapping. The full code on how we reverse geocoded the longitude and latitude information is below.
 ```{r acquiringdata_drug, eval = FALSE}
 #### Felony - Drug Offenses
 #### Sampling only year 2017 and selecting all felony drug rape reports
 
 ### Drug offenses in 2017
-drug_2017 = sex_drug_weapons %>% filter(crime_group == "Drug-Related" & year == 2017)
+drug_2017 = sex_drug_weapons %>% 
+            filter(crime_group == "Drug-Related" & 
+            year == 2017)
 
 ### Sampling to reduce the dataset to avoid getting rejected by Google API
-drug_2017_1 = drug_2017 %>% sample_n(2290)
+drug_2017_1 = drug_2017 %>% 
+              sample_n(2290)
 
 drug_2017_zip_1 = drug_2017_1 %>% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
@@ -230,9 +254,11 @@ saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 ```{r acquiringdata_sex, eval = FALSE}
 #### Felony - Sex Offenses
 
-#The same process will be used for the sex-related crimes. There are 1993 observations; therefore, there's no need to split the #data before reverse geocoding.
+#The same process will be used for the sex-related crimes. There are 1993 observations; therefore, there's no need to split the data before reverse geocoding.
 
-sex_2017 = sex_drug_weapons %>% filter(crime_group == "Sex-Related" & year == 2017)
+sex_2017 = sex_drug_weapons %>% 
+           filter(crime_group == "Sex-Related" & 
+           year == 2017)
 
 complete_sex_zip_2017 = sex_2017 %>% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
@@ -240,17 +266,17 @@ complete_sex_zip_2017 = sex_2017 %>%
 saveRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
 ```
 
-
 ```{r acquiringdata_weapons, eval = FALSE}
 #### Felony - Weapon Offenses
-weapon_2017 = sex_drug_weapons %>% filter(crime_group == "Weapon-Related" & year == 2017)
+weapon_2017 = sex_drug_weapons %>% 
+              filter(crime_group == "Weapon-Related" & 
+              year == 2017)
 
 complete_weapon_zip_2017 = weapon_2017 %>% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
 
 saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
 ```
-
 
 ```{r acquiringdata_zip, eval = FALSE}
 #### 2017 Dataset With Zip Codes
@@ -260,8 +286,9 @@ all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zi
 saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
-### Usage
+<br>
 
+### Usage
 After cleaning, subsetting and reverse geocoding, we saved the resulting dataset in `rds` format. You can download the resulting datasets [from this Google Drive](https://drive.google.com/open?id=1QZB8nKClFl9qZV20Sa15Lf7ZbIlxBcis). The code on how to read the datasets can also be found in our repository file called [`acquiringdata.Rmd`](https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd)
 
 ```{r acquiringdata_usage, eval = FALSE}
@@ -282,12 +309,12 @@ readRDS(complete_sex_zip_2017, file = "datasets/complete_sex_zip_2017.rds")
 readRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds")
 
 ### Weapons, sex, drug for 2017 with zipcodes
-
 readRDS(file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
 
-### Data Dictionary
+<br>
 
+### Data Dictionary
 The list below provides all 17 variables in the datasets with their brief descriptions:
 
 <p> `cmplnt_num`: randomly generated persistent ID for each complaint <br> <p>

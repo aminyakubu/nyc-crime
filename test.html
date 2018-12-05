@@ -326,30 +326,62 @@ div.tocify {
 }
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
-background-color: #337ab7; 
+background-color: #337ab7;
+}
+
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
 
 </style>
 <div id="brief-description" class="section level2">
 <h2>Brief Description</h2>
 <p>This is a report summarizing everything we completed for this project, including our approach, our data cleaning and manipulation steps, our initial questions driving our analyses, our exploratory and formal statistical analyses, and our various graphs and visualizations.</p>
+<p><br></p>
 </div>
 <div id="our-drive-for-the-project" class="section level2">
 <h2>Our Drive For The Project</h2>
 <p>According to <a href="https://www.mentalhealth.gov/basics">MentalHealth.gov</a>, mental health includes our emotional, psychological, and social well-being and it largely affects quality of life for an individual. The factors that contribute to mental health issues include biological factors, family history, and life experiences such as trauma and abuse. Trauma and/or abuse, in particular, can occur or result from being a victim of a crime, especially from felonies, where the level of violence, danger, severity, and risk of crime tends to be higher compared to other crime categories. Although New York City does not have one of the highest crime rates in the country, it is still one of the most crowded and populated cities, setting itself up as a unique location for crimes. As a result, the ripple effects of crimes can have an impact on NYC residents physically, but also have a more lasting and devastating effect on them mentally that tangibly affects others not directly affected by or involved in the crime.</p>
 <p>In addition to the unique impacts of crime in New York City, the location provides a wealth of open and transparent data for anyone to study and analyze. Gathering such data and computing statistics on crime in NYC may provide critical insights regarding steps to be taken for other similar high-density and highly populated areas, which can be helpful for law enforcement and government officials to deter crime. For these particular reasons, we focused on examining the various factors, patterns, and variables associated with crime in New York City.</p>
 <p>We decided to study sex-related, drug-related, and weapons-related felonies in particular for a couple of reasons. First, we felt that there was a significant overlap among these three types of felonies - drug-related crimes, for example, are often committed concurrently with weapons-related crimes. Secondly, we felt that it was important to know the statistics on felonies, especially as experienced by victims, since such information may provide important indicators for mental health advocacy. Third, our raw data contained over 6 million observations and we wanted to reasonably limit our scope a bit. Fourth, as mentioned above, felonies are generally ranked higher compared to misdemeanors and violations, in terms of violence, risk, severity, and danger, providing us with potentially more important insights than the other categories. These reasons led us to explore data on the three main types of felonies (sex-related, weapon-related and drug-related) that occurred in New York City from 2014 to 2017.</p>
+<p><br></p>
 </div>
 <div id="initial-questions" class="section level2">
 <h2>Initial Questions</h2>
 <p>After settling on the NYC Historic Complaint data, we came up with many questions we thought would be interesting to examine:</p>
-<p>• How can we study the distribution of crime categories (felonies, misdemeanors, or violations) across boroughs? • When are crimes being committed? How can we visualize this information by months of the year, day of the week, or even hours of the day? • How do the crime rates change over time? • Were crimes successfully attempted? If so, which types of crimes and where? • What are the top 5 crimes and where are they being committed? • Do any age groups disproportionately affected by a particular crime?</p>
+<ul>
+<li>How can we study the distribution of crime categories (felonies, misdemeanors, or violations) across boroughs?</li>
+<li>When are crimes being committed? How can we visualize this information by months of the year, day of the week, or even hours of the day?</li>
+<li>How do the crime rates change over time?</li>
+<li>Were crimes successfully attempted? If so, which types of crimes and where?</li>
+<li>What are the top 5 crimes and where are they being committed?</li>
+<li>Do any age groups disproportionately affected by a particular crime?</li>
+</ul>
 <p>However, over the course of the project, we decided to settle on questions that were at least tangentially relevant to each other, especially when it came to the exploratory analyses. We also wanted to focus our questions and analyses on several important patterns, namely, how crimes changed over the years, how they changed across boroughs, and how they changed by type of felony—because we felt that there was a lot we could do analytically and visually with these patterns alone—but also utilize different variables to show meaningful results. Furthermore, as mentioned above, we restricted our questions related to the specific crime category (included felonies, excluded misdemeanors and violations) and the type of felony (included sex-related, drug-related, and weapons-related felonies only) within the chosen crime category that we chose to examine. Lastly, we decided to focus on the years 2014 to 2017 because these were the most recent years for which data were available. Our main questions evolved to the following:</p>
-<p>• What were the sociodemographic variables (e.g., race, age, gender of the victim/suspect) associated with the various felonies committed in the different boroughs of New York City? • What was the average time of reported felonies and did this differ across boroughs or by type of felony? • What were the overall crime rates and trends/patterns of these felonies? • What was the geographic and time distribution of these felonies? • Does the occurrence of each type of felony differ by borough and if so, how?</p>
+<ul>
+<li>What were the sociodemographic variables (e.g., race, age, gender of the victim/suspect) associated with the various felonies committed in the different boroughs of New York City?</li>
+<li>What was the average time of reported felonies and did this differ across boroughs or by type of felony?</li>
+<li>What were the overall crime rates and trends/patterns of these felonies?</li>
+<li>What was the geographic and time distribution of these felonies?</li>
+<li>Does the occurrence of each type of felony differ by borough and if so, how?</li>
+</ul>
+<p><br></p>
 </div>
 <div id="data-source" class="section level2">
 <h2>Data Source</h2>
 <p>We used the dataset collected by the New York City Police Department (NYPD); specifically, we utilized the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables. The link to the raw dataset is <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
-<p>In terms of cleaning the dataset, we first utilized several R packages, including the ‘RSocrata<code>(needed to access web API queries),</code>ggmap<code>(needed to geocode),</code>tidyverse<code>(standard package), and</code>lubridate` (data manipulation) packages. The code for installing and loading the packages are below, as well as the code to access the raw dataset directly from the web.</p>
+<p>In terms of cleaning the dataset, we first utilized several R packages, including the <code>RSocrata</code> (needed to access web API queries), <code>ggmap</code> (needed to geocode), <code>tidyverse</code> (standard package), and <code>lubridate</code> (data manipulation) packages. The code for installing and loading the packages are below, as well as the code to access the raw dataset directly from the web.</p>
+<p><br></p>
 <div id="accessing-the-data" class="section level3">
 <h3>Accessing the Data</h3>
 <pre class="r"><code>library(tidyverse)
@@ -374,19 +406,20 @@ nyc_crime = read.socrata(
 <div id="subsetting-data" class="section level3">
 <h3>Subsetting Data</h3>
 <p>We were interested in 2014 to 2017 data pertaining to sex-related, weapons-related and drug-related felony. Therefore, we extracted this information from the data.</p>
-<p>Below is a list of the penal codes in the dataset that we used to select the felonies of interest. Following that is the code we use to subset our data.</p>
-<div id="sexual-related-felony-crimes" class="section level5">
-<h5>Sexual – Related Felony Crimes <br></h5>
+<p>Below is a list of the penal codes in the dataset that we used to select the felonies of interest. Following that is the code we used to subset our data.</p>
+<div id="sex-related-felony-crimes" class="section level5">
+<h5>Sex – Related Felony Crimes <br></h5>
 <p><code>178</code> Facilitating A Sex Offense With A Controlled Substance <br> <code>694</code> Incest <br> <code>697</code> Use Of A Child In Sexual Performance <br> <code>176</code> Sex Crimes <br> <code>180</code> Course Of Sexual Conduct Against Child <br> <code>153</code> Rape 3 <br> <code>157</code> Rape 1 <br> <code>177</code> Sexual Abuse <br> <code>168</code> Sodomy 1 <br> <code>159</code> Rape 1 Attempt <br> <code>166</code> Sodomy 2 <br> <code>164</code> Sodomy 3 <br> <code>179</code> Aggrevated Sexual Abuse <br> <code>155</code> Rape 2 <br> <code>586</code> Sextrafficking <br> <code>696</code> Promoting Sexual Performance – Child <br></p>
 </div>
-<div id="drug-related-felony-crimes" class="section level5">
-<h5>Drug Related Felony Crimes <br></h5>
+<div id="drug---related-felony-crimes" class="section level5">
+<h5>Drug - Related Felony Crimes <br></h5>
 <p><code>500</code> Controlled Substance, Possession <br> <code>501</code> Controlled Substance, Possession <br> <code>502</code> Controlled Substance, Possession <br> <code>503</code> Controlled Substance, Intent To <br> <code>505</code> Controlled Substance, Possession <br> <code>507</code> Controlled Substance, Possession <br> <code>510</code> Controlled Substance, Intent T <br> <code>512</code> Controlled Substance, Sale 1 <br> <code>514</code> Controlled Substance, Sale 2 <br> <code>515</code> Controlled Substance, Sale 3 <br> <code>519</code> Sale School Grounds 4 <br> <code>520</code> Controlled Substance, Sale 4 <br> <code>521</code> Controlled Substance, Sale 5 <br> <code>523</code> Sale School Grounds <br> <code>524</code> Controlled Substance, Possession<br> <code>529</code> Sales Of Prescription <br> <code>530</code> Drug, Injection Of <br> <code>531</code> Drug Paraphernalia, Possessesion <br> <code>532</code> Controlled Substance,Possession <br> <code>568</code> Marijuana, Possession 1, 2 &amp; 3 <br> <code>570</code> Marijuana, Sale 1, 2 &amp; 3 <br></p>
 </div>
-<div id="weapon-related-felony-crimes" class="section level5">
-<h5>Weapon Related Felony Crimes</h5>
+<div id="weapon---related-felony-crimes" class="section level5">
+<h5>Weapon - Related Felony Crimes <br></h5>
 <p><code>781</code> Criminal Disposal Firearm 1 <br> <code>792</code> Weapons Possession 1 &amp; 2 <br> <code>793</code> Weapons Possession 3 <br> <code>796</code> Weapons,Prohibited Use <br></p>
-<pre class="r"><code>#This code was used to retrieve and assess the observations with missing date of crime occurrence
+<pre class="r"><code>#This code was used to retrieve and assess the observations with missing date of crime 
+#occurrence
 
 crime_missing_cp = nyc_crime %&gt;% 
   summarize_all(funs(sum(is.na(.))))
@@ -399,7 +432,8 @@ nyc_felony_crimes = nyc_crime %&gt;%
   mutate_if(is.character, tolower) %&gt;% 
   filter(year %in% 2014:2017) %&gt;% 
   filter(law_cat_cd == &quot;felony&quot;) %&gt;% 
-  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
+  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, 
+         - juris_desc)
 
 saveRDS(nyc_felony_crimes, file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
 
@@ -422,7 +456,9 @@ sex_drug_weapons = nyc_felony_crimes %&gt;%
          ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, vic_age_group, year, 
          prem_typ_desc) %&gt;% 
   
-  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
+  mutate(
+             boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
+             
          crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159,
                                             166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
                                
@@ -430,7 +466,8 @@ sex_drug_weapons = nyc_felony_crimes %&gt;%
                                             519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 
                                             570), &quot;Drug-Related&quot;, 
                                
-                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))
+                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd)))
+         )
 
 saveRDS(sex_drug_weapons, file = &quot;./datasets/sex_drug_weapons.rds&quot;)</code></pre>
 <p>The resulting dataset called <code>sex_drug_weapons</code> dataset has 46,692 observations and 16 variables.</p>
@@ -439,15 +476,18 @@ saveRDS(sex_drug_weapons, file = &quot;./datasets/sex_drug_weapons.rds&quot;)</c
 </div>
 <div id="reverse-geocoding" class="section level3">
 <h3>Reverse Geocoding</h3>
-<p>The dataset comes without zip code or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore, we used Google Maps’ API to reverse geocode and get the exact address of the crime occurrence. We then subsequently took out the zip codes for mapping. The full code on how we reverse geocoded the longitude and latitude information can be found in our repository on GitHub.</p>
+<p>The dataset comes without zip code or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore, we used Google Maps’ API to reverse geocode and get the exact address of the crime occurrence. We limited ourselves to 2017 data only to reduce the burden when using Google’s API. We then subsequently took out the zip codes for mapping. The full code on how we reverse geocoded the longitude and latitude information is below.</p>
 <pre class="r"><code>#### Felony - Drug Offenses
 #### Sampling only year 2017 and selecting all felony drug rape reports
 
 ### Drug offenses in 2017
-drug_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Drug-Related&quot; &amp; year == 2017)
+drug_2017 = sex_drug_weapons %&gt;% 
+            filter(crime_group == &quot;Drug-Related&quot; &amp; 
+            year == 2017)
 
 ### Sampling to reduce the dataset to avoid getting rejected by Google API
-drug_2017_1 = drug_2017 %&gt;% sample_n(2290)
+drug_2017_1 = drug_2017 %&gt;% 
+              sample_n(2290)
 
 drug_2017_zip_1 = drug_2017_1 %&gt;% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
@@ -470,16 +510,20 @@ complete_drug_zip_2017 = bind_rows(drug_2017_zip_1, drug_2017_zip_2)
 saveRDS(complete_drug_zip_2017, file = &quot;datasets/complete_drug_zip_2017.rds&quot;)</code></pre>
 <pre class="r"><code>#### Felony - Sex Offenses
 
-#The same process will be used for the sex-related crimes. There are 1993 observations; therefore, there&#39;s no need to split the #data before reverse geocoding.
+#The same process will be used for the sex-related crimes. There are 1993 observations; therefore, there&#39;s no need to split the data before reverse geocoding.
 
-sex_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Sex-Related&quot; &amp; year == 2017)
+sex_2017 = sex_drug_weapons %&gt;% 
+           filter(crime_group == &quot;Sex-Related&quot; &amp; 
+           year == 2017)
 
 complete_sex_zip_2017 = sex_2017 %&gt;% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
 
 saveRDS(complete_sex_zip_2017, file = &quot;datasets/complete_sex_zip_2017.rds&quot;)</code></pre>
 <pre class="r"><code>#### Felony - Weapon Offenses
-weapon_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Weapon-Related&quot; &amp; year == 2017)
+weapon_2017 = sex_drug_weapons %&gt;% 
+              filter(crime_group == &quot;Weapon-Related&quot; &amp; 
+              year == 2017)
 
 complete_weapon_zip_2017 = weapon_2017 %&gt;% 
   mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
@@ -490,6 +534,7 @@ saveRDS(complete_weapon_zip_2017, file = &quot;datasets/complete_weapon_zip_2017
 all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, complete_weapon_zip_2017) 
 
 saveRDS(all_sex_drug_weapon_zip_2017, file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+<p><br></p>
 </div>
 <div id="usage" class="section level3">
 <h3>Usage</h3>
@@ -510,8 +555,8 @@ readRDS(complete_sex_zip_2017, file = &quot;datasets/complete_sex_zip_2017.rds&q
 readRDS(complete_weapon_zip_2017, file = &quot;datasets/complete_weapon_zip_2017.rds&quot;)
 
 ### Weapons, sex, drug for 2017 with zipcodes
-
 readRDS(file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+<p><br></p>
 </div>
 <div id="data-dictionary" class="section level3">
 <h3>Data Dictionary</h3>
