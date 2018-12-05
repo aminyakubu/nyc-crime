@@ -34,20 +34,20 @@ We decided to study sex-related, drug-related, and weapons-related felonies in p
 
 After settling on the NYC Historic Complaint data, we came up with many questions we thought would be interesting to examine:
 
-•	How can we study the distribution of crime categories (felonies, misdemeanors, or violations) across boroughs?
-•	When are crimes being committed? How can we visualize this information by months of the year, day of the week, or even hours of the day?
-•	How do the crime rates change over time?
-•	Were crimes successfully attempted? If so, which types of crimes and where?
-•	What are the top 5 crimes and where are they being committed?
-•	Do any age groups disproportionately affected by a particular crime?
+*	How can we study the distribution of crime categories (felonies, misdemeanors, or violations) across boroughs?
+*	When are crimes being committed? How can we visualize this information by months of the year, day of the week, or even hours of the day?
+*	How do the crime rates change over time?
+*	Were crimes successfully attempted? If so, which types of crimes and where?
+*	What are the top 5 crimes and where are they being committed?
+*	Do any age groups disproportionately affected by a particular crime?
 
 However, over the course of the project, we decided to settle on questions that were at least tangentially relevant to each other, especially when it came to the exploratory analyses. We also wanted to focus our questions and analyses on several important patterns, namely, how crimes changed over the years, how they changed across boroughs, and how they changed by type of felony—because we felt that there was a lot we could do analytically and visually with these patterns alone—but also utilize different variables to show meaningful results. Furthermore, as mentioned above, we restricted our questions related to the specific crime category (included felonies, excluded misdemeanors and violations) and the type of felony (included sex-related, drug-related, and weapons-related felonies only) within the chosen crime category that we chose to examine. Lastly, we decided to focus on the years 2014 to 2017 because these were the most recent years for which data were available. Our main questions evolved to the following:
 
-•	What were the sociodemographic variables (e.g., race, age, gender of the victim/suspect) associated with the various felonies committed in the different boroughs of New York City?
-•	What was the average time of reported felonies and did this differ across boroughs or by type of felony?
-•	What were the overall crime rates and trends/patterns of these felonies?
-•	What was the geographic and time distribution of these felonies?
-•	Does the occurrence of each type of felony differ by borough and if so, how?
+*	What were the sociodemographic variables (e.g., race, age, gender of the victim/suspect) associated with the various felonies committed in the different boroughs of New York City?
+*	What was the average time of reported felonies and did this differ across boroughs or by type of felony?
+*	What were the overall crime rates and trends/patterns of these felonies?
+*	What was the geographic and time distribution of these felonies?
+*	Does the occurrence of each type of felony differ by borough and if so, how?
 
 ## Data Source 
 
