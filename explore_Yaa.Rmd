@@ -5,9 +5,25 @@ date: "11/30/2018"
 output: html_document
 ---
 
+
 ```{r exp_yaa_lib}
 library(tidyverse)
 ```
+
+
+
+```{r}
+library(tmap)
+library(sqldf)
+```
+
+
+
+```{r}
+install.packages("sqldf")
+```
+
+
 
 
 
