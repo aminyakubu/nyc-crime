@@ -293,7 +293,7 @@ The list below provides all 17 variables in the datasets with their brief descri
 
 `boro_nm`: the name of the borough in which the incident occurred <br> <p>
 `cmplnt_fr_dt`: exact start date of occurrence for the reported incident <br> <p>
-`cmplnt_fr_dt`: exact end date of occurrent for the reported incident <br> <p>
+`cmplnt_to_dt`: exact end date of occurrent for the reported incident <br> <p>
 `cmplnt_fr_tm`: exact time of occurrence for the reported incident <br> <p>
 `latitude`: midblock latitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br> <p>
 `longitude`: midblock longitude coordinate for Global Coordinate System, WGS 1984, decimal degrees (EPSG 4326) <br> <p>
