@@ -54,7 +54,7 @@ For our formal statistical analysis, we wanted to examine the association betwee
 
 `ln(P(crimegroup = weapon related)/P(crime group = sex related)) = β_20 + β_21(Bronx) + β_22(Brooklyn) + β_23(Queens) + β_24(Staten_Island)`
 
-Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime. 
+Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.
 
 ```{r}
 ### Making Drug-related Felonies and Manhattan  - Reference Groups
