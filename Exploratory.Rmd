@@ -267,15 +267,7 @@ The stratification of overall felony rates over the years by type of felony (i.e
 
 ## Geographical Distribution of Felonies
 
-<<<<<<< HEAD
 Our final exploratory analysis examined the geographical distribution of felonies, beyond the borough level. We thought this was critical to investigate because each borough contains such unique and vastly different neighborhoods comprising that borough - solely looking at associated factors at the neighborhood level ignores and masks these different identities within each neighborhood. Examining at this level also gives us more clear-cut information on the absolute numbers of felonies in each neighborhood and provides specific information regarding where law enforcement officials can prioritize efforts.
-=======
-Our final exploratory analysis examined the geographical distribution of felonies, beyond the borough level. We thought this was critical to investigate because each borough contains such unique and vastly different neighborhoods comprising that borough - solely looking at associated factors at the neighborhood level ignores and masks these different identities within each neighborhood. Examining at this level also gives us more clear-cut information regarding the absolute numbers of felonies in each neighborhood and where law enforcement officials can prioritize efforts.
-
-```{r, exploratory_data}
-###Dataset for 2017 with addresses
-crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
->>>>>>> be4da7ecfc19b54bffd10dd9e22eeb2fc538a38a
 
 We first created a visual showing clusters and pockets of the 3 types of felonies in absolute numbers. 
 ```{r, exp_leaflet, echo = FALSE}
@@ -345,7 +337,6 @@ From this visual, we can easily spot areas within each borough that have relativ
 
 We decided to take the visual one step further by incorporating zip codes and creating heat maps to show prevalence of felonies across NYC.
 ```{r, exp_zips}
-
 group_zip = crimes_df %>% 
   group_by(zipcode) %>% 
   summarize(number = n())
