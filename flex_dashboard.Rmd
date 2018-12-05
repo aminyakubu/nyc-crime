@@ -18,6 +18,7 @@ library(chron)
 library(lubridate)
 library(rvest)
 library(tools)
+library(geojsonio)
 ```
 
 ```{r flex_data}
@@ -28,7 +29,7 @@ crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
 
 ```
 
-Column {data-width=500}
+Column {data-width=550}
 -----------------------------------------------------------------------
 
 ### Chart A: Distribution for sex-related, drug-related and weapon-related felonies for 2017 by Zipcode
@@ -70,7 +71,7 @@ map_json %>%
                    position = "topleft")
 ```
 
-Column {data-width=500}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
 ### Chart B: Distribution of victims of sex and weapon-related felonies by age group 2014 - 2017

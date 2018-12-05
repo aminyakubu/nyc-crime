@@ -187,7 +187,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="flex_dashboard.html">Flex Dashboard</a>
@@ -221,14 +221,42 @@ $(document).ready(function () {
 </div>
 
 
-<p>Association between borough and crime, adjusting for average income</p>
-<div id="model-statement-for-the-multinomial-logistic-regression-is-below" class="section level3">
-<h3>Model statement for the multinomial logistic regression is below</h3>
-<p><code>In(P(crimegroup=drug related)/P(crime group=sex related) )=β_10 + β_11 Bronx+β_12 Brooklyn+β_13 Queens+ β_14 Staten_island</code></p>
-<p><code>In(P(crimegroup=weapon related)/P(crime group=sex related) )=β_20 + β_21 Bronx+β_22 Brooklyn+β_23 Queens+ β_24 Staten_island</code></p>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #337ab7;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #337ab7;
+}
+
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
+
+</style>
+<p>For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.</p>
+<p><br></p>
+<div id="model-statement-for-the-multinomial-logistic-regression-model" class="section level3">
+<h3>Model Statement for the Multinomial Logistic Regression Model</h3>
+<p><span class="math display">\[ln (P( crimegroup = drug-related)/P(crime group = sex-related)) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)\]</span></p>
+<p><span class="math display">\[ln(P(crimegroup = weapon-related)/P(crime group = sex-related)) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)\]</span></p>
+<p>Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
+<p><br></p>
 </div>
 <div id="tabulation" class="section level3">
 <h3>Tabulation</h3>
+<p>We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.</p>
 <table>
 <thead>
 <tr class="header">
@@ -376,7 +404,7 @@ $(document).ready(function () {
 </tr>
 </tbody>
 </table>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="interpretation" class="section level3">
 <h3>Interpretation</h3>

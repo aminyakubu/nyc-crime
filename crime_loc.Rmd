@@ -1,7 +1,5 @@
 ---
 title: "Exploratory Analysis"
-author: "Jyoti Ankam"
-date: "November 17, 2018"
 output: html_document
 ---
 

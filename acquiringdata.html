@@ -285,7 +285,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="flex_dashboard.html">Flex Dashboard</a>
@@ -319,155 +319,78 @@ div.tocify {
 </div>
 
 
-<div id="accessing-the-data." class="section level3">
-<h3>Accessing the data.</h3>
-<p>The data was accessed through the SODA Consumer API on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
-<p>The <code>tidyverse</code>, <code>Rsocrata</code> and <code>lubridate</code> libraries are required to connect with the API and subsequently manipulate and clean the data.</p>
-<pre class="r"><code>library(tidyverse)
-library(RSocrata)
-library(lubridate)
-library(photon)
+<p><br></p>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #337ab7;
+}
 
-if(!requireNamespace(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
-devtools::install_github(&quot;dkahle/ggmap&quot;, ref = &quot;tidyup&quot;)
-ggmap(get_googlemap())
-register_google(key = &quot;insert your google api key here&quot;)</code></pre>
-<pre class="r"><code>## Install the required package with:
-## install.packages(&quot;RSocrata) if not already installed
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #337ab7;
+}
 
-nyc_crime = read.socrata(
-  &quot;https://data.cityofnewyork.us/resource/9s4h-37hy.json&quot;,
-  app_token = &quot;xxxx&quot;,
-  email     = &quot;xxxx&quot;,
-  password  = &quot;xxxx&quot; )</code></pre>
-<p>The acquired data has 6,036,805 observations and 35 variables. Broadly, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect and police infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
+
+</style>
+<div id="accessing-the-data" class="section level3">
+<h3>Accessing the Data</h3>
+<p>In this page, we show how we accessed the data and the kinds of data cleaning and manipulation done to make the data ready for analysis. The data is compiled by <a href="https://www1.nyc.gov/site/nypd/index.page">New York City Police Department</a> and owned by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>. <br></p>
+<p>The data was accessed through the SoDA (Socrata Open Data Application Program Interface) web API client on 17th November, 2018. Click <a href="https://dev.socrata.com/consumers/getting-started.html">here</a> to read more about the API.</p>
+<p>Click <a href="https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd">here</a> to view the full R code used to access, clean and manipulate the data. <br></p>
+<p><code>RSocrata</code> package is needed to to use SoDA web API query. <code>ggmap</code> is also needed to geocode coordinate information. Standard packages like <code>tidyverse</code> and <code>lubridate</code> are also necessary for manipulation.</p>
+<p>The raw, acquired dataset has 6,036,805 observations and 35 variables. Broadly speaking, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect, and police department infromation. For more information on the variables, click <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here</a>.</p>
+<p><br></p>
 </div>
-<div id="subsetting" class="section level3">
-<h3>Subsetting</h3>
-<p>We are interested in 2017, 2016, 2015 and 2014 so we extract crime information for those years. We also interested in felony crimes so take out misdeamenors and violations.</p>
-<pre class="r"><code># This code was used to retrieve and assess the observations with missing date of crime occurrence
-
-crime_missing_cp = nyc_crime %&gt;% 
-  summarize_all(funs(sum(is.na(.))))
-
-#Cleaning and subsetting the data
-
-nyc_felony_crimes = nyc_crime %&gt;% 
-  janitor::clean_names() %&gt;% 
-  mutate(year = year(cmplnt_fr_dt))%&gt;%
-  mutate_if(is.character, tolower) %&gt;% 
-  filter(year %in% 2014:2017) %&gt;% 
-  filter(law_cat_cd == &quot;felony&quot;) %&gt;% 
-  select(- station_name, - transit_district, - hadevelopt, - patrol_boro, - housing_psa, - juris_desc)
-
-saveRDS(nyc_felony_crimes, file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
-
-#### selecting crimes of interest
-sex_drug_weapons = nyc_felony_crimes %&gt;% 
-  filter(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696, # Sex related felony crimes
-                      ## Drug related felony crimes
-                      500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570,
-                      ### Weapon related felony crimes
-                      781, 792, 793, 796)) %&gt;% 
-  mutate(longitude = as.numeric(longitude),
-         latitude = as.numeric(latitude)) %&gt;% 
-  select(cmplnt_num, boro_nm, cmplnt_fr_dt, cmplnt_fr_tm, latitude, longitude, ky_cd, ofns_desc, pd_cd, pd_desc, vic_race, vic_sex, vic_age_group, year, prem_typ_desc) %&gt;% 
-  mutate(boro_nm = if_else(boro_nm == &quot;staten island&quot;, &quot;staten_island&quot;, boro_nm),
-         crime_group = if_else(pd_cd %in% c(178, 694, 697, 176, 180, 153, 157, 177, 168, 159, 166, 164, 179, 155, 586, 696), &quot;Sex-Related&quot;, 
-                               if_else(pd_cd %in% c(500, 501, 502, 503, 505, 507, 510, 512, 514, 515, 519, 520, 521, 523, 524, 529, 530, 531, 532, 568, 570), &quot;Drug-Related&quot;, 
-                                       if_else(pd_cd %in% c(781, 792, 793, 796), &quot;Weapon-Related&quot;, pd_cd))))
-
-saveRDS(sex_drug_weapons, file = &quot;./datasets/sex_drug_weapons.rds&quot;)</code></pre>
-<p>Our dataset for analysis has 588,704 observations and 31 variables for nyc_felony_crimes and it’s subset sex_drug_weapons has 46,692 observations and 14 variables.</p>
+<div id="subsetting-data" class="section level3">
+<h3>Subsetting Data</h3>
+<p>We were interested in 2017, 2016, 2015 and 2014 and felony sex-related, weapon-related and drug-related crimes. Therefore, we extracted those crime information for those years.</p>
+<p>Below is a list of the penal codes in the dataset that we used to selected the felony crimes of interest.</p>
+<div id="sexual-related-felony-crimes" class="section level5">
+<h5>Sexual – Related Felony Crimes <br></h5>
+<p><code>178</code> Facilitating A Sex Offense With A Controlled Substance <br> <code>694</code> Incest <br> <code>697</code> Use Of A Child In Sexual Performance <br> <code>176</code> Sex Crimes <br> <code>180</code> Course Of Sexual Conduct Against Child <br> <code>153</code> Rape 3 <br> <code>157</code> Rape 1 <br> <code>177</code> Sexual Abuse <br> <code>168</code> Sodomy 1 <br> <code>159</code> Rape 1 Attempt <br> <code>166</code> Sodomy 2 <br> <code>164</code> Sodomy 3 <br> <code>179</code> Aggrevated Sexual Abuse <br> <code>155</code> Rape 2 <br> <code>586</code> Sextrafficking <br> <code>696</code> Promoting Sexual Performance – Child <br></p>
+</div>
+<div id="drug-related-felony-crimes" class="section level5">
+<h5>Drug Related Felony Crimes <br></h5>
+<p><code>500</code> Controlled Substance, Possession <br> <code>501</code> Controlled Substance, Possession <br> <code>502</code> Controlled Substance, Possession <br> <code>503</code> Controlled Substance, Intent To <br> <code>505</code> Controlled Substance, Possession <br> <code>507</code> Controlled Substance, Possession <br> <code>510</code> Controlled Substance, Intent T <br> <code>512</code> Controlled Substance, Sale 1 <br> <code>514</code> Controlled Substance, Sale 2 <br> <code>515</code> Controlled Substance, Sale 3 <br> <code>519</code> Sale School Grounds 4 <br> <code>520</code> Controlled Substance, Sale 4 <br> <code>521</code> Controlled Substance, Sale 5 <br> <code>523</code> Sale School Grounds <br> <code>524</code> Controlled Substance, Possession<br> <code>529</code> Sales Of Prescription <br> <code>530</code> Drug, Injection Of <br> <code>531</code> Drug Paraphernalia, Possessesion <br> <code>532</code> Controlled Substance,Possession <br> <code>568</code> Marijuana, Possession 1, 2 &amp; 3 <br> <code>570</code> Marijuana, Sale 1, 2 &amp; 3 <br></p>
+</div>
+<div id="weapon-related-felony-crimes" class="section level5">
+<h5>Weapon Related Felony Crimes</h5>
+<p><code>781</code> Criminal Disposal Firearm 1 <br> <code>792</code> Weapons Possession 1 &amp; 2 <br> <code>793</code> Weapons Possession 3 <br> <code>796</code> Weapons,Prohibited Use <br></p>
+<p>The resulting dataset called <code>sex_drug_weapons</code> dataset has 46,692 observations and 15 variables.</p>
+<p><br></p>
+</div>
 </div>
 <div id="reverse-geocoding" class="section level3">
 <h3>Reverse Geocoding</h3>
-<p>The dataset comes without zipcode or neighborhood information. There are only geographic coordinates. This makes chloropleth mapping very difficut. We will reverse geocode the coordinates.</p>
-</div>
-<div id="felony-drug-offenses" class="section level3">
-<h3>Felony Drug offenses</h3>
-<pre class="r"><code>#### Sampling the just year 2017 and selecting all felony drug rape reports
-
-### Drug offenses in 2017
-drug_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Drug-Related&quot; &amp; year == 2017)
-
-### Sampling to reduce the dataset so has not not get rejected by google API
-drug_2017_1 = drug_2017 %&gt;% sample_n(2290)
-
-drug_2017_zip_1 = drug_2017_1 %&gt;% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
-
-saveRDS(drug_2017_zip_1, file = &quot;datasets/drug_2017_zip_1.rds&quot;)
-
-#### Getting the data not sample. Second half of the data
-drug_2017_2 = anti_join(drug_2017, drug_2017_zip_1, by = &quot;cmplnt_num&quot;)
-
-#### Iterating to get the data
-drug_2017_zip_2 = drug_2017_2 %&gt;% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
-
-saveRDS(drug_2017_zip_2, file = &quot;datasets/drug_2017_zip_2.rds&quot;)
-
-### Joining to have the complete dataset
-
-complete_drug_zip_2017 = bind_rows(drug_2017_zip_1, drug_2017_zip_2) 
-
-saveRDS(complete_drug_zip_2017, file = &quot;datasets/complete_drug_zip_2017.rds&quot;)</code></pre>
-</div>
-<div id="felony-sex-offenses" class="section level3">
-<h3>Felony Sex offenses</h3>
-<p>The same process will be used for the sexual related crimes. There are 1993 observations therefore there’s no need to split the data before reverse geocoding.</p>
-<pre class="r"><code>sex_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Sex-Related&quot; &amp; year == 2017)
-
-complete_sex_zip_2017 = sex_2017 %&gt;% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
-
-saveRDS(complete_sex_zip_2017, file = &quot;datasets/complete_sex_zip_2017.rds&quot;)</code></pre>
-</div>
-<div id="felony-weapon-offenses" class="section level3">
-<h3>Felony Weapon offenses</h3>
-<pre class="r"><code>weapon_2017 = sex_drug_weapons %&gt;% filter(crime_group == &quot;Weapon-Related&quot; &amp; year == 2017)
-
-complete_weapon_zip_2017 = weapon_2017 %&gt;% 
-  mutate(zip = map2(.x = longitude, .y = latitude, ~ revgeocode(c(lon = .x, lat = .y))))
-
-saveRDS(complete_weapon_zip_2017, file = &quot;datasets/complete_weapon_zip_2017.rds&quot;)</code></pre>
-<p>Dataset with the 3 crimes together with their zipcodes</p>
-<pre class="r"><code>all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, complete_weapon_zip_2017) 
-
-saveRDS(all_sex_drug_weapon_zip_2017, file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+<p>The dataset comes without zipcode or neighborhood information; there are only coordinates of the exact location where the crime happened. This makes aggregation beyond clustering of the geographic points impossible. Therefore we used google maps API to reverse geocode the get the exact address of the crime occurence. We then subsequently took out the zipcodes for mapping. The full code on how we reverse geocoded the longitude and latitude information can be found in our repository on github.</p>
 </div>
 <div id="usage" class="section level3">
 <h3>Usage</h3>
-<p>To use our dataset, use the following code after cloning our repository.</p>
-<pre class="r"><code>### nyc_felony_crimes dataset
-readRDS(file = &quot;./datasets/nyc_felony_crimes.rds&quot;)
-
-### sex_drug_weapons dataset
-readRDS(file = &quot;./datasets/sex_drug_weapons.rds&quot;)
-
-### Drug offenses for 2017 with zipcodes
-readRDS(complete_drug_zip_2017, file = &quot;datasets/complete_drug_zip_2017.rds&quot;)
-
-### Sex offenses for 2017 with zipcodes
-readRDS(complete_sex_zip_2017, file = &quot;datasets/complete_sex_zip_2017.rds&quot;)
-
-### Weapon offenses for 2017 with zipcodes
-readRDS(complete_weapon_zip_2017, file = &quot;datasets/complete_weapon_zip_2017.rds&quot;)
-
-### Weapons, sex, drug for 2017 with zipcodes
-
-readRDS(file = &quot;datasets/all_sex_drug_weapon_zip_2017.rds&quot;)</code></pre>
+<p>After cleaning, subsetting and reverse geocoding, we saved the resulting dataset in <code>rds</code> format. You can download the resulting datasets <a href="https://drive.google.com/open?id=1QZB8nKClFl9qZV20Sa15Lf7ZbIlxBcis">from this google drive</a>. The code on how to read the datasets can also be found in our repository file called <a href="https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd"><code>acquiringdata.Rmd</code></a></p>
 </div>
 <div id="data-dictionary" class="section level3">
-<h3>Data dictionary</h3>
-<p>Following is the list of all the 16 variables in the dataset with their descriptions:</p>
+<h3>Data Dictionary</h3>
+<p>The list below provides all 17 variables in the datasets with their brief descriptions:</p>
 <p>
 <code>cmplnt_num</code>: randomly generated persistent ID for each complaint <br>
 <p>
 <code>boro_nm</code>: the name of the borough in which the incident occurred <br>
 <p>
-<code>cmplnt_fr_dt</code>: exact date of occurrence for the reported incident <br>
+<code>cmplnt_fr_dt</code>: exact start date of occurrence for the reported incident <br>
+<p>
+<code>cmplnt_to_dt</code>: exact end date of occurrent for the reported incident <br>
 <p>
 <code>cmplnt_fr_tm</code>: exact time of occurrence for the reported incident <br>
 <p>

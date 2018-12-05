@@ -11,7 +11,7 @@
 
 
 
-<title>Factors Associated With New York City Crime From 2014 to 2017</title>
+<title>Analysis of Select Felonies in New York City From 2014 to 2017</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -187,7 +187,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="Exploratory.html">Exploratory Analyses</a>
+  <a href="exploratory.html">Exploratory Analyses</a>
 </li>
 <li>
   <a href="flex_dashboard.html">Flex Dashboard</a>
@@ -216,35 +216,81 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Factors Associated With New York City Crime From 2014 to 2017</h1>
+<h1 class="title toc-ignore">Analysis of Select Felonies in New York City From 2014 to 2017</h1>
 
 </div>
 
 
-<p>Amin Yakubu, ay2416; Jacky Choi, jmc2392; Yaa Klu, ykk2116; Jyoti Ankam, jva2106</p>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #337ab7;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+background-color: #337ab7;
+}
+
+.navbar-default {
+background-color: #337ab7;
+}
+
+.navbar-default .navbar-nav>li>a {
+color: white;
+font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+color: white;
+font-weight: bold;
+}
+
+</style>
+<p><br></p>
+<div id="amin-yakubu-ay2416-jacky-choi-jmc2392-yaa-asantewaa-klu-ykk2116-jyoti-ankam-jva2106" class="section level5">
+<h5>Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106)</h5>
 <head>
 <p><link rel="stylesheet" href="styles.css" type="text/css"> <link rel="stylesheet" href="academicons/css/academicons.min.css"/> <link rel="apple-touch-icon" href="/images/nyc2.jpg" ></p>
-<p><br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:10px solid"><br></p>
+<center>
+<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:1px solid"><br>
+</center>
 <p><br></p>
-<div id="background" class="section level2">
-<h2>Background</h2>
-<p>The New York City of the 1970s looked very different from the gentrified metropolis we know today. The boroughs of Brooklyn, Queens, and Staten Island have historically had low crime rates compared to the Bronx and Manhattan. We explored recent trends in crime reporting and rates across the different boroughs of the city.</p>
+</div>
+<div id="our-drive-for-the-project" class="section level2">
+<h2>Our Drive For The Project</h2>
+<p>Mental health issues have always been associated with various myths. However recently, a lot of conversations are going on around it to create more awareness. According to <a href="https://www.mentalhealth.gov/basics">MentalHealth.gov</a>, mental health includes our emotional, psychological, and social well-being and it largely affects quality of life for an individual. The factors that contribute to mental health issues include biological factors, family history, and life experiences such as trauma and abuse.</p>
+<p>Trauma and/or abuse can occur or result from being a victim of a crime, especially a felony. Although New York City is not listed as one of the top 10 cities with the highest crime rates in the United States, it is still one of the most populated cities in the country and in the world. Thus, collectively speaking, the ripple effects of crimes may intangibly impact more people. Furthermore, gathering data and statistics on crime in NYC may provide insights regarding steps to be taken for other similar high-density areas.</p>
+<p>We decided to study sex-related, drug-related, and weapons-related felonies in particular for a couple of reasons. First, we felt that there was a significant overlap among these three categories - drug-related crimes, for example, are often committed concurrently with weapons-related crimes. Secondly, we felt that it was important to know the statistics on felonies, especially as experienced by victims, since such information may provide important indicators for mental health advocacy. These reasons led us to explore data on the three main categories of felonies (sex-related, weapon-related and drug-related) that occurred in New York City from 2014 to 2017.</p>
+<p><br></p>
+</div>
+<div id="data-sources" class="section level2">
+<h2>Data Sources</h2>
+<p>We used the dataset collected by the New York City Police Department (NYPD); specifically, the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables.</p>
+<p>The link to the raw dataset is <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">here.</a>. Review the <a href="acquiringdata.html">“The Data”</a> page for information on how we cleaned the dataset to obtain a final analytic dataset.</p>
+<p><br></p>
 </div>
 <div id="project-description" class="section level2">
 <h2>Project Description</h2>
-<p>We conducted various exploratory and formal analyses of different variables associated with reported crimes and events across New York City (e.g., sociodemographics, day/seasonality, and other trends). We were interested in looking at a dataset containing information on New York Police Department (NYPD) crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and type of crime. Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either the type of crime, the location of crime, or to each other. Lastly, the dataset provided ample opportunities to visualize our research hypotheses graphically.</p>
-</div>
-<div id="data-sources" class="section level2">
-<h2>Data sources</h2>
-<p>We used the dataset collected by the NYPD - specifically, the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables.</p>
-<p><a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">The link to the dataset is here:</a></p>
+<p>We conducted various exploratory and formal analyses of different variables and factors associated with reported felonies across the boroughs in New York City from 2014 to 2017, including sociodemographics, day/seasonality, and other important trends.</p>
+<p>We were interested in looking at a dataset containing information on NYPD crime complaints because there is a wealth of information and variables in the dataset. It is particularly exciting that we were able to study the variables longitudinally, as well as by discrete categories such as borough and crime category (sex-related, weapon-related and drug-related).</p>
+<p>Furthermore, the dataset provided both victim and suspect demographic information, allowing us to link this information to either crime category, the crime location, or to each other. Lastly, the dataset provided ample opportunities to visualize interesting patterns associated with crime category, crime location (boroughs, distinct zipcodes, and subsets of areas), time of crime, and the demographics of victims.</p>
+<p><br></p>
 </div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
 <p>For the analyses, we used both graphical elements and functions (e.g., ggplot, plotly, shiny, dashboard) and data frames/tables to demonstrate longitudinal trends and trends by type of crime or location. We also included a Flex Dashboard and Shiny app controls to provide stratification by different variables.</p>
+<p>Review our <a href="exploratory.html">“Exploratory Analyses”</a> and <a href="statistical_analysis.html">“Statistical Analysis”</a> pages in particular for a further exploration of what we examined.</p>
+<p><br></p>
 </div>
-<div id="other" class="section level2">
-<h2>Other</h2>
+<div id="some-interesting-findings" class="section level2">
+<h2>Some Interesting Findings</h2>
+<p>Overall, there were 19,753 victims for weapon-related crimes, 18,293 for drug-related crimes, and 8,646 for sex-related crimes within the studied time period. Victims for weapon-related crimes were mostly within the 25-44 age-group (38%) and were more likely to be black (53%). Most victims for drug-related crimes were unknown or unidentified. Majority of victims of sex-related crimes were below 18 years (42%), were female (90%), and were black (38%).</p>
+<p>Most crimes were heavily concentrated in the Bronx and Brooklyn. Bronx captured the highest felonies rates, although just as other boroughs, there has been a consistent decline throughout the 4 years. Interestingly, in Brooklyn, drug-related felonies were on the rise within the years captured.</p>
+<p>When we looked specifically at weapon-related crimes, we observed that they mostly occured on the streets, and usually over the weekends and late in the night as well. Similar to weapon-related crimes, drug-related crimes occurred on the streets. However, they were most likely to occur throughout the week and also from late mornings into the night. Sex-related crimes were very different from the rest because they were more likely to occur around midnight in apartments throughout the whole week. Although not reported in our main findings, it is important to note that most suspects of all the crimes were males.</p>
+<p>In conclusion, we may want to join hands with the U.N. in championing their <a href="http://www.unwomen.org/en/what-we-do/ending-violence-against-women/take-action/16-days-of-activism">16 Days of Activism against Gender-Based Violence Campaign</a> cause. This is because our data suggests that females in New York City, especially children, are at a high risk of violence, and of mostly sex-related crimes. These experiences may eventually increase the burden of disease as they may contribute to mental health issues.</p>
+<p><br></p>
+</div>
+<div id="contact-us" class="section level2">
+<h2>Contact Us</h2>
 <p>Email any one of us if you have any questions: <a href="mailto:%3Cay2416@cumc.columbia.edu%3E">Amin Yakubu</a> | <a href="mailto:%3Cjmc2392@cumc.columbia.edu%3E">Jacky Choi</a> | <a href="mailto:%3Cykk2116@cumc.columbia.edu%3E">Yaa Asantewaa Klu</a> | <a href="mailto:%3Cjva2106@cumc.columbia.edu%3E">Jyoti Ankam</a></p>
 </div>
 

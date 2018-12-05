@@ -4,7 +4,7 @@ navbar:
   title: "Home"
   right:
     - text: "Exploratory Analyses"
-      href: Exploratory.html 
+      href: exploratory.html 
     - text: "Flex Dashboard"
       href: flex_dashboard.html
     - text: "Shiny App"
@@ -17,6 +17,8 @@ navbar:
       href: http://github.com/aminyakubu/nyc-crime/
 output:
   html_document
-  
-  
+
+
+
+
   
