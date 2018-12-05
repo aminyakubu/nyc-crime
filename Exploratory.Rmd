@@ -249,6 +249,7 @@ Bronx has consistently had the highest crime rate over the last 4 years for all 
 ## Geographical Distribution of Felonies
 
 Our final exploratory analysis examined the geographical distribution of felonies, beyond the borough level. We thought this was critical to investigate because each borough contains such unique and vastly different neighborhoods comprising that borough - solely looking at associated factors at the neighborhood level ignores and masks these different identities within each neighborhood. Examining at this level also gives us more clear-cut information regarding the absolute numbers of felonies in each neighborhood and where law enforcement officials can prioritize efforts.
+
 ```{r, exploratory_data}
 ###Dataset for 2017 with addresses
 crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
