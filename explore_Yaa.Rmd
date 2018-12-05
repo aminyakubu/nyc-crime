@@ -31,7 +31,7 @@ felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
 overall_felony = readRDS(file = "./datasets/nyc_felony_crimes.rds")
 
 complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num") %>%
-  janitor::clean_names(dat = .)
+  janitor::clean_names(dat = .) 
 ```
 
 
