@@ -33,17 +33,6 @@ font-weight: bold;
 
 </style>
 
-
-## Top Crimes and Associated Demographics by Borough
-Include Yaa's
-
-<br>
-<br>
-
-## Length of Reported Felony by Borough
-
-<br>
-As another one of our exploratory analyses, we thought it would be interesting to examine whether the length of time of the reported felony differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer felonies may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
 ```{r exp_setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
@@ -69,7 +58,21 @@ library(maps)
 library(tmap)
 ```
 
-First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
+
+## Top Crimes and Associated Demographics by Borough
+Include Yaa's
+
+<br>
+<br>
+
+## Length of Reported Felony by Borough
+
+<br>
+
+We examined whether the length of time between when the crime started and ended differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer time may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
+
+After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
+
 ```{r exp_tidy_crime_data, include = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
@@ -79,8 +82,6 @@ crime_data = crime_df %>%
   mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
   select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm) 
   
-
-summary(crime_data$time_diff2)
 ```
 
 ```{r exp_density_plot, echo = FALSE}
@@ -102,6 +103,7 @@ crime_data2 <- crime_data[complete.cases(crime_data),] %>%
 ```
 
 We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
+
 ```{r exp_mean_time_tables, echo = FALSE}
 crime_table = 
   crime_data2 %>%
