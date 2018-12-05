@@ -442,8 +442,3 @@ tmap_mode(current.mode)
 ```
 
 The heat maps provide an easy way of visually describing the absolute numbers of overall felonies, as well as felonies by each of the 3 types. Overall, we see these crimes occur most in central brooklyn and bronx. This picture is very similar when we look at the picture for only sex-related crimes and weapon-related crimes. In looking at the map for drug-related crimes, we see that the crimes are distributed among most 3 areas - central and south brooklyn, and bronx. 
-
-
-
-
-
