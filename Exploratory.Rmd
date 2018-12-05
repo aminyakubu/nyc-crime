@@ -69,10 +69,8 @@ library(maps)
 library(tmap)
 ```
 
-<br>
-
 First, we loaded the required R packages. Next, we read in the CSV file and tidied it up. After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
-```{r exp_tidy_crime_data, echo = FALSE}
+```{r exp_tidy_crime_data, include = FALSE}
 crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 crime_data = crime_df %>% 
@@ -83,6 +81,9 @@ crime_data = crime_df %>%
   
 
 summary(crime_data$time_diff2)
+```
+
+```{r exp_density_plot, echo = FALSE}
 ggplot(data = crime_data, aes(x = time_diff2)) +
   geom_density() +
     labs(
@@ -99,8 +100,6 @@ ggplot(data = crime_data, aes(x = time_diff2)) +
 crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
     filter(time_diff2 > 0) 
 ```
-
-<br>
 
 We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
 ```{r exp_crime_data_table, echo = FALSE}
@@ -162,21 +161,16 @@ crime_graph2
 <br>
 We obtain a rich amount of information from the graphs above. First, regarding the average length of reported felonies, Staten Island clearly outranks the other borough, leading at 105.42 days. Queens is next (78.63 days), followed by the Bronx (71.31 days), Brooklyn (60.91 days), and Manhattan (58.52 days). 
 
-One reason that may account for Staten Island's rank is that criminals may be more comfortable committing felonies in a borough that is less populated with other residents and law enforcement officials. Manhattan, on the other hand, is a more crowded borough - perhaps criminals feel less comfortable committing a felony in such an area. This may be particularly relevant and true if felonies are more severe, violent, and are harder to deal with. Indeed, we may be right - felonies comprise a more violent category, in relation to misdemeanors; felonies tend to include homicide, rape, robbery, arson, human trafficking, and so on. 
+One reason that may account for Staten Island's rank is that the borough has fewer observations compared to the other boroughs, so any outliers in Staten Island may easily and drastically skew the average. Another potential reason is that criminals may be more comfortable committing felonies in a borough that is less populated with other residents and law enforcement officials. Manhattan, on the other hand, is a more crowded borough - perhaps criminals feel less comfortable committing a felony in such an area. This may be particularly relevant and true if felonies are more severe or violent, and criminals need time, space, and less attention when committing these crimes. Indeed, we may be right - felonies comprise a more violent category, in relation to misdemeanors; felonies tend to include homicide, rape, robbery, arson, human trafficking, and so on. 
 
-Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have more outliers falling outside the range of the boxplots.  reported events in Staten Island. Secondly, the spread of the reported events seems to be slightly larger in Manhattan than in other boroughs. Lastly, the spread among Brooklyn and Queens is approximately the same.
-
-
-
-<br>
-You can find the code for this exploratory analysis [here](code_date_borough.html).
+Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have significantly more outliers (and thus, perhaps more observations) compared to Staten Island, giving a bit more credence to the first hypothesis stated above. We also notice that the median values, which tend to be a more stable measure against outliers than the mean, are close to 0 for all the boroughs, suggesting that many felonies still last around a single day despite our filtering out same-day felonies. Despite this, Staten Island still shows a median value that seems slightly above the values of the other boroughs. 
 
 <br>
 <br>
 
 ## Overall Felony Rates by Borough
 
-For our third exploratory analysis, we chose to examine crime (i.e., felony) rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime.
+For our third exploratory analysis, we chose to examine felony rates by borough. Doing so gives us an understanding as to how NYPD can prioritize their efforts when stemming crime. Studying this also allows us to understand potential longitudinal trends for each borough 
 
 First, we loaded information from the U.S. Census on total population in the individual NYC boroughs to calculate felony rates in each borough.
 ```{r}
