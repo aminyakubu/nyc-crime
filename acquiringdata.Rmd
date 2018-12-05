@@ -75,6 +75,7 @@ nyc_crime = read.socrata(
   email     = "xxxx",
   password  = "xxxx" )
 
+saveRDS(nyc_crime, file = "./datasets/nyc_crime.rds")
 ```
 
 The raw, acquired dataset has 6,036,805 observations and 35 variables. Broadly speaking, the variables contain information on the exact date, time and location of crime, description of crime, demographic information of the victim and suspect, and police department infromation. For more information on the variables, click [here](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i).
@@ -264,6 +265,9 @@ saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2
 After cleaning, subsetting and reverse geocoding, we saved the resulting dataset in `rds` format. You can download the resulting datasets [from this google drive](https://drive.google.com/open?id=1QZB8nKClFl9qZV20Sa15Lf7ZbIlxBcis). The code on how to read the datasets can also be found in our repository file called [`acquiringdata.Rmd`](https://github.com/aminyakubu/nyc-crime/blob/master/acquiringdata.Rmd)
 
 ```{r acquiringdata_usage, eval = FALSE}
+
+### Complete raw dataset without any manipulation or cleaning
+readRDS(file = "./datasets/nyc_crime.rds")
 
 ### nyc_felony_crimes dataset
 readRDS(file = "./datasets/nyc_felony_crimes.rds")
