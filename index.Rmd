@@ -1,5 +1,5 @@
 ---
-title: "Statistics on Felonies That Occurred in New York City From 2014 to 2017"
+title: "Analysis of Select Felonies in New York City From 2014 to 2017"
 ---
 <style>
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
@@ -28,7 +28,7 @@ font-weight: bold;
 
 <br>
 
-####### Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106) 
+##### Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106) 
 
 
 <head>
