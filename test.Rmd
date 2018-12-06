@@ -383,7 +383,102 @@ felony_graph =
 <br>
 Note that in the table above, "People of the State of NY" indicates that the information was not provided by the city, presumably to protect the victims' identity and privacy. Also of note is that young women are disproportionately affected by sex-relate felonies.
 
-Click [here](https://github.com/aminyakubu/nyc-crime/blob/master/demographics.Rmd) to view the code for the demographics table. 
+The code used to build the table above is shown below.
+```{r exp_yaa_data}
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
+overall_felony = readRDS(file = "./datasets/nyc_felony_crimes.rds")
+complete_data = inner_join(overall_felony, felony_crime, by = "cmplnt_num") %>%
+  janitor::clean_names(dat = .) 
+```
+
+```{r num_crimes_all_felonies}
+complete_data %>%
+  group_by(crime_group) %>%
+  summarise(number = n()) %>%
+  arrange(desc(number)) %>%
+  knitr::kable()
+```
+
+```{r weapons_race}
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r weapons_age}
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != "unknown") %>% 
+  group_by(vic_age_group_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r weapons_sex}
+complete_data %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r drug_race}
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable()
+```
+
+```{r drug_age}
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != "unknown") %>% 
+  group_by(vic_age_group_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r drug_sex}
+complete_data %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r sex_race}
+complete_data %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_race_y), vic_race_y != "unknown") %>% 
+  group_by(vic_race_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
+
+```{r sex_age}
+complete_data %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_age_group_y), vic_age_group_y != "unknown") %>% 
+  group_by(vic_age_group_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable()
+```
+
+```{r sex_sex}
+complete_data %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_sex_y), vic_sex_y != "unknown") %>% 
+  group_by(vic_sex_y) %>%
+  summarise(number = n()) %>% arrange(desc(number)) %>% 
+  knitr::kable() 
+```
 
 <br>
 <br>
