@@ -58,10 +58,11 @@ library(maps)
 library(tmap)
 ```
 
+<br>
 
-#### Vicim Demographics
+## Vicim Demographics
 
-We analyzed demographics information for victims of the sex-relatd, weapon-related and drug-related felonies. 
+We analyzed demographic information for victims of sex-related, weapon-related and drug-related felonies. 
 
 ```{r, import_data}
 felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
