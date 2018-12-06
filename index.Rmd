@@ -42,9 +42,15 @@ font-weight: bold;
 <br>
 
 ## Welcome
+```{r install_package, include = FALSE}
+library("vembedr")
+```
 
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=ts-QUqtZYHY&feature=em-share_video_user" frameborder="0" allowfullscreen></iframe>
+```{r video, echo = FALSE}
+embed_url("https://www.youtube.com/watch?v=ts-QUqtZYHY")
+```
 
+<br>
 
 ## Our Drive For The Project
 
