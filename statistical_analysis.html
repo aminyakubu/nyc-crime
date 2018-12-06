@@ -11,7 +11,7 @@
 
 
 
-<title>Statistical Analysis</title>
+<title>Statistical Analyses</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,6 +25,13 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.2/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
 <script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
 <script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
@@ -191,7 +198,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = true;
+    options.showAndHide = false;
     options.smoothScroll = true;
 
     // tocify
@@ -254,6 +261,12 @@ div.tocify {
   border-radius: 0px;
 }
 
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
 
 </style>
 
@@ -314,7 +327,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistical Analysis</h1>
+<h1 class="title toc-ignore">Statistical Analyses</h1>
 
 </div>
 
@@ -343,10 +356,51 @@ font-weight: bold;
 }
 
 </style>
-<div id="differences-between-length-of-crime" class="section level3">
-<h3>Differences between length of crime</h3>
-<p>In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance.</p>
-<p>To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene’s Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn’t met.</p>
+<p><br></p>
+<div id="differences-in-length-of-crime" class="section level2">
+<h2>Differences in Length of Crime</h2>
+<p><br></p>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>In one of the exploratory analyses, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis are included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Crime group</th>
+<th align="right">Count</th>
+<th align="right">Average time in days</th>
+<th align="right">Standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Drug-Related</td>
+<td align="right">18293</td>
+<td align="right">0.5862466</td>
+<td align="right">12.315819</td>
+</tr>
+<tr class="even">
+<td align="left">Sex-Related</td>
+<td align="right">8646</td>
+<td align="right">19.2362846</td>
+<td align="right">83.297645</td>
+</tr>
+<tr class="odd">
+<td align="left">Weapon-Related</td>
+<td align="right">19753</td>
+<td align="right">0.2820289</td>
+<td align="right">9.101974</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>We will assess whether this difference is statistically significant. Testing this difference can yield important insights regarding whether victims are disproportionately suffering the burden of certain crimes, in terms of absolute number of days. Finding a significant result may also suggest that certain felonies are more extensive and complicated, potentially more dangerous or violent, or may require more resources to deal with. Lastly, it may indicate that the victims are at a higher risk compared to those involved in other types of felonies.</p>
+<p><br></p>
+</div>
+<div id="data-and-methods" class="section level3">
+<h3>Data and Methods</h3>
+<p>We first import the data below and clean up the data. We tidy the data so that Manhattan becomes the reference borough and drug-related felonies become the reference felony. Observations with missing information on when the crime started or when it ended were excluded.</p>
+<p>Since we are testing the difference in means between three groups, we should be able to conduct an ANOVA test. To ensure that the assumptions of the ANOVA test are not violated, we test for homogeneity of variances. We used Levene’s test to test homogeneity of variances. We see from the results below that the p-value is less than 0.05. Therefore, the assumption of homogenous variances is not met.</p>
 <table>
 <thead>
 <tr class="header">
@@ -371,7 +425,7 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p>Non-parametric approach of Kruskal-Wallis rank sum test will be used to test the difference between the means.</p>
+<p>We resort to using a non-parametric approach in detecting a difference of means between these three groups by utilizing the Kruskal-Wallis test. Using this test means that we do not make any underlying assumptions about the distribution of the three groups; since these groups potentially come from very different populations, a non-parametric approach seems best for this test.</p>
 <table>
 <thead>
 <tr class="header">
@@ -390,28 +444,50 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p>It is evident that the p value is less that 0.05. We can conclude that at 5% level of significance, at least one of the means of the length of time between when the crime started and ended is different for the different crime groups.</p>
-<p>Since the Kruskal–Wallis test is significant, we then conducted a post-hoc analysis to determine which crime groups differ from each other level. We used the Dunn test for the post-hoc analysis.</p>
+<p><br></p>
+<p>From the test above, it is evident that the p-value is less that 0.05. We conclude that at 5% level of significance, at least one of the average lengths of reported crimes (i.e., time between when the crime started and when it ended) is different among the three felony categories.</p>
+<p>Since the Kruskal–Wallis test is significant, we now conduct a post-hoc analysis to determine which crime groups differ from each other level. We use the Dunn test for the post-hoc analysis.</p>
 <pre><code>##                      Comparison           Z  P.unadj    P.adj
 ## 1    Drug-Related - Sex-Related -75.5637359 0.000000 0.000000
 ## 2 Drug-Related - Weapon-Related  -0.8243442 0.409744 0.409744
 ## 3  Sex-Related - Weapon-Related  75.8203110 0.000000 0.000000</code></pre>
-<p>The results show that there is a statistically significant difference between the average time for sex-related crimes and the other two groups (drugs and weapons). However, there isn’t a significant difference between drug-related and weapon-related. This shows that on average victims of sex crimes endure the crime over a period of time.</p>
+<p><br></p>
 </div>
-<div id="association-between-borough-and-crime" class="section level3">
-<h3>Association between borough and crime</h3>
-<p>We examined the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.</p>
+<div id="results-and-discussion" class="section level3">
+<h3>Results and Discussion</h3>
+<p>The results show that there is a statistically significant difference between the average length of reported felonies for sex-related and drug-related felonies (p &lt; 0.005), as well as for sex-related and weapons-related felonies (p &lt;0.005). However, there isn’t a significant difference between drug-related and weapons-related felonies (p = 0.4097). All together, we have evidence suggesting that victims of sex-related felonies endure longer incidents, compared to victims of drug-related or weapons-related felonies.</p>
+<p>The results of these tests suggest that victims of sex-related felonies endure significantly longer incidents compare to victims of drug-related or weapons-related felonies. This makes sense, considering that sex-related felonies include human trafficking, sexual abuse, and other cases in which the length of the crime is often dragged out compared to those within the other two felonies. Given this result, law enforcement, government, and public health officials should dedicate extra resources to prevent sex-related felonies and ensure that their agencies are adequately prepared and capable to resolve and manage sex-related felonies lasting longer periods of time.</p>
+<p><br> <br></p>
+</div>
+</div>
+<div id="association-between-borough-and-crime-occurrence" class="section level2">
+<h2>Association Between Borough and Crime Occurrence</h2>
+<p><br></p>
+<div id="introduction-1" class="section level3">
+<h3>Introduction</h3>
+<p>In one of our exploratory analyses, we found that felony rates differed by borough (see below).</p>
+<div id="htmlwidget-98e11422a87406e9e92a" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-98e11422a87406e9e92a">{"x":{"data":[{"x":[2014,2015,2016,2017],"y":[0.210786046385165,0.221186002882079,0.238043448707143,0.203308953478887],"text":["year: 2014<br />crime_rate: 0.21078605<br />boro_nm: bronx","year: 2015<br />crime_rate: 0.22118600<br />boro_nm: bronx","year: 2016<br />crime_rate: 0.23804345<br />boro_nm: bronx","year: 2017<br />crime_rate: 0.20330895<br />boro_nm: bronx"],"type":"scatter","mode":"markers+lines","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(68,1,84,1)"}},"hoveron":"points","name":"bronx","legendgroup":"bronx","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","line":{"width":3.77952755905512,"color":"rgba(68,1,84,1)","dash":"solid"},"frame":null},{"x":[2014,2015,2016,2017],"y":[0.136402882695409,0.134326448001734,0.14765338339932,0.148446203918723],"text":["year: 2014<br />crime_rate: 0.13640288<br />boro_nm: brooklyn","year: 2015<br />crime_rate: 0.13432645<br />boro_nm: brooklyn","year: 2016<br />crime_rate: 0.14765338<br />boro_nm: brooklyn","year: 2017<br />crime_rate: 0.14844620<br />boro_nm: brooklyn"],"type":"scatter","mode":"markers+lines","marker":{"autocolorscale":false,"color":"rgba(59,82,139,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(59,82,139,1)"}},"hoveron":"points","name":"brooklyn","legendgroup":"brooklyn","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","line":{"width":3.77952755905512,"color":"rgba(59,82,139,1)","dash":"solid"},"frame":null},{"x":[2014,2015,2016,2017],"y":[0.127708627300452,0.140683727722323,0.149333794670237,0.134917016423714],"text":["year: 2014<br />crime_rate: 0.12770863<br />boro_nm: manhattan","year: 2015<br />crime_rate: 0.14068373<br />boro_nm: manhattan","year: 2016<br />crime_rate: 0.14933379<br />boro_nm: manhattan","year: 2017<br />crime_rate: 0.13491702<br />boro_nm: manhattan"],"type":"scatter","mode":"markers+lines","marker":{"autocolorscale":false,"color":"rgba(33,144,140,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(33,144,140,1)"}},"hoveron":"points","name":"manhattan","legendgroup":"manhattan","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","line":{"width":3.77952755905512,"color":"rgba(33,144,140,1)","dash":"solid"},"frame":null},{"x":[2014,2015,2016,2017],"y":[0.0875950041168804,0.0857718747959579,0.0876798008294814,0.0779281788803612],"text":["year: 2014<br />crime_rate: 0.08759500<br />boro_nm: queens","year: 2015<br />crime_rate: 0.08577187<br />boro_nm: queens","year: 2016<br />crime_rate: 0.08767980<br />boro_nm: queens","year: 2017<br />crime_rate: 0.07792818<br />boro_nm: queens"],"type":"scatter","mode":"markers+lines","marker":{"autocolorscale":false,"color":"rgba(93,200,99,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(93,200,99,1)"}},"hoveron":"points","name":"queens","legendgroup":"queens","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","line":{"width":3.77952755905512,"color":"rgba(93,200,99,1)","dash":"solid"},"frame":null},{"x":[2014,2015,2016,2017],"y":[0.0748762143920844,0.0775876093422156,0.101573026208761,0.0867646384041981],"text":["year: 2014<br />crime_rate: 0.07487621<br />boro_nm: staten_island","year: 2015<br />crime_rate: 0.07758761<br />boro_nm: staten_island","year: 2016<br />crime_rate: 0.10157303<br />boro_nm: staten_island","year: 2017<br />crime_rate: 0.08676464<br />boro_nm: staten_island"],"type":"scatter","mode":"markers+lines","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(253,231,37,1)"}},"hoveron":"points","name":"staten_island","legendgroup":"staten_island","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","line":{"width":3.77952755905512,"color":"rgba(253,231,37,1)","dash":"solid"},"frame":null}],"layout":{"margin":{"t":26.2283105022831,"r":7.30593607305936,"b":40.1826484018265,"l":48.9497716894977},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2013.85,2017.15],"tickmode":"array","ticktext":["2014","2015","2016","2017"],"tickvals":[2014,2015,2016,2017],"categoryorder":"array","categoryarray":["2014","2015","2016","2017"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":"Year","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.0667178526763315,0.246201810422896],"tickmode":"array","ticktext":["0.10","0.15","0.20"],"tickvals":[0.1,0.15,0.2],"categoryorder":"array","categoryarray":["0.10","0.15","0.20"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"Felony Rate","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":0.96751968503937},"annotations":[{"text":"Borough","x":1.02,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"left","yanchor":"bottom","legendTitle":true}],"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":[{"name":"Collaborate","icon":{"width":1000,"ascent":500,"descent":-50,"path":"M487 375c7-10 9-23 5-36l-79-259c-3-12-11-23-22-31-11-8-22-12-35-12l-263 0c-15 0-29 5-43 15-13 10-23 23-28 37-5 13-5 25-1 37 0 0 0 3 1 7 1 5 1 8 1 11 0 2 0 4-1 6 0 3-1 5-1 6 1 2 2 4 3 6 1 2 2 4 4 6 2 3 4 5 5 7 5 7 9 16 13 26 4 10 7 19 9 26 0 2 0 5 0 9-1 4-1 6 0 8 0 2 2 5 4 8 3 3 5 5 5 7 4 6 8 15 12 26 4 11 7 19 7 26 1 1 0 4 0 9-1 4-1 7 0 8 1 2 3 5 6 8 4 4 6 6 6 7 4 5 8 13 13 24 4 11 7 20 7 28 1 1 0 4 0 7-1 3-1 6-1 7 0 2 1 4 3 6 1 1 3 4 5 6 2 3 3 5 5 6 1 2 3 5 4 9 2 3 3 7 5 10 1 3 2 6 4 10 2 4 4 7 6 9 2 3 4 5 7 7 3 2 7 3 11 3 3 0 8 0 13-1l0-1c7 2 12 2 14 2l218 0c14 0 25-5 32-16 8-10 10-23 6-37l-79-259c-7-22-13-37-20-43-7-7-19-10-37-10l-248 0c-5 0-9-2-11-5-2-3-2-7 0-12 4-13 18-20 41-20l264 0c5 0 10 2 16 5 5 3 8 6 10 11l85 282c2 5 2 10 2 17 7-3 13-7 17-13z m-304 0c-1-3-1-5 0-7 1-1 3-2 6-2l174 0c2 0 4 1 7 2 2 2 4 4 5 7l6 18c0 3 0 5-1 7-1 1-3 2-6 2l-173 0c-3 0-5-1-8-2-2-2-4-4-4-7z m-24-73c-1-3-1-5 0-7 2-2 3-2 6-2l174 0c2 0 5 0 7 2 3 2 4 4 5 7l6 18c1 2 0 5-1 6-1 2-3 3-5 3l-174 0c-3 0-5-1-7-3-3-1-4-4-5-6z"},"click":"function(gd) { \n        // is this being viewed in RStudio?\n        if (location.search == '?viewer_pane=1') {\n          alert('To learn about plotly for collaboration, visit:\\n https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html');\n        } else {\n          window.open('https://cpsievert.github.io/plotly_book/plot-ly-for-collaboration.html', '_blank');\n        }\n      }"}],"cloud":false},"source":"A","attrs":{"1cd605df5174d":{"x":{},"y":{},"colour":{},"type":"scatter"},"1cd603cb33311":{"x":{},"y":{},"colour":{}}},"cur_data":"1cd605df5174d","visdat":{"1cd605df5174d":["function (y) ","x"],"1cd603cb33311":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"base_url":"https://plot.ly"},"evals":["config.modeBarButtonsToAdd.0.click"],"jsHooks":[]}</script>
+<p><br></p>
+<p>Given this result, we decided to formally analyze the association between sex-related, drug-related, and weapons-related felonies and the borough in which the crime occurred; specifically, we looked at whether the occurrence of the felony was higher (or lower) in a particular borough compared to the other boroughs. The importance of examining this association cannot be overstated - determining whether felonies occur more often in a specific borough provides the NYPD and other officials the potential capability of directing their resources toward areas that need them the most.</p>
+<p><br></p>
+</div>
+<div id="data-and-methods-1" class="section level3">
+<h3>Data and Methods</h3>
 <p><br></p>
 <div id="model-statement-for-the-multinomial-logistic-regression-model" class="section level5">
-<h5>Model Statement for the Multinomial Logistic Regression Model <br></h5>
-<p><span class="math display">\[ln (\frac{P( crimegroup = drug-related)}{P(crime group = sex-related)}) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)\]</span> <br></p>
-<p><span class="math display">\[ln(\frac{P(crimegroup = weapon-related)}{P(crime group = sex-related)}) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)\]</span></p>
-<p>Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
+<h5>Model Statement for the Multinomial Logistic Regression Model</h5>
+<p>We conducted a multinomial logistic regression to study the association between borough and occurrence of drug-related, sex-related, and weapons-related felonies. The model statement for our research question is included below.</p>
+<p><br></p>
+<p><span class="math display">\[ln (\frac{P( crimegroup = sex-related)}{P(crime group = drug-related)}) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)\]</span> <br></p>
+<p><span class="math display">\[ln(\frac{P(crimegroup = weapons-related)}{P(crime group = drug-related)}) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)\]</span></p>
+<p><br></p>
+<p>Drug-related felonies was chosen as the reference group among the 3 types of felonies because it tends to be the least serious of the 3 crime groups. Among the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
 <p><br></p>
 </div>
 <div id="cross-tabulation" class="section level4">
 <h4>Cross tabulation</h4>
-<p>We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.</p>
+<p>We created a data table to organize the rates of drug-related, sex-related, and weapons-related felonies; we stratified the results by borough. From the table, we can see that, in terms of absolute numbers, Brooklyn has the highest incidence of weapons-related and sex-related felonies, while the Bronx has the highest incidence of drug-related felonies.</p>
 <table>
 <thead>
 <tr class="header">
@@ -454,6 +530,8 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
+<p><br></p>
+<p>Next, we fit a logistic regression model to the data. We also plot the data into a graph.</p>
 <table>
 <thead>
 <tr class="header">
@@ -463,7 +541,7 @@ font-weight: bold;
 <th align="right">Standard error</th>
 <th align="right">statistic</th>
 <th align="right">P value</th>
-<th align="right">Odds ratio</th>
+<th align="right">Odds Ratio</th>
 </tr>
 </thead>
 <tbody>
@@ -559,14 +637,30 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="statistical_analysis_files/figure-html/graph_felony_and_boroughs-1.png" width="672" /></p>
+<p><br></p>
 </div>
 </div>
-<div id="interpretation" class="section level3">
-<h3>Interpretation</h3>
-<p>The odds of sex-related crimes in manhattan is 1.79. The odds of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn. The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens. The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island.</p>
-<p>The odds of weapon related crimes in manhattan is 2.7.</p>
-<p>The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx. The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island.</p>
+<div id="results-and-discussion-1" class="section level3">
+<h3>Results and Discussion</h3>
+<p>From the data table and the graph above, we see that:</p>
+<ul>
+<li>The odds of a sex-related felony occurring in Manhattan is 1.79 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in the Bronx is 1.71 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Brooklyn is 2.37 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Queens is 3.06 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Staten Island is 2.11 times the odds of a drug-related felony occurring in Manhattan.</li>
+</ul>
+<p><br></p>
+<ul>
+<li>The odds of a weapons-related felony occurring in Manhattan is 2.71 times the odds of a drug-related felony occuring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in the Bronx is 2.06 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Brooklyn is 4.14 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Queens is 4.22 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Staten Island is 2.62 times the odds of a drug-related felony occurring in Manhattan.</li>
+</ul>
+<p>These results suggest a significantly higher odds of a sex-related or a weapons-related felony occurring in all 4 boroughs compared to a drug-related felony occurring in Manhattan. Of note is that a weapons-related felony (OR = 4.22) and a sex-related felony (OR = 3.06) is more likely to occur in Queens compared to a drug-related felony in Manhattan - these odds represent the highest among the boroughs.</p>
+</div>
 </div>
 
 
