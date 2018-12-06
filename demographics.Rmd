@@ -1,7 +1,6 @@
 ---
-title: "Explore_Yaa"
-author: "Yaa Klu"
-date: "11/30/2018"
+title: "Demographics"
+
 output: html_document
 ---
 
