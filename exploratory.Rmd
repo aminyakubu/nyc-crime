@@ -59,8 +59,8 @@ library(tmap)
 ```
 
 
-## Top Crimes and Associated Demographics by Borough
-Include Yaa's
+## General Demographics Associated with the Three Felony Categories
+
 
 <br>
 <br>
