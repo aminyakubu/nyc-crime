@@ -254,7 +254,8 @@ saveRDS(complete_drug_zip_2017, file = "datasets/complete_drug_zip_2017.rds")
 ```{r acquiringdata_sex, eval = FALSE}
 #### Felony - Sex Offenses
 
-#The same process will be used for the sex-related crimes. There are 1993 observations; therefore, there's no need to split the data before reverse geocoding.
+#The same process will be used for the sex-related crimes. There are 1993 observations; 
+#therefore, there's no need to split the data before reverse geocoding.
 
 sex_2017 = sex_drug_weapons %>% 
            filter(crime_group == "Sex-Related" & 
@@ -281,7 +282,8 @@ saveRDS(complete_weapon_zip_2017, file = "datasets/complete_weapon_zip_2017.rds"
 ```{r acquiringdata_zip, eval = FALSE}
 #### 2017 Dataset With Zip Codes
 #Dataset with the 3 crimes together with their zipcodes
-all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, complete_weapon_zip_2017) 
+all_sex_drug_weapon_zip_2017 = bind_rows(complete_drug_zip_2017, complete_sex_zip_2017, 
+                                         complete_weapon_zip_2017) 
 
 saveRDS(all_sex_drug_weapon_zip_2017, file = "datasets/all_sex_drug_weapon_zip_2017.rds")
 ```
@@ -339,7 +341,443 @@ The list below provides all 17 variables in the datasets with their brief descri
 <br>
 
 ## Exploratory Analysis
-Our exploratory analyses sought to examine various patterns and trends among the 3 types of felonies across boroughs and across the years. We also wanted to fully maximize the richness of the dataset and made sure to conduct various analyses we felt would be helpful and insightful.
+Our exploratory analyses sought to examine various patterns and trends among the 3 types of felonies across boroughs and across the years. We also wanted to fully maximize the richness of the dataset and made sure to conduct various analyses we felt would be helpful and insightful. We loaded the necessary R packages with the code below.
+```{r exp_libraries}
+library(tidyverse)
+library(rvest)
+library(plotly)
+library(tidyverse)
+library(htmltools)
+library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+library(chron)
+library(lubridate)
+library(rgdal)
+library(geojsonio)
+library(sp)
+library(maps)
+library(tmap)
+```
+
+<br>
+
+### Top Crimes and Associated Demographics by Borough
+For our first exploratory analysis, we wanted to examine sociodemographics associated with each of the three types of felonies. We focused particularly on the sociodemographics of the victim, in alignment with what we had mentioned was a motivator for our project. Studying sociodemographic variables and factors also provides crucial information regarding who is being targeted in these crimes, which allows us to deduce who may need more help and assistance in the aftermath of these crimes.
+
+Using the code below, we imported the data, tidied up the data, and created bar graphs showing the absolute numbers of victims being affected by the three felonies, stratified by age group.
+
+```{r, import_data}
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
+
+```{r}
+felony_graph =
+  felony_crime %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown")
+```
+
+```{r}
+socio_graph2 = 
+  felony_graph %>% 
+  group_by(vic_age_group, crime_group) %>%
+  summarise(number = n()) %>%
+  ggplot(aes(x = vic_age_group, y = number, fill = crime_group)) + 
+  facet_grid(~crime_group) +
+  geom_bar(stat = "identity") +
+    labs(
+    title = "Victim's Age and Felony",
+    x = "Victim's Age Group",
+    y = "Frequency",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+socio_graph2
+```
+
+<br> We notice several interesting findings associated with the graphs above. First, in terms of absolute numbers, we see that there are significantly more sex-related felonies being committed across all age groups than any of the other two felonies. There is also a notable difference between weapons-related felonies and drug-related felonies, with drug-related felonies ranking last between the two. Given these findings, crime prevention efforts should perhaps direct their efforts more toward sex-related felonies.
+
+Secondly, we see that the age distribution of sex-related felonies is heavily skewed to the right – victims tend to be younger. This aligns with what we understand and know from research and cases associated with human trafficking and other sex crimes. We also see that the age distribution of weapons-related and drug-related felonies tend to be approximately normal, with more of the felonies being committed on middle-aged victims as opposed to younger or older individuals. 
+
+<br>
+<br>
+
+### Length of Reported Felony by Borough
+
+For our second exploratory analysis, we examined whether the length of time between when the crime started and ended differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer time may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
+
+After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
+
+```{r exp_tidy_crime_data}
+crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+crime_data = crime_df %>% 
+  janitor::clean_names() %>%
+  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm) 
+  
+```
+
+```{r exp_density_plot}
+ggplot(data = crime_data, aes(x = time_diff2)) +
+  geom_density() +
+    labs(
+    title = "Density Plot of Length of Reported Felony",
+    x = "Length of Reported Felony",
+    y = "Density",
+    caption = "Data from the crime_data dataset"
+    ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                     labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")) +
+  xlim(0, 5)
+
+
+crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
+    filter(time_diff2 > 0) 
+```
+
+We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
+
+```{r exp_mean_time_tables}
+crime_table = 
+  crime_data2 %>%
+  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
+          time_diff, 'Borough' = boro_nm) %>% 
+  group_by(Borough) %>%
+  summarise(mean_time = mean(time_diff2)) %>% 
+  knitr::kable(digits = 2) 
+
+crime_table
+
+
+crime_table2 = 
+  crime_data2 %>%
+  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
+          time_diff, 'Borough' = boro_nm) %>% 
+  group_by(Borough) %>%
+  summarise(mean_time = mean(time_diff2))
+```
+
+<br>
+Next, we visually investigated at whether the length of time for the reported felony differed by borough. We examined both the average length of time of reported felonies across boroughs, as well as each _individual_ reported felony's length of time across boroughs.
+```{r exp_mean_time_graphs}
+crime_graph = 
+  crime_table2 %>% 
+  ggplot(aes(x = Borough, y = mean_time)) + 
+  geom_point(color = 'darkblue') +
+    labs(
+    title = "Average Length of Reported Felonies, By Borough",
+    x = "Borough",
+    y = "Average Length of Reported Event",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+crime_graph
+
+
+crime_graph2 = 
+  crime_data2 %>% 
+  group_by(boro_nm) %>% 
+  ggplot(aes(x = boro_nm, y = time_diff2)) + 
+  geom_boxplot(color = 'darkblue') +
+    labs(
+    title = "Spread of Times of Each Reported Felony, By Borough",
+    x = "Borough",
+    y = "Length of Reported Event",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+crime_graph2
+```
+
+<br>
+We obtain a rich amount of information from the graphs above. First, regarding the average length of reported felonies, Staten Island clearly outranks the other borough, leading at 105.42 days. Queens is next (78.63 days), followed by the Bronx (71.31 days), Brooklyn (60.91 days), and Manhattan (58.52 days). 
+
+One reason that may account for Staten Island's rank is that the borough has fewer observations compared to the other boroughs, so any outliers in Staten Island may easily and drastically skew the average. Another potential reason is that criminals may be more comfortable committing felonies in a borough that is less populated with other residents and law enforcement officials. Manhattan, on the other hand, is a more crowded borough - perhaps criminals feel less comfortable committing a felony in such an area. This may be particularly relevant and true if felonies are more severe or violent, and criminals need time, space, and less attention when committing these crimes. Indeed, we may be right - felonies comprise a more violent category, in relation to misdemeanors; felonies tend to include homicide, rape, robbery, arson, human trafficking, and so on. 
+
+Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have significantly more outliers (and thus, perhaps more observations) compared to Staten Island, giving a bit more credence to the first hypothesis stated above. We also notice that the median values, which tend to be a more stable measure against outliers than the mean, are close to 0 for all the boroughs, suggesting that many felonies still last around a single day despite our filtering out same-day felonies. Despite this, Staten Island still shows a median value that seems slightly above the values of the other boroughs. 
+
+<br>
+<br>
+
+### Overall Felony Rates by Borough
+
+For our third exploratory analysis, we chose to examine overall felony rates by borough. Doing so gives us a strong understanding as to how NYPD can prioritize their efforts when stemming crime; it also allows us to understand potential longitudinal trends for each borough. If, for example, felony rates have remained consistently high for a particular borough, laaw enforcement officials have suggestive evidence that the high rates are not a fluke and would be able to mobilize effects in that borough more effectively, readily, and directly. 
+
+To study this, we loaded information from the U.S. Census containing information on the total population in each of the boroughs to calculate felony rates. Next, we plotted the overall felony rates over 2014-2017 for each borough by merging the sex_drug_weapons dataset with the data from the U.S. Census.
+```{r exp_tidy_felony_data}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  
+  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% 
+  as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017, (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+
+```
+
+```{r exp_overall_felony_rates}
+grouped_df = sex_drug_weapons %>% 
+  group_by(boro_nm, year) %>% 
+  summarise(number = n())
+
+full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100)
+
+x = full %>% 
+  filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) +
+  labs(x = "Year",
+       y = "Felony Rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    ) + theme_classic()
+
+ggplotly(x)
+```
+
+From the graph above, we notice some interesting findings. First, Bronx, by far, has had the highest overall felony rate from 2014-2017. Secondly, the felony rates for Brooklyn and Manhattan are very similar; this applies to Queens and Staten Island as well, which comprise the two boroughs with the lowest overall crime rates from 2014-2017. Third, we can see that felony rates decreased from 2016-2017 for all boroughs except for Brooklyn. The Bronx, in particular, has had a significant decrease in felony rates from 2016 to 2017. Lastly, overall felony rates across the years for all boroughs have tended to remain stable, generally speaking. As with the other exploratory analyses, note that these felonies are strictly sex-related, weapons-related, and drug-related felonies.
+
+To examine this borough-specific trend more closely, we subsetted the graph by type of felony.
+```{r import_trend_data}
+### Dataset for 2017 with addresses
+crimes_df = readRDS(file = "./datasets/all_sex_drug_weapon_zip_2017.rds")
+
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+### Selecting zipcodes from address
+crimes_df = crimes_df %>% 
+  mutate(zipcode = str_extract(zip, "[0-9][0-9][0-9][0-9][0-9]"))
+```
+
+```{r exp_overall_felony_rates_stratify}
+stratify_df = crimes_14_17 %>% 
+  group_by(boro_nm, crime_group, year) %>% 
+  summarise(number = n())
+
+population_df = left_join(stratify_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100)
+```
+
+```{r trend_analysis_graph}
+population_df %>% 
+  filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) + facet_grid(~crime_group) +
+  labs(x = "Year",
+       y = "Felony Rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    )
+```
+
+The stratification of overall felony rates over the years by type of felony (i.e., sex-related, drug-related, or weapons-related) provides a lot of information amongst the three graphs:
+
+* Broadly speaking, felony rates have decreased across the board from 2016 to 2017 for nearly all boroughs - only Brooklyn has seen a rise in the rate of drug-related felonies from 2015 to 2017. 
+
+* Bronx has consistently had the highest crime rate over the last 4 years for all 3 types of felonies. We see a steep reduction, however, in the crime rate for the Bronx between the years of 2016 and 2017 - this change is most notable among the graph showing drug-relaed felonies. 
+
+* Drug-related and weapons-related felonies occur significantly more often compared to sex-related felonies. This may not be all that surprising, given the heavy interplay between drugs and weapons.
+
+* Queens and Staten Island have had the lowest felony rates across all years and across all three types of felonies.
+
+<br>
+<br>
+
+### Geographical Distribution of Felonies
+
+Our final exploratory analysis examined the geographical distribution of felonies, beyond the borough level. We thought this was critical to investigate because each borough contains such unique and vastly different neighborhoods comprising that borough - solely looking at associated factors at the neighborhood level ignores and masks these different identities within each neighborhood. Examining at this level also gives us more clear-cut information on the absolute numbers of felonies in each neighborhood and provides specific information regarding where law enforcement officials can prioritize efforts.
+
+We first created a visual showing clusters and pockets of the 3 types of felonies in absolute numbers. 
+```{r, exp_leaflet}
+year_2014 = filter(crimes_14_17, year == 2014) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2015 = filter(crimes_14_17, year == 2015) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2016 = filter(crimes_14_17, year == 2016) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+year_2017 = filter(crimes_14_17, year == 2017) %>% 
+  filter(!is.na(longitude) | !is.na(latitude))
+
+pal <- colorFactor(palette = c("blue", "red", "green"), 
+               levels = c("Sex-Related", "Weapon-Related", "Drug-Related"))
+
+leaflet()  %>% 
+  addTiles() %>% 
+  
+#Setting view on NYC. The values are the coordinates of NYC
+  setView(lat = 40.7, lng = -74.0, zoom = 11) %>%
+  addCircleMarkers(data = year_2014,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2014",
+                   clusterOptions = markerClusterOptions()) %>% 
+  addCircleMarkers(data = year_2015,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2015",
+                   clusterOptions = markerClusterOptions()) %>% 
+  addCircleMarkers(data = year_2016,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2016",
+                   clusterOptions = markerClusterOptions()) %>% 
+  addCircleMarkers(data = year_2017,
+                   lng = ~ longitude,
+                   lat = ~ latitude, 
+                   radius = 1,
+                   color = ~pal(crime_group),
+                   group = "2017",
+                   clusterOptions = markerClusterOptions()) %>%
+  addLayersControl(overlayGroups = c("2014", "2015", "2016", "2017")) %>% 
+  addLegend(pal = pal, 
+            values = c("Sex-Related", "Weapon-Related", "Drug-Related"),
+            opacity = .5,
+            title = "Crime Group",
+            position = "topleft")
+```
+From this visual, we can easily spot areas within each borough that have relatively low numbers of felonies.
+
+```{r notes, include = FALSE}
+
+# map_url = "http://data.beta.nyc//dataset/3bf5fb73-edb5-4b05-bb29-7c95f4a727fc/resource/6df127b1-6d04-4bb7-b983-07402a2c3f90/download/f4129d9aa6dd4281bc98d0f701629b76nyczipcodetabulationareas.geojson"
+
+# download.file(map_url, "./datasets/nyc_zip_map.geojson")
+```
+
+We decided to take the visual one step further by incorporating zip codes and creating heat maps to show prevalence of these 3 felony groups across NYC.
+```{r, exp_zips}
+group_zip = crimes_df %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_data = sp::merge(map_json, group_zip, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_data@data <-  
+  map_w_data@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+total = tm_shape(map_w_data) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "Total Crime",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+```
+
+```{r, exp_drug}
+drug_group = crimes_df %>% filter(crime_group == "Drug-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_drug <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_drug = sp::merge(map_json_drug, drug_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_drug@data <-  
+  map_w_drug@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+drug = tm_shape(map_w_drug) +
+  # Add title and change palette
+  tm_fill(col = "number", 
+          title = "2017 Drug-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+```
+
+
+```{r, exp_weapon}
+weapon_group = crimes_df %>% filter(crime_group == "Weapon-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_weapon <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_weapon = sp::merge(map_json_drug, weapon_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_weapon@data <-  
+  map_w_weapon@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+
+weapon = tm_shape(map_w_weapon) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Weapon-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5)
+  # Add tm_credits()
+```
+
+
+```{r, exp_sex}
+sex_group = crimes_df %>% filter(crime_group == "Sex-Related") %>% 
+  group_by(zipcode) %>% 
+  summarize(number = n())
+
+map_json_sex <- geojson_read("./datasets/nyc_zip_map.geojson", what = "sp")
+
+map_w_sex = sp::merge(map_json_sex, sex_group, by.x = "postalCode", by.y = "zipcode") 
+
+map_w_sex@data <-  
+  map_w_sex@data %>% 
+  mutate(number = as.numeric(number)) %>% 
+  mutate(number = if_else(is.na(number), 0, number))
+
+# Use qtm() to create a choropleth map of gdp
+sex = tm_shape(map_w_sex) +
+  # Add title and change palette
+  tm_fill(col = "number",
+          title = "2017 Sex-Related Crimes",
+          palette = "Greens") +
+  # Add tm_borders()
+  tm_borders(col = "grey60", lwd = 0.5) 
+
+current.mode <- tmap_mode("plot")
+tmap_arrange(total, sex, drug, weapon)
+tmap_mode(current.mode)
+```
+The heat maps provide an easy way of visually describing the absolute numbers of overall felonies, as well as felonies by each of the 3 types. Overall, we see that these crimes occur mostly in central Brooklyn and Bronx. This finding applies to both sex-related crimes and weapon-related crimes. In looking at the map for just drug-related crimes, we see that the crimes are distributed among 3 areas - central Brooklyn, south Brooklyn, and the Bronx.
 
 
 
