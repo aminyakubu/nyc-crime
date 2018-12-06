@@ -20,6 +20,15 @@ library(sqldf)
 
 
 ```{r}
+install.packages("leaflet.extras")
+library(leaflet.extras)
+```
+
+```{r}
+library(leaflet.extras)
+```
+
+```{r}
 install.packages("sqldf")
 ```
 

@@ -60,10 +60,12 @@ library(tmap)
 
 
 <<<<<<< HEAD
-## General Demographics Associated with the Three Felony Categories
+## Demographics Associated with the Three Felony Categories
 =======
-## Top Crimes and Associated Demographics by Borough
+## Demographics Associated with the Three Felony Categories
+
 For this exploratory analysis, we wanted to examine sociodemographics associated with each of the three types of felonies.
+
 ```{r, import_data}
 felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
