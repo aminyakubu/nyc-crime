@@ -146,6 +146,7 @@ time_data %>% filter(!is.na(boro_nm)) %>%
 There seems to be a marked difference in the average length of incidents across boroughs and felony type. Notably, we see that, on average, sex-related felonies seem to have a longer average incident length than drug- and weapon-related felonies. In terms of boroughs, Staten Island slightly ranks higher than the rest of the boroughs. 
 
 We wanted to investigate further. First, we visually investigated the distribution of the length of each incident across all boroughs and all three felony types.
+
 ```{r exp_density_plot}
 
 ggplot(data = time_data, aes(x = time_diff2)) +

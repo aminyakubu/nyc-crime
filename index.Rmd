@@ -36,24 +36,10 @@ font-weight: bold;
 <link rel="stylesheet" href="academicons/css/academicons.min.css"/>
 <link rel="apple-touch-icon" href="/images/nyc2.jpg" >
 
-<center>
-<br><img src="images/nyc2.jpg" alt="nyc" style="width:70%; border:1px solid"><br>
-</center>
-<br>
-
-## Welcome
-```{r install_package, include = FALSE}
-library("vembedr")
-```
-
-<iframe width = "560" height = "315" src="https://www.youtube.com/watch?v=ts-QUqtZYHY" frameborder = "1" allowfullscreen></iframe>
-
-```{r, embed, echo = FALSE, message = FALSE}
-embed_youtube("v=ts-QUqtZYHY")
-```
+### Screencast
 
 
-You can watch the Youtube video [here.](https://www.youtube.com/watch?v=ts-QUqtZYHY)
+<iframe width="600" height="315" src="https://www.youtube.com/embed/ts-QUqtZYHY" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
 
 <br>
 
@@ -107,7 +93,7 @@ Given these results, we may want to join hands with the U.N. in championing thei
 
 ## Formal Report
 
-Our formal report summarizing our entire project can be found [here.](test.html)
+Our formal report summarizing our entire project can be found [here.](final_report.html)
 
 <br>
 

@@ -1,0 +1,191 @@
+---
+title: "Analysis of NYC Sex-Related, Weapon-Related and Drug-Related Felonies"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    source_code: embed
+runtime: shiny
+---
+
+
+```{r}
+#### File for shiny app. It's not being run from this file. It's just showing the code. 
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(flexdashboard)
+library(tidyverse)
+library(viridis)
+library(p8105.datasets)
+library(plotly)
+library(chron)
+library(lubridate)
+library(rvest)
+library(tools)
+
+```
+
+```{r}
+### Dataset for 4 years without addresses
+crimes_14_17 = readRDS(file = "./sex_drug_weapons.rds")
+
+season_df = crimes_14_17 %>% 
+  mutate(quarter = as.numeric(quarter(cmplnt_fr_dt)),
+         month = months(cmplnt_fr_dt),
+         month = forcats::fct_relevel(month, c("January", "February", "March", "April", "May", "June", "July",
+                                               "August", "September", "October", "November", "December")),
+         day = weekdays(cmplnt_fr_dt),
+         day = forcats::fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")),
+         cmplnt_fr_tm = lubridate::hms(as.character(cmplnt_fr_tm)),
+         hour = hour(cmplnt_fr_tm),
+         prem_typ_desc = toTitleCase(prem_typ_desc)) %>% select(-cmplnt_fr_tm)
+
+####Labels for axes
+trendx <- list(
+  title = "Month")
+
+trendy <- list(
+  title = "Number of Crimes")
+
+heatx <- list(
+  title = "Hour of the day")
+
+heaty <- list(
+  title = "Day of the week")
+
+ratex <- list(
+  title = "Year")
+
+ratey <- list(
+  title = "Crime rate")
+
+barx <- list(
+  title = "Premises of crime location")
+
+bary <- list(
+  title = "Number")
+```
+
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+
+crimegroups = season_df %>% distinct(crime_group) %>% pull()
+# selectInput widget
+selectInput("crime_types", label = h3("Select Crime Type"),
+            choices = crimegroups, selected = "Sex-Related")
+
+years = season_df %>% arrange(desc(year)) %>% distinct(year) %>% pull()
+
+radioButtons("year_choice", label = h3("Choose Year"),
+    choices = years, 
+    selected = "2017")
+```
+
+NYPD Crime data for Sex-related, Weapon-Related and Drug-related felonies 
+from 2014 to 2017. 
+
+
+Row
+-----------------------------------------------------------------------
+
+### Heatmap
+    
+```{r}
+renderPlotly({
+season_df %>% mutate(hour = as.factor(hour)) %>% 
+    filter(crime_group == input$crime_types,
+                     year == input$year_choice) %>% 
+  group_by(day, hour) %>% 
+  summarize(number = n()) %>% 
+  mutate(text_label = str_c('Hour: ', hour, '\nDay: ', day, '\nNumber: ', number)) %>% 
+  plot_ly( x = ~ hour, y = ~ day, hoverinfo = "text",
+         type = "heatmap", text = ~ text_label,
+         colors = colorRamp(c("yellow", "red")),
+         z = ~ number) %>% 
+    layout(xaxis = heatx, yaxis = heaty)
+})
+```
+
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Trend
+    
+```{r}
+renderPlotly({
+season_df %>% filter(!is.na(boro_nm)) %>% 
+    filter(crime_group == input$crime_types,
+                     year == input$year_choice) %>% 
+  group_by(boro_nm, month) %>% 
+  summarize(number = n()) %>% 
+  mutate(text_label = str_c('Borough: ', boro_nm, '\nNumber: ', number)) %>% 
+  plot_ly(x = ~ month, 
+          y = ~ number, 
+          color = ~ boro_nm, 
+          type = 'scatter', 
+          mode = 'lines', hoverinfo = "text",
+          text = ~ text_label) %>% 
+    layout(xaxis = trendx, yaxis = trendy)
+})
+```
+   
+### Crime rate
+
+```{r}
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017,  (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+
+grouped_df = crimes_14_17 %>% group_by(boro_nm, crime_group, year) %>% 
+  summarise(number = n())
+
+population_df = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100,
+         year = as.factor(year))
+
+renderPlotly({
+population_df %>% 
+    filter(crime_group == input$crime_types) %>% 
+  plot_ly(x = ~ year, 
+          y = ~ crime_rate, 
+          color = ~ boro_nm, 
+          type = 'scatter', 
+          mode = 'lines') %>% 
+    layout(xaxis = ratex, yaxis = ratey)
+})
+
+```
+
+### Location of crime
+
+```{r}
+
+renderPlotly({
+season_df %>% 
+    filter(crime_group == input$crime_types,
+           year == input$year_choice) %>% 
+    group_by(prem_typ_desc) %>%
+    summarize(number = n()) %>% top_n(15) %>% 
+  plot_ly(x = ~ reorder(prem_typ_desc, -number),
+          y = ~ number,
+          type = 'bar') %>% 
+    layout(xaxis = barx, yaxis = bary)
+})
+```
+

@@ -36,7 +36,6 @@ font-weight: bold;
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(message = FALSE)
 ```
 
 ```{r, loading_packages}
@@ -87,7 +86,8 @@ We will assess whether this difference is statistically significant. Testing thi
 <br> 
 
 ### Data and Methods
-We first import the data below and clean up the data. We tidy the data so that Manhattan becomes the reference borough and drug-related felonies become the reference felony. Observations with missing information on when the crime started or when it ended were excluded.
+We first import the data below and clean up the data. We tidy the data so that Manhattan becomes the reference borough and drug-related felonies become the reference felony. Observations with missing information on when the crime ended where assummed to have the ended the same day it started as NYPD recorded information if only there was an end date. 
+
 ```{r, data_import}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
