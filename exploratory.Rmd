@@ -178,7 +178,7 @@ crime_data %>%
 
 <br>
 
-We also visually examined the length of each reported felonies across boroughs, shown below. 
+We also visually examined the length of each reported felony across boroughs, shown below. 
 ```{r exp_mean_time_graphs, echo = FALSE}
 
 crime_graph2 = 
