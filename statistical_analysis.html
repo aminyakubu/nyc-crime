@@ -343,10 +343,48 @@ font-weight: bold;
 }
 
 </style>
-<div id="differences-between-length-of-crime" class="section level3">
-<h3>Differences between length of crime</h3>
-<p>In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance.</p>
-<p>To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene’s Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn’t met.</p>
+<div id="differences-in-length-of-crime" class="section level2">
+<h2>Differences in Length of Crime</h2>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Crime group</th>
+<th align="right">Count</th>
+<th align="right">Average time in days</th>
+<th align="right">Standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Drug-Related</td>
+<td align="right">18293</td>
+<td align="right">0.5862466</td>
+<td align="right">12.315819</td>
+</tr>
+<tr class="even">
+<td align="left">Sex-Related</td>
+<td align="right">8646</td>
+<td align="right">19.2362846</td>
+<td align="right">83.297645</td>
+</tr>
+<tr class="odd">
+<td align="left">Weapon-Related</td>
+<td align="right">19753</td>
+<td align="right">0.2820289</td>
+<td align="right">9.101974</td>
+</tr>
+</tbody>
+</table>
+<p>We will assess whether this difference is statistically significant. Testing this difference can yield important insights regarding whether victims are disproportionately suffering the burden of certain crimes, in terms of absolute number of days. Finding a significant result may also suggest that certain felonies are more extensive and complicated, potentially more dangerous or violent, or may require more resources to deal with. Lastly, it may indicate that the victims are at a higher risk compared to those involved in other types of felonies.</p>
+<p><br></p>
+</div>
+<div id="data-and-methods" class="section level3">
+<h3>Data and Methods</h3>
+<p>We first import the data below and clean up the data. We tidy the data so that Manhattan becomes the reference borough and drug-related felonies become the reference felony. Observations with missing information on when the crime started or when it ended were excluded.</p>
+<p>Since we are testing the difference in means between three groups, we should be able to conduct an ANOVA test. To ensure that the assumptions of the ANOVA test are not violated, we test for homogeneity of variances. We used Levene’s test to test homogeneity of variances. We see from the results below that the p-value is less than 0.05. Therefore, the assumption of homogenous variances is not met.</p>
 <table>
 <thead>
 <tr class="header">
@@ -371,7 +409,7 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p>Non-parametric approach of Kruskal-Wallis rank sum test will be used to test the difference between the means.</p>
+<p>We resort to using a non-parametric approach in detecting a difference of means between these three groups by utilizing the Kruskal-Wallis test. Using this test means that we do not make any underlying assumptions about the distribution of the three groups; since these groups potentially come from very different populations, a non-parametric approach seems best for this test.</p>
 <table>
 <thead>
 <tr class="header">
@@ -390,13 +428,20 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p>It is evident that the p value is less that 0.05. We can conclude that at 5% level of significance, at least one of the means of the length of time between when the crime started and ended is different for the different crime groups.</p>
-<p>Since the Kruskal–Wallis test is significant, we then conducted a post-hoc analysis to determine which crime groups differ from each other level. We used the Dunn test for the post-hoc analysis.</p>
+<p><br></p>
+<p>From the test above, it is evident that the p-value is less that 0.05. We conclude that at 5% level of significance, at least one of the average lengths of reported crimes (i.e., time between when the crime started and when it ended) is different among the three felony categories.</p>
+<p>Since the Kruskal–Wallis test is significant, we now conduct a post-hoc analysis to determine which crime groups differ from each other level. We use the Dunn test for the post-hoc analysis.</p>
 <pre><code>##                      Comparison           Z  P.unadj    P.adj
 ## 1    Drug-Related - Sex-Related -75.5637359 0.000000 0.000000
 ## 2 Drug-Related - Weapon-Related  -0.8243442 0.409744 0.409744
 ## 3  Sex-Related - Weapon-Related  75.8203110 0.000000 0.000000</code></pre>
-<p>The results show that there is a statistically significant difference between the average time for sex-related crimes and the other two groups (drugs and weapons). However, there isn’t a significant difference between drug-related and weapon-related. This shows that on average victims of sex crimes endure the crime over a period of time.</p>
+<p><br></p>
+</div>
+<div id="results-and-discussion" class="section level3">
+<h3>Results and Discussion</h3>
+<p>The results show that there is a statistically significant difference between the average length of reported felonies for sex-related and drug-related felonies (p &lt; 0.005), as well as for sex-related and weapons-related felonies (p &lt;0.005). However, there isn’t a significant difference between drug-related and weapons-related felonies (p = 0.4097). All together, we have evidence suggesting that victims of sex-related felonies endure longer incidents, compared to victims of drug-related or weapons-related felonies.</p>
+<p>The results of these tests suggest that victims of sex-related felonies endure significantly longer incidents compare to victims of drug-related or weapons-related felonies. This makes sense, considering that sex-related felonies include human trafficking, sexual abuse, and other cases in which the length of the crime is often dragged out compared to those within the other two felonies. Given this result, law enforcement, government, and public health officials should dedicate extra resources to prevent sex-related felonies and ensure that their agencies are adequately prepared and capable to resolve and manage sex-related felonies lasting longer periods of time.</p>
+<p><br> <br></p>
 </div>
 <div id="association-between-borough-and-crime" class="section level3">
 <h3>Association between borough and crime</h3>
@@ -559,7 +604,7 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 </div>
 <div id="interpretation" class="section level3">
@@ -567,6 +612,7 @@ font-weight: bold;
 <p>The odds of sex-related crimes in manhattan is 1.79. The odds of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn. The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens. The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island.</p>
 <p>The odds of weapon related crimes in manhattan is 2.7.</p>
 <p>The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx. The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island.</p>
+</div>
 </div>
 
 

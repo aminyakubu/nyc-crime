@@ -1,5 +1,5 @@
 ---
-title: "Statistical Analysis"
+title: "Statistical Analyses"
 output:
   html_document:
     toc: true
@@ -50,12 +50,45 @@ library(dunn.test)
 library(tools)
 ```
 
+<br>
 
-```{r, data_import}
+## Differences in Length of Crime
+
+### Introduction
+In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.
+```{r, import_data}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
 
-### Differences between length of crime
+```{r tidy_data}
+time_data = sex_drug_weapons %>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan")) %>% 
+  janitor::clean_names() %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(time_diff2, boro_nm, crime_group) %>% 
+  mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2)) 
+```
+
+```{r data_table}
+time_data %>% 
+  rename(`Crime group` = crime_group) %>% 
+  group_by(`Crime group`) %>%
+  summarise(Count = n(), 
+            `Average time in days` = mean(time_diff2),
+            `Standard deviation` = sd(time_diff2)) %>% 
+  knitr::kable()
+```
+
+We will assess whether this difference is statistically significant. Testing this difference can yield important insights regarding whether victims are disproportionately suffering the burden of certain crimes, in terms of absolute number of days. Finding a significant result may also suggest that certain felonies are more extensive and complicated, potentially more dangerous or violent, or may require more resources to deal with. Lastly, it may indicate that the victims are at a higher risk compared to those involved in other types of felonies.
+
+<br> 
+
+### Data and Methods
+We first import the data below and clean up the data. We tidy the data so that Manhattan becomes the reference borough and drug-related felonies become the reference felony. Observations with missing information on when the crime started or when it ended were excluded.
+```{r, data_import}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
 
 ```{r}
 test_mean_data = sex_drug_weapons %>%
@@ -67,26 +100,25 @@ test_mean_data = sex_drug_weapons %>%
   mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2))
 ```
 
-In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance. 
-
-
-To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene's Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn't met. 
-
-```{r}
- leveneTest(time_diff2 ~ crime_group, data = test_mean_data) %>% broom::tidy() %>% knitr::kable()
-
+Since we are testing the difference in means between three groups, we should be able to conduct an ANOVA test. To ensure that the assumptions of the ANOVA test are not violated, we test for homogeneity of variances. We used Levene's test to test homogeneity of variances. We see from the results below that the p-value is less than 0.05. Therefore, the assumption of homogenous variances is not met. 
+```{r levene_test}
+ leveneTest(time_diff2 ~ crime_group, data = test_mean_data) %>% 
+  broom::tidy() %>% 
+  knitr::kable()
 ```
 
-Non-parametric approach of Kruskal-Wallis rank sum test will be used to test the difference between the means. 
-
-```{r}
-kruskal.test(time_diff2 ~ crime_group, data = test_mean_data) %>% broom::tidy() %>% knitr::kable()
+We resort to using a non-parametric approach in detecting a difference of means between these three groups by utilizing the Kruskal-Wallis test. Using this test means that we do not make any underlying assumptions about the distribution of the three groups; since these groups potentially come from very different populations, a non-parametric approach seems best for this test.
+```{r kruskal_wallis_test}
+kruskal.test(time_diff2 ~ crime_group, data = test_mean_data) %>% 
+  broom::tidy() %>% 
+  knitr::kable()
 ```
 
-It is evident that the p value is less that 0.05. We can conclude that at 5% level of significance, at least one of the means of the length of time between when the crime started and ended is different for the different crime groups. 
+<br>
 
-Since the Kruskal–Wallis test is significant, we then conducted a post-hoc analysis to determine which crime groups differ from each other level. We used the Dunn test for the post-hoc analysis. 
+From the test above, it is evident that the p-value is less that 0.05. We conclude that at 5% level of significance, at least one of the average lengths of reported crimes (i.e., time between when the crime started and when it ended) is different among the three felony categories.
 
+Since the Kruskal–Wallis test is significant, we now conduct a post-hoc analysis to determine which crime groups differ from each other level. We use the Dunn test for the post-hoc analysis. 
 ```{r dunn}
 dunnTest(time_diff2 ~ crime_group,
               data = test_mean_data,
@@ -94,7 +126,15 @@ dunnTest(time_diff2 ~ crime_group,
               method = "bh")  
 ```
 
-The results show that there is a statistically significant difference between the average time for sex-related crimes and the other two groups (drugs and weapons). However, there isn't a significant difference between drug-related and weapon-related. This shows that on average victims of sex crimes endure the crime over a period of time. 
+<br>
+
+### Results and Discussion
+The results show that there is a statistically significant difference between the average length of reported felonies for sex-related and drug-related felonies (p < 0.005), as well as for sex-related and weapons-related felonies (p <0.005). However, there isn't a significant difference between drug-related and weapons-related felonies (p = 0.4097). All together, we have evidence suggesting that victims of sex-related felonies endure longer incidents, compared to victims of drug-related or weapons-related felonies.
+
+The results of these tests suggest that victims of sex-related felonies endure significantly longer incidents compare to victims of drug-related or weapons-related felonies. This makes sense, considering that sex-related felonies include human trafficking, sexual abuse, and other cases in which the length of the crime is often dragged out compared to those within the other two felonies. Given this result, law enforcement, government, and public health officials should dedicate extra resources to prevent sex-related felonies and ensure that their agencies are adequately prepared and capable to resolve and manage sex-related felonies lasting longer periods of time. 
+
+<br>
+<br>
 
 ### Association between borough and crime
  
