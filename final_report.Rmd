@@ -77,7 +77,6 @@ In terms of cleaning the dataset, we first utilized several R packages, includin
 <br>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 ```
