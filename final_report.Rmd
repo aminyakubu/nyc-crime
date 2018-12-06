@@ -1,5 +1,6 @@
 ---
 title: "Formal Report"
+author: "Amin Yakubu (ay2416); Jacky Choi (jmc2392); Yaa Asantewaa Klu (ykk2116); Jyoti Ankam (jva2106)"
 output:
   html_document:
     toc: true
