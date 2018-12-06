@@ -885,9 +885,23 @@ library(tools)
 #### Introduction
 In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.
 
-<center>
-<br><img src = "images/crime_length2.png" alt="crime_length" style="width:170%; border:1px solid"> <br>
-</center>
+```{r exp_tidy_crime_data, echo = FALSE}
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+time_data = felony_crime %>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan")) %>% 
+  janitor::clean_names() %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(time_diff2, boro_nm, crime_group) %>% 
+  mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2)) 
+
+time_data %>% rename(`Crime group` = crime_group) %>% 
+group_by(`Crime group`) %>%
+  summarise(Count = n(), 
+            `Average time in days` = mean(time_diff2),
+             `Standard deviation` = sd(time_diff2)) %>% knitr::kable()
+```
 
 <br>
 
@@ -954,9 +968,46 @@ The results of these tests suggest that victims of sex-related felonies endure s
 #### Introduction
 In one of our exploratory analyses, we found that felony rates differed by borough (see below).
 
-<center>
-<br><img src = "images/felony_rates2.png" alt="felony_rates" style="width:170%; border:1px solid"> <br>
-</center>
+```{r exp_tidy_felony_data, include = FALSE}
+sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
+
+url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
+
+nyc_population = read_html(url) %>%  
+  html_nodes(css = "table") %>% .[[1]] %>% 
+  html_table(header = TRUE) %>% 
+  as.tibble() %>% 
+  janitor::clean_names()
+
+names(nyc_population)[1:7] = c("estimate_date", "new_york_city", "bronx", "brooklyn", "manhattan", "queens", "staten_island")
+
+nyc_population = nyc_population %>% 
+  gather(key = boro_nm, value = population, estimate_date:staten_island) %>% 
+  mutate(population = if_else(population == "Population estimates, July 1, 2017, (V2017)", "2017", population),
+         population = as.numeric(gsub("," , "", population)))
+```
+
+```{r exp_overall_felony_rates, echo = FALSE}
+grouped_df = sex_drug_weapons %>% 
+  group_by(boro_nm, year) %>% 
+  summarise(number = n())
+
+full = left_join(grouped_df, nyc_population, by = "boro_nm") %>% 
+  mutate(crime_rate = (number/population)*100)
+
+x = full %>% 
+  filter(!is.na(boro_nm)) %>% 
+  ggplot(aes(x = year, y = crime_rate, color = boro_nm)) + 
+  geom_point() + geom_line(size = 1) +
+  labs(x = "Year",
+       y = "Felony Rate",
+       legend) + viridis::scale_color_viridis(
+      name = "Borough", 
+      discrete = TRUE
+    ) + theme_classic()
+
+ggplotly(x)
+```
 
 <br>
 
