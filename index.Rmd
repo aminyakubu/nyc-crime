@@ -46,9 +46,7 @@ font-weight: bold;
 library("vembedr")
 ```
 
-```{r video, echo = FALSE}
-embed_youtube("https://www.youtube.com/watch?v=ts-QUqtZYHY", width = 600, height = 400)
-```
+<iframe width = "560" height = "315" src="https://www.youtube.com/watch?v=ts-QUqtZYHY" frameborder = "0" allowfullscreen></iframe>
 
 <br>
 
