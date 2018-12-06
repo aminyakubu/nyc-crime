@@ -47,6 +47,7 @@ library(car)
 library(ggpubr)
 library(FSA)
 library(dunn.test)
+library(tools)
 ```
 
 
@@ -54,7 +55,7 @@ library(dunn.test)
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
 
-#### Differences between length of crime
+### Differences between length of crime
 
 ```{r}
 test_mean_data = sex_drug_weapons %>%
@@ -128,7 +129,7 @@ sex_drug_weapons = sex_drug_weapons %>%
 
 <br>
 
-### Tabulation
+#### Cross tabulation
 
 We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.
 ```{r, felonies_boroughs}
@@ -138,19 +139,25 @@ with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
 
 ```{r, results = "hide"}
 fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
-  mutate( OR = exp(estimate))
+  mutate( `Odds ratio` = exp(estimate))
 ```
 
 ```{r}
-fit %>% knitr::kable()
+clean_fit = fit %>% mutate(term = str_replace(term, "\\(", ""),
+               term = str_replace(term, "\\)", ""),
+               term = str_replace(term, "boro_nm", ""),
+               term = toTitleCase(term)) %>% mutate(term = str_replace(term, "_", " ")) %>% 
+  rename(`Crime group` = y.level, Term = term, Estimate = estimate, `Standard error` = std.error, `P value` = p.value) 
 
+clean_fit %>% 
+  knitr::kable() 
 ```
 
 ```{r}
 
-ggplot(fit, aes(x = term, y = OR)) +
-  geom_segment( aes(x = term, xend = term, y = 0, yend = OR), color = "grey") +
-  geom_point(color = "orange", size = 3) + facet_grid(~ y.level) +
+ggplot(clean_fit, aes(x = Term, y = `Odds ratio`)) +
+  geom_segment( aes(x = Term, xend = Term, y = 0, yend = `Odds ratio`), color = "grey") +
+  geom_point(color = "orange", size = 3) + facet_grid(~ `Crime group`) +
   theme_light() +
   theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8),
     panel.grid.major.x = element_blank(),
@@ -175,18 +182,4 @@ The odds of weapon related vs. drug related crimes will increase by 2.064 if mov
 The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. 
 The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. 
 The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island. 
-
-
-```{r, eval = FALSE}
-x = sex_drug_weapons %>% filter(vic_race != "unknown") %>% filter(crime_group != "Sex-Related") %>% 
-  mutate(race = if_else(vic_race == "white", "white", "minority")) %>% 
-  mutate(race = as.factor(race),
-         crime_group = as.factor(crime_group))
-
-glm(crime_group ~ race, family = binomial(), data = x) %>% broom::tidy() %>% 
-  mutate( OR = exp(estimate)) %>% knitr::kable()
-
-multinom(crime_group ~ race, data = x) %>% broom::tidy() %>% 
-  mutate(OR = exp(estimate)) %>% knitr::kable(digits = 4)
-```
 

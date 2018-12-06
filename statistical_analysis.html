@@ -343,8 +343,8 @@ font-weight: bold;
 }
 
 </style>
-<div id="differences-between-length-of-crime" class="section level4">
-<h4>Differences between length of crime</h4>
+<div id="differences-between-length-of-crime" class="section level3">
+<h3>Differences between length of crime</h3>
 <p>In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance.</p>
 <p>To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene’s Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn’t met.</p>
 <table>
@@ -409,9 +409,8 @@ font-weight: bold;
 <p>Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
 <p><br></p>
 </div>
-</div>
-<div id="tabulation" class="section level3">
-<h3>Tabulation</h3>
+<div id="cross-tabulation" class="section level4">
+<h4>Cross tabulation</h4>
 <p>We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.</p>
 <table>
 <thead>
@@ -458,19 +457,19 @@ font-weight: bold;
 <table>
 <thead>
 <tr class="header">
-<th align="left">y.level</th>
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
+<th align="left">Crime group</th>
+<th align="left">Term</th>
+<th align="right">Estimate</th>
+<th align="right">Standard error</th>
 <th align="right">statistic</th>
-<th align="right">p.value</th>
-<th align="right">OR</th>
+<th align="right">P value</th>
+<th align="right">Odds ratio</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Sex-Related</td>
-<td align="left">(Intercept)</td>
+<td align="left">Intercept</td>
 <td align="right">0.5844049</td>
 <td align="right">0.0275731</td>
 <td align="right">-19.4813700</td>
@@ -479,7 +478,7 @@ font-weight: bold;
 </tr>
 <tr class="even">
 <td align="left">Sex-Related</td>
-<td align="left">boro_nmbronx</td>
+<td align="left">Bronx</td>
 <td align="right">0.5367635</td>
 <td align="right">0.0377326</td>
 <td align="right">-16.4896410</td>
@@ -488,7 +487,7 @@ font-weight: bold;
 </tr>
 <tr class="odd">
 <td align="left">Sex-Related</td>
-<td align="left">boro_nmbrooklyn</td>
+<td align="left">Brooklyn</td>
 <td align="right">0.8622320</td>
 <td align="right">0.0366125</td>
 <td align="right">-4.0486419</td>
@@ -497,7 +496,7 @@ font-weight: bold;
 </tr>
 <tr class="even">
 <td align="left">Sex-Related</td>
-<td align="left">boro_nmqueens</td>
+<td align="left">Queens</td>
 <td align="right">1.1189544</td>
 <td align="right">0.0416796</td>
 <td align="right">2.6966344</td>
@@ -506,7 +505,7 @@ font-weight: bold;
 </tr>
 <tr class="odd">
 <td align="left">Sex-Related</td>
-<td align="left">boro_nmstaten_island</td>
+<td align="left">Staten island</td>
 <td align="right">0.7451797</td>
 <td align="right">0.0747898</td>
 <td align="right">-3.9327525</td>
@@ -515,7 +514,7 @@ font-weight: bold;
 </tr>
 <tr class="even">
 <td align="left">Weapon-Related</td>
-<td align="left">(Intercept)</td>
+<td align="left">Intercept</td>
 <td align="right">0.9955120</td>
 <td align="right">0.0237090</td>
 <td align="right">-0.1897204</td>
@@ -524,7 +523,7 @@ font-weight: bold;
 </tr>
 <tr class="odd">
 <td align="left">Weapon-Related</td>
-<td align="left">boro_nmbronx</td>
+<td align="left">Bronx</td>
 <td align="right">0.7250480</td>
 <td align="right">0.0306600</td>
 <td align="right">-10.4865465</td>
@@ -533,7 +532,7 @@ font-weight: bold;
 </tr>
 <tr class="even">
 <td align="left">Weapon-Related</td>
-<td align="left">boro_nmbrooklyn</td>
+<td align="left">Brooklyn</td>
 <td align="right">1.4212297</td>
 <td align="right">0.0298985</td>
 <td align="right">11.7572104</td>
@@ -542,7 +541,7 @@ font-weight: bold;
 </tr>
 <tr class="odd">
 <td align="left">Weapon-Related</td>
-<td align="left">boro_nmqueens</td>
+<td align="left">Queens</td>
 <td align="right">1.4406084</td>
 <td align="right">0.0348954</td>
 <td align="right">10.4617057</td>
@@ -551,7 +550,7 @@ font-weight: bold;
 </tr>
 <tr class="even">
 <td align="left">Weapon-Related</td>
-<td align="left">boro_nmstaten_island</td>
+<td align="left">Staten island</td>
 <td align="right">0.9647314</td>
 <td align="right">0.0596248</td>
 <td align="right">-0.6021913</td>
@@ -561,6 +560,7 @@ font-weight: bold;
 </tbody>
 </table>
 <p><img src="statistical_analysis_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
 </div>
 <div id="interpretation" class="section level3">
 <h3>Interpretation</h3>
