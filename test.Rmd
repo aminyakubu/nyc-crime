@@ -504,7 +504,7 @@ time_data = felony_crime %>%
 
 ##### Average Length of Incident by Borough and Crime Group 
 
-```{r exp_tidy_crime_data}
+```{r exp_tidy_crime_data2}
 time_data %>% rename(`Crime group` = crime_group) %>% 
 group_by(`Crime group`) %>%
   summarise(Count = n(), 
@@ -592,7 +592,7 @@ Regarding the length of each reported felony across boroughs, we see that Bronx,
 For our third exploratory analysis, we chose to examine overall felony rates by borough. Doing so gives us a strong understanding as to how NYPD can prioritize their efforts when stemming crime; it also allows us to understand potential longitudinal trends for each borough. If, for example, felony rates have remained consistently high for a particular borough, laaw enforcement officials have suggestive evidence that the high rates are not a fluke and would be able to mobilize effects in that borough more effectively, readily, and directly. 
 
 To study this, we loaded information from the U.S. Census containing information on the total population in each of the boroughs to calculate felony rates. Next, we plotted the overall felony rates over 2014-2017 for each borough by merging the sex_drug_weapons dataset with the data from the U.S. Census.
-```{r exp_tidy_felony_data}
+```{r exp_tidy_felony_data2}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 
 url = "https://www.census.gov/quickfacts/fact/table/newyorkcitynewyork,bronxcountybronxboroughnewyork,kingscountybrooklynboroughnewyork,newyorkcountymanhattanboroughnewyork,queenscountyqueensboroughnewyork,richmondcountystatenislandboroughnewyork/PST045217"
@@ -612,7 +612,7 @@ nyc_population = nyc_population %>%
 
 ```
 
-```{r exp_overall_felony_rates}
+```{r exp_overall_felony_rates2}
 grouped_df = sex_drug_weapons %>% 
   group_by(boro_nm, year) %>% 
   summarise(number = n())
