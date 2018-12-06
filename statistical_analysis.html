@@ -191,7 +191,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = true;
+    options.showAndHide = false;
     options.smoothScroll = true;
 
     // tocify
@@ -254,6 +254,12 @@ div.tocify {
   border-radius: 0px;
 }
 
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
 
 </style>
 
@@ -350,36 +356,10 @@ font-weight: bold;
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
 <p>In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Crime group</th>
-<th align="right">Count</th>
-<th align="right">Average time in days</th>
-<th align="right">Standard deviation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Drug-Related</td>
-<td align="right">18293</td>
-<td align="right">0.5862466</td>
-<td align="right">12.315819</td>
-</tr>
-<tr class="even">
-<td align="left">Sex-Related</td>
-<td align="right">8646</td>
-<td align="right">19.2362846</td>
-<td align="right">83.297645</td>
-</tr>
-<tr class="odd">
-<td align="left">Weapon-Related</td>
-<td align="right">19753</td>
-<td align="right">0.2820289</td>
-<td align="right">9.101974</td>
-</tr>
-</tbody>
-</table>
+<center>
+<br><img src = "images/crime_length.jpg" alt="crime_length" style="width:170%; border:1px solid"> <br>
+</center>
+<p><br></p>
 <p>We will assess whether this difference is statistically significant. Testing this difference can yield important insights regarding whether victims are disproportionately suffering the burden of certain crimes, in terms of absolute number of days. Finding a significant result may also suggest that certain felonies are more extensive and complicated, potentially more dangerous or violent, or may require more resources to deal with. Lastly, it may indicate that the victims are at a higher risk compared to those involved in other types of felonies.</p>
 <p><br></p>
 </div>
@@ -445,24 +425,35 @@ font-weight: bold;
 <p>The results of these tests suggest that victims of sex-related felonies endure significantly longer incidents compare to victims of drug-related or weapons-related felonies. This makes sense, considering that sex-related felonies include human trafficking, sexual abuse, and other cases in which the length of the crime is often dragged out compared to those within the other two felonies. Given this result, law enforcement, government, and public health officials should dedicate extra resources to prevent sex-related felonies and ensure that their agencies are adequately prepared and capable to resolve and manage sex-related felonies lasting longer periods of time.</p>
 <p><br> <br></p>
 </div>
-<div id="association-between-borough-and-crime-occurrence" class="section level3">
-<h3>Association Between Borough and Crime Occurrence</h3>
+</div>
+<div id="association-between-borough-and-crime-occurrence" class="section level2">
+<h2>Association Between Borough and Crime Occurrence</h2>
+<p><br></p>
+<div id="introduction-1" class="section level3">
+<h3>Introduction</h3>
 <p>In one of our exploratory analyses, we found that felony rates differed by borough (see below).</p>
 <center>
 <br><img src = "images/felony_rates.jpg" alt="felony_rates" style="width:170%; border:1px solid"> <br>
 </center>
-<p>Given this result, we decided to formally analyze the association between sex-related, drug-related, and weapons-related felonies and the borough in which the crime occurred.</p>
+<p><br></p>
+<p>Given this result, we decided to formally analyze the association between sex-related, drug-related, and weapons-related felonies and the borough in which the crime occurred; specifically, we looked at whether the occurrence of the felony was higher (or lower) in a particular borough compared to the other boroughs. The importance of examining this association cannot be overstated - determining whether felonies occur more often in a specific borough provides the NYPD and other officials the potential capability of directing their resources toward areas that need them the most.</p>
+<p><br></p>
+</div>
+<div id="data-and-methods-1" class="section level3">
+<h3>Data and Methods</h3>
 <p><br></p>
 <div id="model-statement-for-the-multinomial-logistic-regression-model" class="section level5">
-<h5>Model Statement for the Multinomial Logistic Regression Model <br></h5>
-<p><span class="math display">\[ln (\frac{P( crimegroup = drug-related)}{P(crime group = sex-related)}) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)\]</span> <br></p>
-<p><span class="math display">\[ln(\frac{P(crimegroup = weapon-related)}{P(crime group = sex-related)}) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)\]</span></p>
-<p>Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
+<h5>Model Statement for the Multinomial Logistic Regression Model</h5>
+<p>We conducted a multinomial logistic regression to study the association between borough and occurrence of drug-related, sex-related, and weapons-related felonies. The model statement for our research question is included below.</p>
+<p><br></p>
+<p><span class="math display">\[ln (\frac{P( crimegroup = sex-related)}{P(crime group = drug-related)}) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)\]</span> <br></p>
+<p><span class="math display">\[ln(\frac{P(crimegroup = weapons-related)}{P(crime group = drug-related)}) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)\]</span></p>
+<p>Drug-related felonies was chosen as the reference group among the 3 types of felonies because it tends to be the least serious of the 3 crime groups. Among the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.</p>
 <p><br></p>
 </div>
 <div id="cross-tabulation" class="section level4">
 <h4>Cross tabulation</h4>
-<p>We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.</p>
+<p>We created a data table to organize the rates of drug-related, sex-related, and weapons-related felonies; we stratified the results by borough. From the table, we can see that, in terms of absolute numbers, Brooklyn has the highest incidence of weapons-related and sex-related felonies, while the Bronx has the highest incidence of drug-related felonies.</p>
 <table>
 <thead>
 <tr class="header">
@@ -505,6 +496,8 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
+<p><br></p>
+<p>Next, we fit a logistic regression model to the data. We also plot the data into a graph.</p>
 <table>
 <thead>
 <tr class="header">
@@ -514,7 +507,7 @@ font-weight: bold;
 <th align="right">Standard error</th>
 <th align="right">statistic</th>
 <th align="right">P value</th>
-<th align="right">Odds ratio</th>
+<th align="right">Odds Ratio</th>
 </tr>
 </thead>
 <tbody>
@@ -610,14 +603,27 @@ font-weight: bold;
 </tr>
 </tbody>
 </table>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="statistical_analysis_files/figure-html/graph_felony_and_boroughs-1.png" width="672" /></p>
 </div>
 </div>
-<div id="interpretation" class="section level3">
-<h3>Interpretation</h3>
-<p>The odds of sex-related crimes in manhattan is 1.79. The odds of sex related vs. drug-related crimes will increase by 1.71 if moving from Manhattan to Bronx. The odds of sex related vs. drug-related crimes will increase by 2.3684 if moving from Manhattan to Brooklyn. The odds of sex related vs. drug-related crimes will increase by 3.06 if moving from Manhattan to Queens. The odds of sex related vs. drug-related crimes will increase by 2.106 if moving from Manhattan to Staten Island.</p>
-<p>The odds of weapon related crimes in manhattan is 2.7.</p>
-<p>The odds of weapon related vs. drug related crimes will increase by 2.064 if moving from Manhattan to Bronx. The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island.</p>
+<div id="results-and-discussion-1" class="section level3">
+<h3>Results and Discussion</h3>
+<p>From the data table and the graph above, we see that:</p>
+<ul>
+<li>The odds of a sex-related felony occurring in Manhattan is 1.79 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in the Bronx is 1.71 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Brooklyn is 2.37 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Queens is 3.06 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a sex-related felony occurring in Staten Island is 2.11 times the odds of a drug-related felony occurring in Manhattan.</li>
+</ul>
+<p><br></p>
+<ul>
+<li>The odds of a weapons-related felony occurring in Manhattan is 2.71 times the odds of a drug-related felony occuring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in the Bronx is 2.06 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Brooklyn is 4.14 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Queens is 4.22 times the odds of a drug-related felony occurring in Manhattan.</li>
+<li>The odds of a weapons-related felony occurring in Staten Island is 2.62 times the odds of a drug-related felony occurring in Manhattan.</li>
+</ul>
 </div>
 </div>
 
