@@ -58,10 +58,10 @@ library(tools)
 <br>
 
 ### Introduction
-In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.
+In one of the exploratory analyses, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis are included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.
 
 <center>
-<br><img src = "images/crime_length.jpg" alt="crime_length" style="width:170%; border:1px solid"> <br>
+<br><img src = "images/crime_length2.png" alt="crime_length" style="width:170%; border:1px solid"> <br>
 </center>
 
 <br>
@@ -130,7 +130,7 @@ The results of these tests suggest that victims of sex-related felonies endure s
 In one of our exploratory analyses, we found that felony rates differed by borough (see below).
 
 <center>
-<br><img src = "images/felony_rates.jpg" alt="felony_rates" style="width:170%; border:1px solid"> <br>
+<br><img src = "images/felony_rates2.png" alt="felony_rates" style="width:170%; border:1px solid"> <br>
 </center>
 
 <br>

@@ -3,7 +3,8 @@ title: "Formal Report"
 output:
   html_document:
     toc: true
-    toc_float: true
+    toc_float:
+      collapsed: false
 ---
 
 <br>
@@ -362,10 +363,8 @@ library(tmap)
 
 <br>
 
-### Top Crimes and Associated Demographics by Borough
-For our first exploratory analysis, we wanted to examine sociodemographics associated with each of the three types of felonies. We focused particularly on the sociodemographics of the victim, in alignment with what we had mentioned was a motivator for our project. Studying sociodemographic variables and factors also provides crucial information regarding who is being targeted in these crimes, which allows us to deduce who may need more help and assistance in the aftermath of these crimes.
-
-Using the code below, we imported the data, tidied up the data, and created bar graphs showing the absolute numbers of victims being affected by the three felonies, stratified by age group.
+### Victim Demographics
+For our first exploratory analysis, we analyzed demographic information for victims of sex-related, weapon-related and drug-related felonies. 
 
 ```{r, import_data}
 felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
@@ -377,52 +376,63 @@ felony_graph =
   filter(!is.na(vic_age_group), vic_age_group != "unknown")
 ```
 
-```{r}
-socio_graph2 = 
-  felony_graph %>% 
-  group_by(vic_age_group, crime_group) %>%
-  summarise(number = n()) %>%
-  ggplot(aes(x = vic_age_group, y = number, fill = crime_group)) + 
-  facet_grid(~crime_group) +
-  geom_bar(stat = "identity") +
-    labs(
-    title = "Victim's Age and Felony",
-    x = "Victim's Age Group",
-    y = "Frequency",
-    caption = "Sex-related, drug-related, and weapons-related felonies only"
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = "bottom")
+<center>
+<br><img src = "images/demographics_table.png" alt="demographics" style="width:170%; border:1px solid"> <br>
+</center>
 
-socio_graph2
+<br>
+Note that in the table above, "People of the State of NY" indicates that the information was not provided by the city, presumably to protect the victims' identity and privacy. Also of note is that young women are disproportionately affected by sex-relate felonies.
+
+Click [here](https://github.com/aminyakubu/nyc-crime/blob/master/demographics.Rmd) to view the code for the demographics table. 
+
+<br>
+<br>
+
+### Length of Reported Incident by Borough and Felony
+
+<br>
+
+For our second exploratory analysis, We examined whether the length of time between when the crime started and ended differed by borough and felony type. Examining the length of time between when the crime started and ended can serve as a proxy indicator of the severity of the crime. Longer times may mean the crime is more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
+
+```{r}
+time_data = felony_crime %>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan")) %>% 
+  janitor::clean_names() %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(time_diff2, boro_nm, crime_group) %>% 
+  mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2)) 
+# if value is missing it means the crime doesn't have an end date. It happened at a point in time. 
 ```
 
-<br> We notice several interesting findings associated with the graphs above. First, in terms of absolute numbers, we see that there are significantly more sex-related felonies being committed across all age groups than any of the other two felonies. There is also a notable difference between weapons-related felonies and drug-related felonies, with drug-related felonies ranking last between the two. Given these findings, crime prevention efforts should perhaps direct their efforts more toward sex-related felonies.
-
-Secondly, we see that the age distribution of sex-related felonies is heavily skewed to the right – victims tend to be younger. This aligns with what we understand and know from research and cases associated with human trafficking and other sex crimes. We also see that the age distribution of weapons-related and drug-related felonies tend to be approximately normal, with more of the felonies being committed on middle-aged victims as opposed to younger or older individuals. 
-
-<br>
 <br>
 
-### Length of Reported Felony by Borough
-
-For our second exploratory analysis, we examined whether the length of time between when the crime started and ended differed by borough. Examining the length of the reported felony can serve as a proxy indicator of the severity of the crime by each borough - longer time may tend to be more severe, harder to resolve, more violent, and may require more resources to deal with. Furthermore, differences in the length of reported felonies may have implications for law enforcement officials, policymakers, and urban residents.
-
-After running a density plot on a newly created variable called time_diff2 (length of reported felony in days) and viewing some summary statistics, we noticed that most of the values of that variable seemed to fall under "0," heavily skewing the data. We also noticed a high number of missing values. As a result, we excluded missing values and only looked at observations for which time_diff2 > 0, which allowed us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe any patterns - our final analytic dataset, crime_data2, included 2,682 observations. As a reminder, note that only sex-related, weapons-related, and drug-related felonies are analyzed.
+##### Average Length of Incident by Borough and Crime Group 
 
 ```{r exp_tidy_crime_data}
-crime_df = readRDS(file = "./datasets/sex_drug_weapons.rds")
-
-crime_data = crime_df %>% 
-  janitor::clean_names() %>%
-  mutate(time_diff = (difftime(cmplnt_to_dt, cmplnt_fr_dt))) %>% 
-  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
-  select(cmplnt_fr_dt, cmplnt_to_dt, time_diff, time_diff2, boro_nm) 
-  
+time_data %>% rename(`Crime group` = crime_group) %>% 
+group_by(`Crime group`) %>%
+  summarise(Count = n(), 
+            `Average time in days` = mean(time_diff2),
+             `Standard deviation` = sd(time_diff2)) %>% knitr::kable()
 ```
 
+```{r exp_mean_time_tables}
+
+time_data %>% filter(!is.na(boro_nm)) %>% 
+  rename(Borough = boro_nm) %>% 
+  group_by(Borough) %>%
+  summarise(Count = n(), `Average time in days` = mean(time_diff2), 
+            `Standard deviation` = sd(time_diff2)) %>% 
+  knitr::kable(digits = 2) 
+```
+
+There seems to be a marked difference in the average length of incidents across boroughs and felony type. Notably, we see that, on average, sex-related felonies seem to have a longer average incident length than drug- and weapon-related felonies. In terms of boroughs, Staten Island slightly ranks higher than the rest of the boroughs. 
+
+We wanted to investigate further. First, we visually investigated the distribution of the length of each incident across all boroughs and all three felony types.
 ```{r exp_density_plot}
-ggplot(data = crime_data, aes(x = time_diff2)) +
+
+ggplot(data = time_data, aes(x = time_diff2)) +
   geom_density() +
     labs(
     title = "Density Plot of Length of Reported Felony",
@@ -433,55 +443,30 @@ ggplot(data = crime_data, aes(x = time_diff2)) +
   scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                      labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10")) +
   xlim(0, 5)
-
-
-crime_data2 <- crime_data[complete.cases(crime_data),] %>% 
-    filter(time_diff2 > 0) 
 ```
 
-We first looked at the data in a data table to examine general trends and get a feel of the data; specifically, we examined the average length of a reported felony for each borough in a data table - based on this, there seems to be a marked difference in the average length across boroughs. For example, average length of reported crimes ranged from 58.52 days (Manhattan) to 105.42 days (Staten Island) across all the years and across weapons-related, drug-related, and sex-related felonies.
+The density plot of the length of incidents above shows that most of the values seemed to fall under "0," heavily skewing the data. In other words, most incidents occurred within a day. We also noticed a high number of missing values in our data. 
 
-```{r exp_mean_time_tables}
-crime_table = 
-  crime_data2 %>%
-  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
-          time_diff, 'Borough' = boro_nm) %>% 
+We therefore excluded missing values and only looked at observations for which length of time of the incident was greater than 0 (i.e., greater than 1 day) to allow us to more clearly visualize and understand our data. The number of observations was still large and sufficient enough to observe patterns. 
+
+The table below shows the averages after the exclusions.
+```{r}
+crime_data <- time_data[complete.cases(time_data),] %>% 
+    filter(time_diff2 > 0) 
+
+crime_data %>%
+  rename('Borough' = boro_nm) %>% 
   group_by(Borough) %>%
-  summarise(mean_time = mean(time_diff2)) %>% 
-  knitr::kable(digits = 2) 
-
-crime_table
-
-
-crime_table2 = 
-  crime_data2 %>%
-  rename('Start Date of Event' = cmplnt_fr_dt, 'End Date of Event' = cmplnt_to_dt, 'Time Difference (Seconds)' =     
-          time_diff, 'Borough' = boro_nm) %>% 
-  group_by(Borough) %>%
-  summarise(mean_time = mean(time_diff2))
+  summarise(mean_time = mean(time_diff2)) %>% knitr::kable()
 ```
 
 <br>
-Next, we visually investigated at whether the length of time for the reported felony differed by borough. We examined both the average length of time of reported felonies across boroughs, as well as each _individual_ reported felony's length of time across boroughs.
-```{r exp_mean_time_graphs}
-crime_graph = 
-  crime_table2 %>% 
-  ggplot(aes(x = Borough, y = mean_time)) + 
-  geom_point(color = 'darkblue') +
-    labs(
-    title = "Average Length of Reported Felonies, By Borough",
-    x = "Borough",
-    y = "Average Length of Reported Event",
-    caption = "Sex-related, drug-related, and weapons-related felonies only"
-    ) +
-  geom_smooth(se = FALSE) +
-  theme(legend.position = "bottom")
 
-crime_graph
-
+We also visually examined the length of each reported felonies across boroughs, shown below. 
+```{r exp_mean_time_graphs, echo = FALSE}
 
 crime_graph2 = 
-  crime_data2 %>% 
+  crime_data %>% 
   group_by(boro_nm) %>% 
   ggplot(aes(x = boro_nm, y = time_diff2)) + 
   geom_boxplot(color = 'darkblue') +
@@ -491,18 +476,18 @@ crime_graph2 =
     y = "Length of Reported Event",
     caption = "Sex-related, drug-related, and weapons-related felonies only"
     ) +
-  geom_smooth(se = FALSE) +
   theme(legend.position = "bottom")
 
 crime_graph2
 ```
 
 <br>
-We obtain a rich amount of information from the graphs above. First, regarding the average length of reported felonies, Staten Island clearly outranks the other borough, leading at 105.42 days. Queens is next (78.63 days), followed by the Bronx (71.31 days), Brooklyn (60.91 days), and Manhattan (58.52 days). 
+
+We see that for the average length of reported felonies, Staten Island clearly outranks the other borough, leading at 105.42 days. Queens is next (78.63 days), followed by the Bronx (71.31 days), Brooklyn (60.91 days), and Manhattan (58.52 days). 
 
 One reason that may account for Staten Island's rank is that the borough has fewer observations compared to the other boroughs, so any outliers in Staten Island may easily and drastically skew the average. Another potential reason is that criminals may be more comfortable committing felonies in a borough that is less populated with other residents and law enforcement officials. Manhattan, on the other hand, is a more crowded borough - perhaps criminals feel less comfortable committing a felony in such an area. This may be particularly relevant and true if felonies are more severe or violent, and criminals need time, space, and less attention when committing these crimes. Indeed, we may be right - felonies comprise a more violent category, in relation to misdemeanors; felonies tend to include homicide, rape, robbery, arson, human trafficking, and so on. 
 
-Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have significantly more outliers (and thus, perhaps more observations) compared to Staten Island, giving a bit more credence to the first hypothesis stated above. We also notice that the median values, which tend to be a more stable measure against outliers than the mean, are close to 0 for all the boroughs, suggesting that many felonies still last around a single day despite our filtering out same-day felonies. Despite this, Staten Island still shows a median value that seems slightly above the values of the other boroughs. 
+Regarding the length of each reported felony across boroughs, we see that Bronx, Brooklyn, Manhattan, and Queens have significantly more outliers (and more observations) compared to Staten Island, giving a bit more credence to the first hypothesis stated above. We also notice that the median values, which tend to be a more stable measure against outliers than the mean, are close to 0 for all the boroughs, suggesting that many felonies still last around a single day despite our filtering out same-day felonies. Despite this, Staten Island still shows a median value that seems slightly above the values of the other boroughs. 
 
 <br>
 <br>
@@ -806,7 +791,7 @@ library(tools)
 In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.
 
 <center>
-<br><img src = "images/crime_length.jpg" alt="crime_length" style="width:170%; border:1px solid"> <br>
+<br><img src = "images/crime_length2.png" alt="crime_length" style="width:170%; border:1px solid"> <br>
 </center>
 
 <br>
@@ -875,7 +860,7 @@ The results of these tests suggest that victims of sex-related felonies endure s
 In one of our exploratory analyses, we found that felony rates differed by borough (see below).
 
 <center>
-<br><img src = "images/felony_rates.jpg" alt="felony_rates" style="width:170%; border:1px solid"> <br>
+<br><img src = "images/felony_rates2.png" alt="felony_rates" style="width:170%; border:1px solid"> <br>
 </center>
 
 <br>
