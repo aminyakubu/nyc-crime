@@ -48,6 +48,11 @@ library("vembedr")
 
 <iframe width = "560" height = "315" src="https://www.youtube.com/watch?v=ts-QUqtZYHY" frameborder = "1" allowfullscreen></iframe>
 
+```{r, embed, echo = FALSE, message = FALSE}
+embed_youtube("v=ts-QUqtZYHY")
+```
+
+
 You can watch the Youtube video [here.](https://www.youtube.com/watch?v=ts-QUqtZYHY)
 
 <br>
