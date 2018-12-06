@@ -60,7 +60,80 @@ library(tmap)
 
 
 ## Top Crimes and Associated Demographics by Borough
-Include Yaa's
+For this exploratory analysis, we wanted to examine sociodemographics associated with each of the three types of felonies.
+```{r, import_data}
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
+
+```{r}
+felony_graph =
+  felony_crime %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown")
+```
+
+```{r, sex_related_data}
+sex_graph =  
+  felony_crime %>%
+  filter(crime_group == "Sex-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% 
+  arrange(desc(number))
+```
+
+```{r, weapons_related_data}
+felony_crime %>%
+  filter(crime_group == "Weapon-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) 
+```
+
+```{r, drug_related_data}
+felony_crime %>%
+  filter(crime_group == "Drug-Related") %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown") %>% 
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>% arrange(desc(number)) 
+```
+
+```{r, histogram}
+socio_graph = 
+  felony_graph %>% 
+  ggplot(aes(x = vic_age_group, y = number)) + 
+  geom_bar(color = 'darkblue') +
+    labs(
+    title = "VIctim's Age and Felony",
+    x = "Victim's Age Group",
+    y = "Frequency",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+socio_graph
+```
+
+```{r}
+socio_graph2 = 
+  felony_graph %>% 
+  group_by(vic_age_group) %>%
+  summarise(number = n()) %>%
+  ggplot(aes(x = vic_age_group, y = number)) + 
+  facet_grid(~crime_group) +
+  geom_bar(stat = "identity", color = 'darkblue') +
+    labs(
+    title = "VIctim's Age and Felony",
+    x = "Victim's Age Group",
+    y = "Frequency",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+socio_graph2
+```
+
 
 <br>
 <br>
