@@ -46,7 +46,7 @@ font-weight: bold;
 library("vembedr")
 ```
 
-<iframe width = "560" height = "315" src="https://www.youtube.com/watch?v=ts-QUqtZYHY" frameborder = "0" allowfullscreen></iframe>
+<iframe width = "560" height = "315" src="https://youtu.be/ts-QUqtZYHY" frameborder = "0" allowfullscreen></iframe>
 
 <br>
 
