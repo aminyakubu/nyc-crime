@@ -56,7 +56,7 @@ We decided to study sex-related, drug-related, and weapons-related felonies in p
 
 We used the dataset collected by the New York City Police Department (NYPD); specifically, the NYPD Historic Complaint dataset, which provides longitudinal information on complaints filed to the NYPD, the type of crimes committed by a suspect, suspect demographics, victim demographics, location of crime, date and time of crime, and other variables.
 
-The link to the raw dataset is [here.](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i). Review the ["The Data"](acquiringdata.html) page for information on how we cleaned the dataset to obtain a final analytic dataset.
+The link to the raw dataset is [here.](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i) Review the ["The Data"](acquiringdata.html) page for information on how we cleaned the dataset to obtain a final analytic dataset.
 
 <br>
 

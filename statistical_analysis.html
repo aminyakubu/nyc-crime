@@ -11,7 +11,7 @@
 
 
 
-<title>Statistical Analysis</title>
+<title>Statistical Analyses</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -314,7 +314,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistical Analysis</h1>
+<h1 class="title toc-ignore">Statistical Analyses</h1>
 
 </div>
 
@@ -343,8 +343,10 @@ font-weight: bold;
 }
 
 </style>
+<p><br></p>
 <div id="differences-in-length-of-crime" class="section level2">
 <h2>Differences in Length of Crime</h2>
+<p><br></p>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
 <p>In one of the exploratory analysis, we found that the average length of time of the reported crime (i.e., time between when it started and when it ended) differed for each felony type (sex-related, drug-related, and weapons-related). Results from that exploratory analysis is included below. We see that sex-related felonies last an average of 19.236 days, drug-related felonies last an average of 0.586 days, and weapons-related felonies last an average of 0.282 days.</p>
@@ -443,9 +445,13 @@ font-weight: bold;
 <p>The results of these tests suggest that victims of sex-related felonies endure significantly longer incidents compare to victims of drug-related or weapons-related felonies. This makes sense, considering that sex-related felonies include human trafficking, sexual abuse, and other cases in which the length of the crime is often dragged out compared to those within the other two felonies. Given this result, law enforcement, government, and public health officials should dedicate extra resources to prevent sex-related felonies and ensure that their agencies are adequately prepared and capable to resolve and manage sex-related felonies lasting longer periods of time.</p>
 <p><br> <br></p>
 </div>
-<div id="association-between-borough-and-crime" class="section level3">
-<h3>Association between borough and crime</h3>
-<p>We examined the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.</p>
+<div id="association-between-borough-and-crime-occurrence" class="section level3">
+<h3>Association Between Borough and Crime Occurrence</h3>
+<p>In one of our exploratory analyses, we found that felony rates differed by borough (see below).</p>
+<center>
+<br><img src = "images/felony_rates.jpg" alt="felony_rates" style="width:170%; border:1px solid"> <br>
+</center>
+<p>Given this result, we decided to formally analyze the association between sex-related, drug-related, and weapons-related felonies and the borough in which the crime occurred.</p>
 <p><br></p>
 <div id="model-statement-for-the-multinomial-logistic-regression-model" class="section level5">
 <h5>Model Statement for the Multinomial Logistic Regression Model <br></h5>

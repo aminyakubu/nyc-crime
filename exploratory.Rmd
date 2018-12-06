@@ -120,7 +120,7 @@ time_data = felony_crime %>%
 # if value is missing it means the crime doesn't have an end date. It happened at a point in time. 
 ```
 
-##### Average length of crimes by brough and crime groups 
+##### Average Length of Incident by Borough and Crime Group 
 
 ```{r exp_tidy_crime_data}
 time_data %>% rename(`Crime group` = crime_group) %>% 
