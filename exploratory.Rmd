@@ -78,7 +78,7 @@ felony_graph =
 <br><img src = "images/demographics_table.png" alt="demographics" style="width:170%; border:1px solid"> <br>
 </center>
 
-Click [here]() to view the the code for the demographics table. 
+Click [here](https://github.com/aminyakubu/nyc-crime/blob/master/demographics.Rmd) to view the the code for the demographics table. 
 ```{r sociograph, eval = FALSE}
 socio_graph2 = 
   felony_graph %>% 
