@@ -47,7 +47,7 @@ library("vembedr")
 ```
 
 ```{r video, echo = FALSE}
-embed_url("https://www.youtube.com/watch?v=ts-QUqtZYHY")
+embed_youtube("https://www.youtube.com/watch?v=ts-QUqtZYHY", width = 600, height = 400)
 ```
 
 <br>
