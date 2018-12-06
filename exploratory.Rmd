@@ -59,7 +59,41 @@ library(tmap)
 ```
 
 
+<<<<<<< HEAD
 ## General Demographics Associated with the Three Felony Categories
+=======
+## Top Crimes and Associated Demographics by Borough
+For this exploratory analysis, we wanted to examine sociodemographics associated with each of the three types of felonies.
+```{r, import_data}
+felony_crime = readRDS(file = "./datasets/sex_drug_weapons.rds")
+```
+
+```{r}
+felony_graph =
+  felony_crime %>%
+  filter(!is.na(vic_age_group), vic_age_group != "unknown")
+```
+
+```{r}
+socio_graph2 = 
+  felony_graph %>% 
+  group_by(vic_age_group, crime_group) %>%
+  summarise(number = n()) %>%
+  ggplot(aes(x = vic_age_group, y = number, fill = crime_group)) + 
+  facet_grid(~crime_group) +
+  geom_bar(stat = "identity") +
+    labs(
+    title = "VIctim's Age and Felony",
+    x = "Victim's Age Group",
+    y = "Frequency",
+    caption = "Sex-related, drug-related, and weapons-related felonies only"
+    ) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom")
+
+socio_graph2
+```
+>>>>>>> 945f96c002487e7f9f7af4fb047ceed9f58f241c
 
 
 <br>

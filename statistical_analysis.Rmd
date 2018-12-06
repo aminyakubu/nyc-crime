@@ -1,6 +1,9 @@
 ---
 title: "Statistical Analysis"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 <style>
@@ -38,21 +41,74 @@ knitr::opts_chunk$set(message = FALSE)
 ```{r, loading_packages}
 library(nnet)
 library(tidyverse)
+library(nnet)
+library(tidyverse)
+library(car)
+library(ggpubr)
+library(FSA)
+library(dunn.test)
+library(tools)
 ```
+
 
 ```{r, data_import}
 sex_drug_weapons = readRDS(file = "./datasets/sex_drug_weapons.rds")
 ```
 
-For our formal statistical analysis, we wanted to examine the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.
+### Differences between length of crime
+
+```{r}
+test_mean_data = sex_drug_weapons %>%
+  mutate(crime_group = forcats::fct_relevel(crime_group, "Drug-Related"),
+         boro_nm = forcats::fct_relevel(boro_nm, "manhattan")) %>% 
+  janitor::clean_names() %>% 
+  mutate(time_diff2 = (as.numeric(cmplnt_to_dt - cmplnt_fr_dt, units = "days", na.rm = TRUE))) %>% 
+  select(time_diff2, boro_nm, crime_group) %>% 
+  mutate(time_diff2 = if_else(is.na(time_diff2), 0, time_diff2))
+```
+
+In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance. 
+
+
+To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene's Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn't met. 
+
+```{r}
+ leveneTest(time_diff2 ~ crime_group, data = test_mean_data) %>% broom::tidy() %>% knitr::kable()
+
+```
+
+Non-parametric approach of Kruskal-Wallis rank sum test will be used to test the difference between the means. 
+
+```{r}
+kruskal.test(time_diff2 ~ crime_group, data = test_mean_data) %>% broom::tidy() %>% knitr::kable()
+```
+
+It is evident that the p value is less that 0.05. We can conclude that at 5% level of significance, at least one of the means of the length of time between when the crime started and ended is different for the different crime groups. 
+
+Since the Kruskal–Wallis test is significant, we then conducted a post-hoc analysis to determine which crime groups differ from each other level. We used the Dunn test for the post-hoc analysis. 
+
+```{r dunn}
+dunnTest(time_diff2 ~ crime_group,
+              data = test_mean_data,
+              #Method of adjustment - Benjamini-Hochberg               
+              method = "bh")  
+```
+
+The results show that there is a statistically significant difference between the average time for sex-related crimes and the other two groups (drugs and weapons). However, there isn't a significant difference between drug-related and weapon-related. This shows that on average victims of sex crimes endure the crime over a period of time. 
+
+### Association between borough and crime
+ 
+We examined the association between sex-related, drug-related, and weapons-related felonies and boroughs. We chose to look at this because the exploratory analyses suggested that the rates of these felonies differed, depending on the borough.
 
 <br>
 
-### Model Statement for the Multinomial Logistic Regression Model
+##### Model Statement for the Multinomial Logistic Regression Model <br>
 
-$$ln (P( crimegroup = drug-related)/P(crime group = sex-related)) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)$$
+$$ln (\frac{P( crimegroup = drug-related)}{P(crime group = sex-related)}) = \beta_{10} + \beta_{11}(Bronx) + \beta_{12}(Brooklyn) + \beta_{13}(Queens) + \beta_{14}(Staten Island)$$
+<br>
 
-$$ln(P(crimegroup = weapon-related)/P(crime group = sex-related)) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)$$
+$$ln(\frac{P(crimegroup = weapon-related)}{P(crime group = sex-related)}) = \beta_{20} + \beta_{21}(Bronx) + \beta_{22}(Brooklyn) + \beta_{23}(Queens) + \beta_{24}(Staten Island)$$
+
 
 Drug-related group was chosen as reference group among the 3 types of felonies because it is the least serious of the 3 crime groups. For the boroughs, Manhattan was chosen as the reference group because it is widely thought to be the borough with least crime.
 
@@ -66,7 +122,7 @@ sex_drug_weapons = sex_drug_weapons %>%
 
 <br>
 
-### Tabulation
+#### Cross tabulation
 
 We create a data table to organize the rates of drug-related, sex-related, and weapons-related felonies.
 ```{r, felonies_boroughs}
@@ -76,19 +132,25 @@ with(sex_drug_weapons, table(boro_nm, crime_group)) %>%
 
 ```{r, results = "hide"}
 fit = multinom(crime_group ~ boro_nm, data = sex_drug_weapons) %>% broom::tidy() %>% 
-  mutate( OR = exp(estimate))
+  mutate( `Odds ratio` = exp(estimate))
 ```
 
 ```{r}
-fit %>% knitr::kable()
+clean_fit = fit %>% mutate(term = str_replace(term, "\\(", ""),
+               term = str_replace(term, "\\)", ""),
+               term = str_replace(term, "boro_nm", ""),
+               term = toTitleCase(term)) %>% mutate(term = str_replace(term, "_", " ")) %>% 
+  rename(`Crime group` = y.level, Term = term, Estimate = estimate, `Standard error` = std.error, `P value` = p.value) 
 
+clean_fit %>% 
+  knitr::kable() 
 ```
 
 ```{r}
 
-ggplot(fit, aes(x = term, y = OR)) +
-  geom_segment( aes(x = term, xend = term, y = 0, yend = OR), color = "grey") +
-  geom_point(color = "orange", size = 3) + facet_grid(~ y.level) +
+ggplot(clean_fit, aes(x = Term, y = `Odds ratio`)) +
+  geom_segment( aes(x = Term, xend = Term, y = 0, yend = `Odds ratio`), color = "grey") +
+  geom_point(color = "orange", size = 3) + facet_grid(~ `Crime group`) +
   theme_light() +
   theme(axis.text.x = element_text(angle = 80, hjust = 1, size = 8),
     panel.grid.major.x = element_blank(),
@@ -113,18 +175,4 @@ The odds of weapon related vs. drug related crimes will increase by 2.064 if mov
 The odds of weapon related vs drug related crimes will increase by 4.14 if moving from Manhattan to Brooklyn. 
 The odds of weapon related vs drug related crimes will increase by 4.22 if moving from Manhattan to Queens. 
 The odds of weapon related vs drug related crimes will increase by 2.62 if moving from Manhattan to Staten Island. 
-
-
-```{r, eval = FALSE}
-x = sex_drug_weapons %>% filter(vic_race != "unknown") %>% filter(crime_group != "Sex-Related") %>% 
-  mutate(race = if_else(vic_race == "white", "white", "minority")) %>% 
-  mutate(race = as.factor(race),
-         crime_group = as.factor(crime_group))
-
-glm(crime_group ~ race, family = binomial(), data = x) %>% broom::tidy() %>% 
-  mutate( OR = exp(estimate)) %>% knitr::kable()
-
-multinom(crime_group ~ race, data = x) %>% broom::tidy() %>% 
-  mutate(OR = exp(estimate)) %>% knitr::kable(digits = 4)
-```
 
