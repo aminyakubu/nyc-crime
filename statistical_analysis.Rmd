@@ -69,13 +69,6 @@ test_mean_data = sex_drug_weapons %>%
 
 In the exploratory analysis, we found that the average length of time between when the crime started and when it ended were different for different crime groups. We will further access this differences for statistical significance. 
 
-```{r, eval = FALSE}
-test_mean_data %>% rename(`Crime group` = crime_group) %>% 
-group_by(`Crime group`) %>%
-  summarise(Count = n(), 
-            `Average days` = mean(time_diff2),
-             `Standard deviation` = sd(time_diff2)) %>% knitr::kable()
-```
 
 To make sure assumptions of ANOVA are not violated, we will test for homogeneity of variance. We used Levene's Test of homogeneity to test homogeneity of variances. We see from the results below that the p value is less than 0.05. Therefore, the assumption of homogeneity of variance isn't met. 
 
