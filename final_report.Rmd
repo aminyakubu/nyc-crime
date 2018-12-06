@@ -75,6 +75,12 @@ In terms of cleaning the dataset, we first utilized several R packages, includin
 
 <br>
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
 ### Accessing the Data
 ```{r acquiringdata_libraries, eval = FALSE}
 library(tidyverse)
@@ -86,6 +92,7 @@ devtools::install_github("dkahle/ggmap", ref = "tidyup")
 ggmap(get_googlemap())
 register_google(key = "insert your google api key here")
 ```
+
 
 ```{r acquiringdata_api, eval = FALSE}
 ## Install the required package with:
@@ -480,6 +487,7 @@ complete_data %>%
   knitr::kable() 
 ```
 
+f = female, m = male, e = people of new york (non-binary gender), d = business/organization
 <br>
 <br>
 
